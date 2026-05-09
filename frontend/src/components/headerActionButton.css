@@ -1,0 +1,48 @@
+.header-action-wrapper {
+  height: 44px;
+  display: flex;
+  align-items: stretch;
+}
+
+.header-action-btn {
+  min-width: 160px;
+  height: 100%;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1;
+
+  padding: 0;
+  margin: 0;
+
+  border-radius: 10px;
+  box-sizing: border-box;
+
+  border: 1px solid transparent;
+  background: transparent;
+
+  cursor: pointer;
+}
+
+/* Outline */
+.header-action-btn.outline {
+  border-color: #22c55e;
+  color: #22c55e;
+  background: transparent;
+}
+
+/* Primary */
+.header-action-btn.primary {
+  background: linear-gradient(135deg, #22c55e, #16a34a);
+  color: #022c22;
+}
+
+/* Hover polish */
+.header-action-btn:hover {
+  transform: translateY(-1px);
+  transition: transform 0.15s ease;
+}

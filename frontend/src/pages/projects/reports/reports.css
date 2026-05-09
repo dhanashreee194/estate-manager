@@ -1,0 +1,28 @@
+.cost-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 20px;
+  margin-bottom: 30px;
+}
+.cost-card {
+  background: linear-gradient(180deg, #020617, #020617dd);
+  border: 1px solid #1e293b;
+  border-radius: 14px;
+  padding: 20px;
+}
+
+.cost-title {
+  color: #9ca3af;
+  font-size: 14px;
+}
+
+.cost-value {
+  font-size: 26px;
+  margin-top: 8px;
+  font-weight: 600;
+}
+@media (max-width: 1200px) {
+  .cost-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}

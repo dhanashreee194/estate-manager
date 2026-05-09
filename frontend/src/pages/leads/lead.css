@@ -1,0 +1,121 @@
+.kanban-container {
+  display: flex;
+  gap: 20px;
+  padding: 20px;
+
+  overflow-x: auto; /* allow horizontal scroll */
+  overflow-y: hidden;
+
+  width: 100%;
+}
+.lead-column {
+  min-width: 280px;
+  max-width: 280px;
+  flex-shrink: 0;
+}
+
+.column-header {
+  font-weight: bold;
+  color: #16c784;
+  margin-bottom: 12px;
+}
+
+.column-body {
+  min-height: 400px;
+}
+
+.lead-card {
+  background: #1e293b;
+  padding: 10px;
+  border-radius: 8px;
+  margin-bottom: 10px;
+  cursor: grab;
+  transition: 0.2s;
+}
+
+.lead-card:hover {
+  background: #273549;
+}
+
+.lead-name {
+  font-weight: bold;
+}
+
+.lead-phone {
+  font-size: 14px;
+  opacity: 0.8;
+}
+
+.lead-source {
+  font-size: 12px;
+  opacity: 0.6;
+}
+
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.modal {
+  background: #0f172a;
+  padding: 24px;
+  border-radius: 10px;
+  width: 400px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.modal input,
+.modal textarea {
+  padding: 8px;
+  border-radius: 6px;
+  border: 1px solid #2a3a55;
+  background: #020617;
+  color: white;
+}
+
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+.primary {
+  background: #16c784;
+  border: none;
+  padding: 8px 14px;
+  border-radius: 6px;
+}
+.drag-handle {
+  cursor: grab;
+  font-size: 18px;
+  margin-bottom: 5px;
+}
+.kanban-container::-webkit-scrollbar {
+  display: none;
+}
+/* horizontal scroll wrapper */
+.kanban-scroll {
+  width: 100%;
+  overflow-x: auto;
+  overflow-y: hidden;
+}
+
+/* board layout */
+.kanban-container {
+  display: flex;
+  gap: 20px;
+  padding: 20px;
+  width: max-content;
+}
+
+/* columns */
+.lead-column {
+  width: 300px;
+  flex-shrink: 0;
+}

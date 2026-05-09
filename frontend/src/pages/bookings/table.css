@@ -1,0 +1,109 @@
+/* Table Card */
+.table-card {
+  margin-top: 20px;
+  background: rgba(255, 255, 255, 0.02);
+  border-radius: 12px;
+  padding: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.table-card.empty {
+  text-align: center;
+  padding: 40px;
+  color: #aaa;
+}
+
+/* Wrapper */
+.table-wrapper {
+  overflow-x: auto;
+}
+
+/* Table */
+.booking-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+  color: #eaeaea;
+}
+
+/* Header */
+.booking-table thead {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.booking-table th {
+  text-align: left;
+  padding: 12px 14px;
+  font-weight: 600;
+  color: #b5f5d1;
+  position: sticky;
+  top: 0;
+  z-index: 2;
+}
+
+/* Body */
+.booking-table td {
+  padding: 12px 14px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+/* Hover */
+.booking-table tbody tr:hover {
+  background: rgba(0, 255, 170, 0.05);
+}
+
+/* Customer Cell */
+.customer-cell {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.customer-cell .name {
+  font-weight: 500;
+}
+
+.customer-cell .phone {
+  font-size: 12px;
+  color: #888;
+}
+
+/* Unit */
+.unit-badge {
+  background: rgba(0, 255, 170, 0.15);
+  color: #4cffc3;
+  padding: 3px 8px;
+  border-radius: 6px;
+  font-size: 12px;
+}
+
+/* Amount */
+.amount {
+  font-weight: 600;
+  color: #ffd166;
+}
+
+/* Status */
+.status-badge {
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+/* Status Colors */
+.status-badge.booked {
+  background: rgba(0, 255, 100, 0.15);
+  color: #4cff83;
+}
+
+.status-badge.cancelled {
+  background: rgba(255, 80, 80, 0.15);
+  color: #ff6b6b;
+}
+
+.status-badge.pending {
+  background: rgba(255, 200, 0, 0.15);
+  color: #ffd166;
+}

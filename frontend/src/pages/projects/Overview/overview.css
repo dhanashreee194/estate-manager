@@ -1,0 +1,71 @@
+.overview-page {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* KPI cards */
+.overview-stats {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+}
+
+.stat-card {
+  background: #0b1220;
+  border: 1px solid #1e293b;
+  border-radius: 14px;
+  padding: 16px;
+}
+
+.stat-label {
+  color: #9ca3af;
+  font-size: 13px;
+}
+
+.stat-value {
+  font-size: 22px;
+  font-weight: 600;
+  margin-top: 6px;
+}
+
+.positive {
+  color: #22c55e;
+}
+
+.warning {
+  color: #facc15;
+}
+
+/* Grid */
+.overview-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+
+.overview-card {
+  background: #0f172a;
+  border-radius: 16px;
+  padding: 20px;
+}
+
+/* Rows */
+.unit-row,
+.finance-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 8px 0;
+  border-bottom: 1px solid #1f2937;
+}
+
+.activity-list {
+  list-style: none;
+  padding: 0;
+  margin-top: 10px;
+}
+
+.activity-list li {
+  padding: 6px 0;
+  color: #e5e7eb;
+}

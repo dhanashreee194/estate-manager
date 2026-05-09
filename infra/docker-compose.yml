@@ -1,0 +1,19 @@
+version: "3.9"
+
+services:
+  postgres:
+    image: postgres:16
+    container_name: estate_manager_postgres
+    restart: always
+    environment:
+      POSTGRES_USER: estate_manager_user
+      POSTGRES_PASSWORD: estate_manager_password
+      POSTGRES_DB: estate_manager_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - estate_manager_pgdata:/var/lib/postgresql/data
+
+volumes:
+  estate_manager_pgdata:
+

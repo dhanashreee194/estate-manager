@@ -1,0 +1,592 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ================= COMPANY (TENANT)
+model Company {
+  id        String   @id @default(uuid())
+  name      String
+  email     String   @unique
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+
+  users     User[]
+  projects  Project[]
+  materials Material[]
+  Customer  Customer[]
+  Unit      Unit[]
+  Booking   Booking[]
+  Payment   Payment[]
+  labours   Labour[]
+  buildings Building[]
+  wings     Wing[]
+  leads     Lead[]
+}
+
+enum UserRole {
+  ADMIN
+  SALES
+  ACCOUNTANT
+}
+
+// ================= USERS
+model User {
+  id        String @id @default(uuid())
+  name      String
+  email     String @unique
+  password  String
+  role      String
+  companyId String
+
+  company  Company   @relation(fields: [companyId], references: [id])
+  leads    Lead[]    @relation("UserLeads")
+  bookings Booking[] @relation("UserBookings") // ✅ correct
+}
+
+// ================= PROJECTS / SITES
+model Project {
+  id        String   @id @default(uuid())
+  name      String
+  location  String?
+  status    String
+  createdAt DateTime @default(now())
+  companyId String
+
+  company           Company                @relation(fields: [companyId], references: [id])
+  inventories       Inventory[]
+  inventoryInwards  InventoryInward[]
+  inventoryOutwards InventoryOutward[]
+  expenses          Expense[]
+  labours           LabourAssignment[]
+  attendance        LabourAttendance[]
+  Building          Building[]
+  Unit              Unit[]
+  Booking           Booking[]
+  requirements      InventoryRequirement[]
+  dailyReports      DailyReport[]
+  tasks             Task[]
+  budget            ProjectBudget?
+  leads             Lead[]
+}
+
+// ================= MATERIALS (COMPANY-SCOPED)
+enum MaterialUnit {
+  BAG
+  KG
+  TON
+  PIECE
+  LITER
+  BRASS
+}
+
+model Material {
+  id        String       @id @default(uuid())
+  name      String
+  unit      MaterialUnit
+  unitCost  Float
+  companyId String
+
+  company           Company                @relation(fields: [companyId], references: [id])
+  inventories       Inventory[]
+  inventoryInwards  InventoryInward[]
+  inventoryOutwards InventoryOutward[]
+  requirements      InventoryRequirement[]
+}
+
+// ================= INVENTORY
+model Inventory {
+  id         String @id @default(uuid())
+  projectId  String
+  materialId String
+  quantity   Float
+
+  project  Project   @relation(fields: [projectId], references: [id])
+  material Material  @relation(fields: [materialId], references: [id])
+  expenses Expense[]
+
+  @@unique([projectId, materialId])
+}
+
+// ================= LABOUR
+model Labour {
+  id        String @id @default(uuid())
+  name      String
+  category  String
+  dailyWage Int
+
+  companyId String?
+  company   Company? @relation(fields: [companyId], references: [id])
+
+  assignments LabourAssignment[]
+  attendances LabourAttendance[]
+
+  createdAt DateTime @default(now())
+}
+
+// ================= EXPENSES (SINGLE LEDGER)
+model Expense {
+  id        String   @id @default(uuid())
+  projectId String
+  type      String
+  amount    Float
+  date      DateTime
+  gstRate   Float? // 5, 12, 18, 28
+  gstAmount Float?
+  vendorGST String?
+
+  inventoryId String?
+  inventory   Inventory? @relation(fields: [inventoryId], references: [id])
+
+  project          Project           @relation(fields: [projectId], references: [id])
+  LabourAttendance LabourAttendance?
+}
+
+// ================= LABOUR ASSIGNMENT
+model LabourAssignment {
+  id        String    @id @default(uuid())
+  labourId  String
+  projectId String
+  startDate DateTime  @default(now())
+  endDate   DateTime?
+
+  labour  Labour  @relation(fields: [labourId], references: [id])
+  project Project @relation(fields: [projectId], references: [id])
+}
+
+// ================= LABOUR ATTENDANCE
+model LabourAttendance {
+  id         String   @id @default(uuid())
+  labourId   String
+  projectId  String
+  date       DateTime
+  present    Boolean
+  wageForDay Float
+
+  expenseId String?  @unique
+  expense   Expense? @relation(fields: [expenseId], references: [id])
+
+  labour  Labour  @relation(fields: [labourId], references: [id])
+  project Project @relation(fields: [projectId], references: [id])
+
+  @@unique([labourId, projectId, date])
+}
+
+enum UnitType {
+  PLOT
+  FLAT
+  ROW_HOUSE
+  VILLA
+}
+
+enum UnitStatus {
+  AVAILABLE
+  HOLD
+  BOOKED
+  SOLD
+  CANCELLED
+}
+
+enum BookingStatus {
+  HOLD
+  BOOKED
+  PARTIAL_PAID
+  FULLY_PAID
+  REGISTERED
+  CANCELLED
+}
+
+enum PaymentMode {
+  CASH
+  CHEQUE
+  ONLINE
+}
+
+model Building {
+  id        String  @id @default(uuid())
+  projectId String
+  name      String
+  facing    String?
+
+  project   Project  @relation(fields: [projectId], references: [id])
+  wings     Wing[]
+  Company   Company? @relation(fields: [companyId], references: [id])
+  companyId String?
+}
+
+model Wing {
+  id            String  @id @default(uuid())
+  buildingId    String
+  name          String
+  totalFloors   Int
+  hasLift       Boolean
+  liftsCount    Int?
+  flatsPerFloor Int?
+
+  building  Building @relation(fields: [buildingId], references: [id])
+  flats     Unit[]
+  Company   Company? @relation(fields: [companyId], references: [id])
+  companyId String?
+}
+
+model Unit {
+  id        String   @id @default(uuid())
+  projectId String
+  companyId String
+  unitType  UnitType
+
+  wingId     String?
+  unitNumber String
+  areaSqFt   Float
+  direction  String?
+  floor      Int?
+  bhkType    String?
+  basePrice  Float
+  status     UnitStatus @default(AVAILABLE)
+
+  project Project @relation(fields: [projectId], references: [id])
+  wing    Wing?   @relation(fields: [wingId], references: [id])
+  Company Company @relation(fields: [companyId], references: [id])
+
+  Booking Booking? // ✅ One unit → one booking
+}
+
+model Customer {
+  id        String   @id @default(uuid())
+  companyId String
+  name      String
+  phone     String
+  email     String?
+  address   String?
+  createdAt DateTime @default(now())
+
+  company  Company   @relation(fields: [companyId], references: [id])
+  bookings Booking[]
+
+  @@unique([companyId, phone]) // optional but recommended
+  @@index([companyId])
+}
+
+model Booking {
+  id String @id @default(uuid())
+
+  bookingNumber String?   // NEW
+
+  companyId   String
+  unitId      String @unique
+  customerId  String
+  projectId   String
+  createdById String
+
+  bookingDate DateTime @default(now())
+
+  // NEW — broker / agent
+  brokerId String?
+  broker   Broker? @relation(fields: [brokerId], references: [id])
+
+  // NEW — booking money
+  bookingAmount Float? 
+  tokenAmount   Float?
+
+  // Builder Side
+  builtUpSqft    Float
+  marketRate     Float
+  builtUpValue   Float
+  gstAmount      Float
+  maintenanceFee Float
+  advocateFee    Float
+  mecbFee        Float
+  oneTimeMaint   Float
+
+  // Govt Side
+  govtSqMeter     Float
+  govtValue       Float
+  stampDuty       Float
+  registrationFee Float
+
+  // Totals
+  totalPrice Float
+  govtAmount Float
+
+  // NEW — split payment
+  cashAmount Float
+  bankAmount Float?    // NEW
+  loanAmount Float?    // NEW
+
+  // NEW — cancellation
+  cancelDate      DateTime?
+  refundAmount    Float?
+  deductionAmount Float?
+
+  status BookingStatus @default(BOOKED)
+
+  // Relations
+  unit     Unit     @relation(fields: [unitId], references: [id])
+  customer Customer @relation(fields: [customerId], references: [id])
+  project  Project  @relation(fields: [projectId], references: [id])
+  company  Company  @relation(fields: [companyId], references: [id])
+
+  createdBy User @relation("UserBookings", fields: [createdById], references: [id])
+
+  payments Payment[]
+  installments InstallmentPlan[]  // NEW
+}
+
+model Payment {
+  id String @id @default(uuid())
+
+  bookingId String
+  companyId String
+
+  amount Float
+  stage  String
+
+  installmentId String?
+  installment InstallmentPlan? @relation(fields: [installmentId], references: [id])
+
+  date    DateTime @default(now())
+  mode    PaymentMode
+  remarks String?
+
+  booking Booking @relation(fields: [bookingId], references: [id])
+  company Company @relation(fields: [companyId], references: [id])
+}
+
+model ProjectBudget {
+  id        String   @id @default(uuid())
+  projectId String   @unique
+  amount    Float
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  project Project @relation(fields: [projectId], references: [id])
+}
+
+model InventoryInward {
+  id         String   @id @default(uuid())
+  projectId  String
+  materialId String
+  quantity   Float
+  createdAt  DateTime @default(now())
+
+  project  Project  @relation(fields: [projectId], references: [id])
+  material Material @relation(fields: [materialId], references: [id])
+
+  @@index([projectId])
+  @@index([materialId])
+}
+
+model InventoryOutward {
+  id         String   @id @default(uuid())
+  projectId  String
+  materialId String
+  quantity   Float
+  createdAt  DateTime @default(now())
+
+  project  Project  @relation(fields: [projectId], references: [id])
+  material Material @relation(fields: [materialId], references: [id])
+
+  @@index([projectId])
+  @@index([materialId])
+}
+
+model InventoryRequirement {
+  id           String   @id @default(uuid())
+  projectId    String
+  materialId   String
+  requiredQty  Float
+  fulfilledQty Float    @default(0)
+  createdAt    DateTime @default(now())
+
+  project  Project  @relation(fields: [projectId], references: [id])
+  material Material @relation(fields: [materialId], references: [id])
+
+  @@index([projectId])
+}
+
+model DailyReport {
+  id        String   @id @default(uuid())
+  projectId String
+  date      DateTime
+
+  workDetails String
+
+  project Project @relation(fields: [projectId], references: [id])
+
+  labours   DailyLabour[]
+  materials DailyMaterial[]
+  payments  DailyPayment[]
+  goods     DailyGoods[]
+
+  createdAt DateTime @default(now())
+
+  @@unique([projectId, date])
+}
+
+model DailyLabour {
+  id String @id @default(uuid())
+
+  reportId String
+  agency   String
+
+  skilled Int
+  men     Int
+  women   Int
+  total   Int
+
+  report DailyReport @relation(fields: [reportId], references: [id])
+}
+
+model DailyMaterial {
+  id String @id @default(uuid())
+
+  reportId String
+
+  material String // Cement / Steel / etc
+  size     String? // 6mm, 8mm etc
+
+  stock    Float
+  consumed Float
+  balance  Float
+
+  report DailyReport @relation(fields: [reportId], references: [id])
+}
+
+model DailyPayment {
+  id String @id @default(uuid())
+
+  reportId String
+
+  party  String
+  amount Float
+
+  report DailyReport @relation(fields: [reportId], references: [id])
+}
+
+model DailyGoods {
+  id String @id @default(uuid())
+
+  reportId String
+
+  material String
+  quantity Float
+  remarks  String?
+
+  report DailyReport @relation(fields: [reportId], references: [id])
+}
+
+model Task {
+  id        String @id @default(uuid())
+  projectId String
+
+  title       String
+  description String?
+
+  status   String // Pending / InProgress / Done
+  priority String // Low / Medium / High
+
+  dueDate   DateTime?
+  createdAt DateTime  @default(now())
+
+  project Project @relation(fields: [projectId], references: [id])
+
+  @@index([projectId])
+}
+
+model Lead {
+  id        String  @id @default(uuid())
+  companyId String
+  projectId String?
+
+  name        String
+  phone       String
+  email       String?
+  source      String?
+  budget      Float?
+  requirement String?
+
+  status LeadStatus @default(NEW)
+
+  assignedToId String?
+  assignedTo   User?   @relation("UserLeads", fields: [assignedToId], references: [id])
+
+  nextFollowUp DateTime?
+  remarks      String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  company Company  @relation(fields: [companyId], references: [id])
+  project Project? @relation(fields: [projectId], references: [id])
+}
+
+enum LeadStatus {
+  NEW
+  FOLLOW_UP
+  VISIT_SCHEDULED
+  NEGOTIATION
+  CONVERTED
+  LOST
+}
+
+enum InstallmentStatus {
+  PENDING
+  UPCOMING
+  DUE
+  OVERDUE
+  PAID
+  CANCELLED
+}
+model InstallmentPlan {
+  id        String @id @default(uuid())
+  bookingId String
+
+  milestone String
+  amount    Float
+  dueDate   DateTime
+  paid      Boolean @default(false)
+
+  reminderSent Boolean @default(false)
+  reminderSentAt DateTime?
+
+  overdueNoticeSent Boolean @default(false)
+
+  penaltyAmount Float? @default(0)
+
+  status InstallmentStatus @default(PENDING)
+
+  booking Booking @relation(fields:[bookingId], references:[id])
+
+  payments Payment[]
+}
+
+model Document {
+  id         String  @id @default(uuid())
+  bookingId  String?
+  customerId String?
+
+  type       String
+  url        String
+  uploadedAt DateTime @default(now())
+}
+
+model BankAccount {
+  id        String @id @default(uuid())
+  companyId String
+  name      String
+  balance   Float
+}
+
+model Broker {
+  id             String @id @default(uuid())
+  companyId      String
+  name           String
+  phone          String
+  commissionRate Float
+
+  bookings Booking[]  // NEW
+}
