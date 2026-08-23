@@ -28,6 +28,7 @@ import { BrokerModule } from './broker/broker.module';
 import { FinanceModule } from './finance/finance.module';
 import { LandModule } from './land/land.module';
 import { ReminderModule } from './reminder/reminder.module';
+import { MarketingModule } from './marketing/marketing.module';
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -61,6 +62,7 @@ import { ReminderModule } from './reminder/reminder.module';
     FinanceModule,
     LandModule,
     ReminderModule,
+    MarketingModule,
   ],
 })
 export class AppModule {}

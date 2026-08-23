@@ -16,7 +16,9 @@ Free tier note: the API uses a **Node** runtime (not Docker). Docker on Render r
 4. After the API is live, copy its URL (e.g. `https://estate-manager-api.onrender.com`).
 5. In **estate-manager-web** env: set `VITE_API_URL` to that API URL.
 6. In **estate-manager-api** env: set `CORS_ORIGIN` to the frontend URL.
-7. Redeploy both services.
+7. In **estate-manager-api** env: set `PUBLIC_APP_URL` to the frontend URL (used for WhatsApp/Facebook/Instagram campaign landing links, e.g. `https://estate-manager-web.onrender.com`).
+8. Optional AI marketing: set `OPENAI_API_KEY` (and optionally `OPENAI_MODEL`, `OPENAI_IMAGE_MODEL`) on the API to enable caption + image generation in Marketing.
+9. Redeploy both services.
 
 Free Postgres expires after 30 days unless upgraded.
 

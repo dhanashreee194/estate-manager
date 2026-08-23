@@ -30,7 +30,7 @@ export class LeadService {
         remarks: dto.remarks,
         companyId,
       },
-      include: { assignedTo: true, project: true },
+      include: { assignedTo: true, project: true, unit: true, campaign: true },
     });
   }
 
@@ -49,6 +49,8 @@ export class LeadService {
       include: {
         assignedTo: true,
         project: true,
+        unit: true,
+        campaign: { select: { id: true, title: true, code: true } },
       },
     });
   }
@@ -59,6 +61,8 @@ export class LeadService {
       include: {
         assignedTo: true,
         project: true,
+        unit: true,
+        campaign: { select: { id: true, title: true, code: true } },
       },
     });
 
@@ -75,7 +79,7 @@ export class LeadService {
     return this.prisma.lead.update({
       where: { id },
       data: dto,
-      include: { assignedTo: true, project: true },
+      include: { assignedTo: true, project: true, unit: true, campaign: true },
     });
   }
 
@@ -106,7 +110,7 @@ export class LeadService {
         ...(filters?.source ? { source: filters.source } : {}),
         ...(filters?.projectId ? { projectId: filters.projectId } : {}),
       },
-      include: { project: true, assignedTo: true },
+      include: { project: true, assignedTo: true, unit: true, campaign: true },
       orderBy: { createdAt: 'desc' },
     });
 

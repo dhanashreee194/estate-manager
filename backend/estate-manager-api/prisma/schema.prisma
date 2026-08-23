@@ -33,6 +33,7 @@ model Company {
   landPartners LandPartner[]
   landParcels  LandParcel[]
   reminders    Reminder[]
+  marketingCampaigns MarketingCampaign[]
 }
 
 enum VendorType {
@@ -83,6 +84,7 @@ model User {
   company  Company   @relation(fields: [companyId], references: [id])
   leads    Lead[]    @relation("UserLeads")
   bookings Booking[] @relation("UserBookings") // ✅ correct
+  marketingCampaigns MarketingCampaign[] @relation("UserCampaigns")
 }
 
 // ================= PROJECTS / SITES
@@ -116,6 +118,7 @@ model Project {
   leads             Lead[]
   cashbookEntries   CashbookEntry[]
   landParcels       LandParcel[]
+  marketingCampaigns MarketingCampaign[]
 }
 
 // ================= MATERIALS (COMPANY-SCOPED)
@@ -318,6 +321,8 @@ model Unit {
   Company Company @relation(fields: [companyId], references: [id])
 
   Booking Booking? // ✅ One unit → one booking
+  leads   Lead[]
+  marketingCampaigns MarketingCampaign[]
 
   @@index([projectId, layoutRow, layoutCol])
 }
@@ -616,6 +621,8 @@ model Lead {
   id        String  @id @default(uuid())
   companyId String
   projectId String?
+  unitId    String?
+  campaignId String?
 
   name        String
   phone       String
@@ -639,11 +646,14 @@ model Lead {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  company Company  @relation(fields: [companyId], references: [id])
-  project Project? @relation(fields: [projectId], references: [id])
+  company  Company            @relation(fields: [companyId], references: [id])
+  project  Project?           @relation(fields: [projectId], references: [id])
+  unit     Unit?              @relation(fields: [unitId], references: [id])
+  campaign MarketingCampaign? @relation(fields: [campaignId], references: [id])
 
   @@index([companyId, source])
   @@index([companyId, status])
+  @@index([campaignId])
 }
 
 enum LeadSource {
@@ -1045,3 +1055,69 @@ model Reminder {
   @@index([companyId, type])
   @@index([entityType, entityId])
 }
+
+// ================= MARKETING CAMPAIGNS (compose & share)
+enum CampaignStatus {
+  DRAFT
+  ACTIVE
+  PAUSED
+  ARCHIVED
+}
+
+enum CampaignShareChannel {
+  WHATSAPP
+  FACEBOOK
+  INSTAGRAM
+}
+
+model MarketingCampaign {
+  id        String         @id @default(uuid())
+  companyId String
+  code      String         @unique
+  title     String
+  status    CampaignStatus @default(DRAFT)
+
+  projectId String
+  unitId    String?
+
+  headline  String
+  body      String
+  ctaLabel  String  @default("Enquire now")
+  ctaPhone  String?
+  imageUrl  String?
+
+  enableWhatsapp  Boolean @default(true)
+  enableFacebook  Boolean @default(true)
+  enableInstagram Boolean @default(true)
+
+  shareCount        Int @default(0)
+  landingViewCount  Int @default(0)
+  leadCount         Int @default(0)
+
+  createdById String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  company   Company              @relation(fields: [companyId], references: [id])
+  project   Project              @relation(fields: [projectId], references: [id])
+  unit      Unit?                @relation(fields: [unitId], references: [id])
+  createdBy User?                @relation("UserCampaigns", fields: [createdById], references: [id])
+  shares    CampaignShareEvent[]
+  leads     Lead[]
+
+  @@index([companyId, status])
+  @@index([companyId, projectId])
+  @@index([code])
+}
+
+model CampaignShareEvent {
+  id         String               @id @default(uuid())
+  campaignId String
+  channel    CampaignShareChannel
+  createdAt  DateTime             @default(now())
+
+  campaign MarketingCampaign @relation(fields: [campaignId], references: [id], onDelete: Cascade)
+
+  @@index([campaignId, channel])
+}
+

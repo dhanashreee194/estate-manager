@@ -21,6 +21,14 @@ services:
         generateValue: true
       - key: CORS_ORIGIN
         value: https://estate-manager-web.onrender.com
+      - key: PUBLIC_APP_URL
+        value: https://estate-manager-web.onrender.com
+      - key: OPENAI_API_KEY
+        sync: false
+      - key: OPENAI_MODEL
+        value: gpt-4o-mini
+      - key: OPENAI_IMAGE_MODEL
+        value: dall-e-3
 
   - type: web
     name: estate-manager-web

@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Link } from "react-router-dom";
 import { useAppSelector } from "../../../store/hooks";
 import UnitEditModal from "./UnitEditModal";
 
@@ -93,13 +94,23 @@ export default function BuildingList({
                           >
                             <div className="flat-title">
                               <span>Flat {flat.unitNumber}</span>
-                              <button
-                                className="icon-btn edit small"
-                                onClick={() => setEditingFlat(flat)}
-                                title="Edit Flat"
-                              >
-                                ✎
-                              </button>
+                              <div className="card-actions">
+                                {projectId && flat.status === "AVAILABLE" && (
+                                  <Link
+                                    className="secondary-btn small-btn"
+                                    to={`/dashboard/marketing?projectId=${projectId}&unitId=${flat.id}`}
+                                  >
+                                    Promote
+                                  </Link>
+                                )}
+                                <button
+                                  className="icon-btn edit small"
+                                  onClick={() => setEditingFlat(flat)}
+                                  title="Edit Flat"
+                                >
+                                  ✎
+                                </button>
+                              </div>
                             </div>
 
                             <div className="flat-meta">

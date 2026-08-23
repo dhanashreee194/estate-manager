@@ -30,6 +30,8 @@ import FinancePage from "../pages/finance/FinancePage";
 import LandPage from "../pages/land/LandPage";
 import CollectionsPage from "../pages/collections/CollectionsPage";
 import RemindersPage from "../pages/reminders/RemindersPage";
+import MarketingPage from "../pages/marketing/MarketingPage";
+import CampaignLandingPage from "../pages/marketing/CampaignLandingPage";
 
 export default function AppRouter() {
   return (
@@ -39,6 +41,7 @@ export default function AppRouter() {
 
       <Route path="/login" element={<Login />} />
       <Route path="/signup" element={<Signup />} />
+      <Route path="/c/:code" element={<CampaignLandingPage />} />
 
       <Route
         path="/dashboard"
@@ -56,6 +59,7 @@ export default function AppRouter() {
         <Route path="/dashboard/land" element={<LandPage />} />
         <Route path="/dashboard/collections" element={<CollectionsPage />} />
         <Route path="/dashboard/reminders" element={<RemindersPage />} />
+        <Route path="/dashboard/marketing" element={<MarketingPage />} />
         <Route path="bookings" element={<BookingsPage />} />
         <Route path="/dashboard/leads" element={<LeadKanban />} />
         <Route path="/dashboard/users" element={<UsersPage />} />

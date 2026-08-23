@@ -1,4 +1,4 @@
-import { useParams } from "react-router-dom";
+import { useParams, Link } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import ActivityOverview from "./ActivityOverview";
@@ -18,12 +18,6 @@ export default function ProjectOverview() {
     const loadAnalytics = async () => {
       try {
         const data = await getProjectAnalytics(projectId!);
-        console.log(
-          "🔍 Analytics API Response for project",
-          projectId,
-          ":",
-          data,
-        );
         setAnalytics(data);
       } catch (err) {
         console.error("Failed to load project analytics:", err);
@@ -43,6 +37,16 @@ export default function ProjectOverview() {
 
   return (
     <div className="overview-page">
+      {projectId && (
+        <div style={{ marginBottom: 12 }}>
+          <Link
+            className="secondary-btn"
+            to={`/dashboard/marketing?projectId=${projectId}`}
+          >
+            {t("marketing.promoteProject")}
+          </Link>
+        </div>
+      )}
       <OverviewStats analytics={analytics} />
 
       <div className="overview-grid">

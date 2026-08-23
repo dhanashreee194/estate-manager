@@ -128,6 +128,13 @@ export default function AdminDashboard() {
           </NavLink>
 
           <NavLink
+            to="/dashboard/marketing"
+            className={({ isActive }) => (isActive ? "active" : "")}
+          >
+            {t("nav.marketing")}
+          </NavLink>
+
+          <NavLink
             to="/dashboard/bookings"
             className={({ isActive }) => (isActive ? "active" : "")}
           >

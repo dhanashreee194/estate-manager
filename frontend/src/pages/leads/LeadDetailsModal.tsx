@@ -49,6 +49,18 @@ export default function LeadDetailsModal({ lead, onClose }: any) {
         <p>
           <b>{t("leads.requirement")}:</b> {lead.requirement || "—"}
         </p>
+        {lead.unit && (
+          <p>
+            <b>{t("marketing.unit")}:</b> {lead.unit.unitType}{" "}
+            {lead.unit.unitNumber}
+          </p>
+        )}
+        {lead.campaign && (
+          <p>
+            <b>{t("marketing.campaign")}:</b> {lead.campaign.title} (
+            {lead.campaign.code})
+          </p>
+        )}
 
         <button onClick={onClose}>{t("common.close")}</button>
       </div>
