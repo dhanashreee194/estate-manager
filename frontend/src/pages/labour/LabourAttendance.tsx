@@ -6,7 +6,6 @@ import {
   getAssignedLabours,
   getProjectAttendance,
   markAttendance,
-  updateAttendance,
 } from "../../api/labour";
 import { useEffect, useState } from "react";
 import "./labour.css";
@@ -18,20 +17,6 @@ export default function LabourAttendance() {
   const [present, setPresent] = useState(true);
   const [wage, setWage] = useState(0);
   const queryClient = useQueryClient();
-
-  const [editingId, setEditingId] = useState<string | null>(null);
-  const [editPresent, setEditPresent] = useState(true);
-  const [editWage, setEditWage] = useState(0);
-
-  const updateMutation = useMutation({
-    mutationFn: ({ id, data }: any) => updateAttendance(id, data),
-    onSuccess: () => {
-      setEditingId(null);
-      queryClient.invalidateQueries({
-        queryKey: ["attendance", projectId],
-      });
-    },
-  });
 
   const deleteMutation = useMutation({
     mutationFn: deleteAttendance,
@@ -145,14 +130,6 @@ export default function LabourAttendance() {
             <span>{new Date(row.date).toLocaleDateString()}</span>
 
             <span className="actions-col">
-              <button
-                className="icon-btn edit"
-                title={t("labour.editAttendance")}
-                onClick={() => setEditingId(row)}
-              >
-                ✏️
-              </button>
-
               <button
                 className="icon-btn delete"
                 title={t("labour.deleteAttendance")}

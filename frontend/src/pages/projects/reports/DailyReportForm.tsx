@@ -37,15 +37,13 @@ export default function DailyReportForm() {
     const reportId = report.id;
 
     // 2️⃣ Save Labour
-    await addLabour({
-      reportId,
+    await addLabour(reportId, {
       ...labour,
       total: labour.skilled + labour.men + labour.women,
     });
 
     // 3️⃣ Save Material
-    await addMaterial({
-      reportId,
+    await addMaterial(reportId, {
       ...material,
     });
 

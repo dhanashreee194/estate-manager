@@ -1,10 +1,9 @@
 import { useState } from "react";
 import BuildingList from "./BuildingList";
 import PlotList from "./PlotList";
-import { useAppSelector } from "../../../store/hooks";
+import UnitCreateModal from "./UnitCreateModal";
 
 export default function UnitsOverview() {
-  const projectId = useAppSelector((state) => state.project.currentProjectId);
   const [openWingId, setOpenWingId] = useState<string | null>(null);
 
   // TEMP: Replace later with API data

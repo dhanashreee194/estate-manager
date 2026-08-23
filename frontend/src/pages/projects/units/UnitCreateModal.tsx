@@ -1,7 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { useParams } from "react-router-dom";
-import { createUnit, getProjectUnits } from "../../../api/unit";
+import { createUnit } from "../../../api/unit";
 import "./units.css";
 import { createWing } from "../../../api/wing";
 import { createBuilding, getProjectBuildings } from "../../../api/building";

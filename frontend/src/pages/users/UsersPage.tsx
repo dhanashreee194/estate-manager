@@ -67,8 +67,6 @@ import { useTranslation } from "react-i18next";
 import { getCustomers } from "../../api/customer";
 import EditCustomerModal from "./EditCustomerModal";
 import { useNavigate } from "react-router-dom";
-import FileUpload from "../../components/FileUpload";
-import { uploadKyc } from "../../api/kyc";
 export default function CustomersPage() {
   const { t } = useTranslation();
   const navigate = useNavigate();

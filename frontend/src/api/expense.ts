@@ -10,6 +10,7 @@ export const createExpense = (data: {
   gstAmount?: number;
   vendorId?: string;
   vendorGST?: string;
+  bankAccountId?: string;
 }) => api.post("/expense", data).then((r) => r.data);
 
 export const getProjectExpenses = (projectId: string) =>

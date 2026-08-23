@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { Routes, Route, Navigate } from "react-router-dom";
 import Login from "../auth/Login";
 import Signup from "../auth/Signup";
 import AdminDashboard from "../dashboard/AdminDashboard";

@@ -8,7 +8,6 @@ import UnitCreateModal from "./UnitCreateModal";
 
 import { getProjectUnits } from "../../../api/unit";
 import { getProjectBuildings } from "../../../api/building";
-import { getWingsByProject } from "../../../api/wing";
 import { useAppDispatch } from "../../../store/hooks";
 import { setCurrentProjectId } from "../../../store/projectSlice";
 
@@ -51,7 +50,7 @@ export default function ProjectUnits() {
   //   queryFn: () => getWingsByProject(projectId!),
   //   enabled: !!projectId,
   // });
-  const wings = []; // Using empty array until backend implements the endpoint
+  const wings: unknown[] = []; // until backend implements GET /wing/project/:id
 
   console.log("Wings:", wings, buildings, units);
   return (

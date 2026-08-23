@@ -7,14 +7,6 @@ import DailyReportModal from "./DailyReportModal";
 
 import "../projects.css";
 import { getProjectAnalytics } from "../../../api/projectAnalytics";
-import {
-  CartesianGrid,
-  Line,
-  LineChart,
-  ResponsiveContainer,
-  XAxis,
-  YAxis,
-} from "recharts";
 
 export default function ReportsPage() {
   const { t } = useTranslation();
