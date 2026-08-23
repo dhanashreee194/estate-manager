@@ -14,16 +14,29 @@ async function bootstrap() {
 
   app.useStaticAssets(uploadsDir, { prefix: '/uploads/' });
 
-  const corsOrigins = (
-    process.env.CORS_ORIGIN ||
-    'http://localhost:5173,http://localhost:5174,https://estate-manager-web.onrender.com'
-  )
+  const defaultOrigins = [
+    'http://localhost:5173',
+    'http://localhost:5174',
+    'http://localhost:8080',
+    'https://estate-manager-web.onrender.com',
+  ];
+  const corsOrigins = (process.env.CORS_ORIGIN || defaultOrigins.join(','))
     .split(',')
     .map((o) => o.trim())
     .filter(Boolean);
 
   app.enableCors({
-    origin: corsOrigins,
+    origin: (
+      origin: string | undefined,
+      callback: (err: Error | null, allow?: boolean) => void,
+    ) => {
+      // Allow non-browser / same-origin tools (no Origin header)
+      if (!origin) return callback(null, true);
+      if (corsOrigins.includes(origin) || corsOrigins.includes('*')) {
+        return callback(null, true);
+      }
+      return callback(null, false);
+    },
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization'],

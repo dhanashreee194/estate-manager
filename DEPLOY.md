@@ -14,11 +14,11 @@ Free tier note: the API uses a **Node** runtime (not Docker). Docker on Render r
 2. Open [Render Blueprints](https://dashboard.render.com/blueprints) → **New Blueprint Instance** → select this repo (`render.yaml`).
 3. If a previous sync failed on Docker, delete that Blueprint and create a new one (or Manual Sync after this fix).
 4. After the API is live, copy its URL (e.g. `https://estate-manager-api.onrender.com`).
-5. In **estate-manager-web** env: set `VITE_API_URL` to that API URL.
-6. In **estate-manager-api** env: set `CORS_ORIGIN` to the frontend URL.
-7. In **estate-manager-api** env: set `PUBLIC_APP_URL` to the frontend URL (used for WhatsApp/Facebook/Instagram campaign landing links, e.g. `https://estate-manager-web.onrender.com`).
-8. Optional AI marketing: set `OPENAI_API_KEY` (and optionally `OPENAI_MODEL`, `OPENAI_IMAGE_MODEL`) on the API to enable caption + image generation in Marketing.
-9. Redeploy both services.
+5. In **estate-manager-web** env: set `VITE_API_URL` to the **exact** API URL shown on the Render service page (e.g. `https://raut-estate-api.onrender.com`).
+6. In the API service env: set `CORS_ORIGIN` and `PUBLIC_APP_URL` to the frontend URL.
+7. Verify API health: open `https://<your-api-host>/health` — it should return `"service":"estate-manager-api"`. If you only see a generic health JSON without that field, you are hitting the wrong host.
+8. Optional AI marketing: set `OPENAI_API_KEY` on the API.
+9. Redeploy API first, then web (clear build cache on web after changing `VITE_API_URL`).
 
 Free Postgres expires after 30 days unless upgraded.
 

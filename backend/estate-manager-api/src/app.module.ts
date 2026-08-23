@@ -1,4 +1,7 @@
 import { Module } from '@nestjs/common';
+import { ConfigModule } from '@nestjs/config';
+import { AppController } from './app.controller';
+import { AppService } from './app.service';
 import { PrismaModule } from './prisma/prisma.module';
 import { ProjectModule } from './project/project.module';
 import { InventoryModule } from './inventory/inventory.module';
@@ -12,7 +15,6 @@ import { PaymentModule } from './payment/payment.module';
 import { DashboardModule } from './dashboard/dashboard.module';
 import { LedgerModule } from './ledger/ledger.module';
 import { BudgetModule } from './budget/budget.module';
-import { ConfigModule } from '@nestjs/config';
 import { BuildingModule } from './unit/building.module';
 import { WingModule } from './unit/wing.module';
 import { DailyReportModule } from './daily-report/daily-report.module';
@@ -29,10 +31,12 @@ import { FinanceModule } from './finance/finance.module';
 import { LandModule } from './land/land.module';
 import { ReminderModule } from './reminder/reminder.module';
 import { MarketingModule } from './marketing/marketing.module';
+import { HealthController } from './health.controller';
+
 @Module({
   imports: [
     ConfigModule.forRoot({
-      isGlobal: true, // 🔥 important
+      isGlobal: true,
     }),
     PrismaModule,
     ProjectModule,
@@ -64,5 +68,7 @@ import { MarketingModule } from './marketing/marketing.module';
     ReminderModule,
     MarketingModule,
   ],
+  controllers: [AppController, HealthController],
+  providers: [AppService],
 })
 export class AppModule {}

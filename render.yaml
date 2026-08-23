@@ -1,15 +1,17 @@
 # Render Blueprint — free tier uses native Node (Docker requires a paid plan).
 # After first deploy, confirm both services are Live, then log in at the web URL.
+# IMPORTANT: copy the exact API URL from the Render service page into VITE_API_URL
+# (it may include a random suffix, e.g. raut-estate-api.onrender.com).
 
 services:
   - type: web
-    name: estate-manager-api
+    name: raut-estate-api
     runtime: node
     plan: free
     rootDir: backend/estate-manager-api
     buildCommand: npm ci --include=dev && npx prisma generate && npm run build
     startCommand: npx prisma migrate deploy && npm run start:prod
-    healthCheckPath: /
+    healthCheckPath: /health
     envVars:
       - key: NODE_VERSION
         value: "20"
@@ -44,7 +46,7 @@ services:
       - key: NODE_VERSION
         value: "20"
       - key: VITE_API_URL
-        value: https://estate-manager-api.onrender.com
+        value: https://raut-estate-api.onrender.com
 
 databases:
   - name: estate-manager-db

@@ -10,7 +10,8 @@ function resolveApiBase(): string {
     typeof window !== "undefined" &&
     window.location.hostname.endsWith("onrender.com")
   ) {
-    return "https://estate-manager-api.onrender.com";
+    // Must match the Render API service name in render.yaml
+    return "https://raut-estate-api.onrender.com";
   }
 
   return "http://localhost:3000";
