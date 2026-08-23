@@ -8,12 +8,17 @@
 
 ## Option A — Render (recommended)
 
+Free tier note: the API uses a **Node** runtime (not Docker). Docker on Render requires a paid plan.
+
 1. Push this repo to GitHub.
-2. Open [Render Blueprints](https://dashboard.render.com/blueprints) → **New Blueprint Instance** → select this repo.
-3. After the API is live, copy its URL (e.g. `https://estate-manager-api.onrender.com`).
-4. In **estate-manager-web** env: set `VITE_API_URL` to that API URL.
-5. In **estate-manager-api** env: set `CORS_ORIGIN` to the frontend URL.
-6. Redeploy both services.
+2. Open [Render Blueprints](https://dashboard.render.com/blueprints) → **New Blueprint Instance** → select this repo (`render.yaml`).
+3. If a previous sync failed on Docker, delete that Blueprint and create a new one (or Manual Sync after this fix).
+4. After the API is live, copy its URL (e.g. `https://estate-manager-api.onrender.com`).
+5. In **estate-manager-web** env: set `VITE_API_URL` to that API URL.
+6. In **estate-manager-api** env: set `CORS_ORIGIN` to the frontend URL.
+7. Redeploy both services.
+
+Free Postgres expires after 30 days unless upgraded.
 
 ## Option B — Docker Compose (VPS)
 
