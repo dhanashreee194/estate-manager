@@ -1,9 +1,5 @@
-import { IsEmail, IsEnum, IsString } from 'class-validator';
-
-export enum InviteRole {
-  SALES = 'SALES',
-  ACCOUNTANT = 'ACCOUNTANT',
-}
+import { IsEmail, IsIn, IsString } from 'class-validator';
+import { INVITABLE_ROLES } from '../app-roles';
 
 export class InviteUserDto {
   @IsString()
@@ -15,6 +11,6 @@ export class InviteUserDto {
   @IsString()
   password: string;
 
-  @IsEnum(InviteRole)
-  role: InviteRole;
+  @IsIn([...INVITABLE_ROLES])
+  role: string;
 }

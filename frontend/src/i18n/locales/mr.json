@@ -151,10 +151,17 @@
     "fullName": "पूर्ण नाव",
     "tempPassword": "तात्पुरता पासवर्ड",
     "roleSales": "विक्री",
+    "roleSupervisor": "पर्यवेक्षक",
     "roleAccountant": "अकाउंटंट",
     "roleAdmin": "अॅडमिन",
     "success": "वापरकर्ता यशस्वीरित्या आमंत्रित",
     "allRequired": "सर्व फील्ड आवश्यक आहेत"
+  },
+  "roles": {
+    "ADMIN": "अॅडमिन",
+    "SUPERVISOR": "पर्यवेक्षक",
+    "SALES": "विक्री",
+    "ACCOUNTANT": "अकाउंटंट"
   },
   "createProject": {
     "title": "प्रकल्प तयार करा",

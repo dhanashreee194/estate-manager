@@ -1,9 +1,10 @@
 import { Controller, Get, Param, Query, Req, UseGuards } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
+import { RolesGuard } from 'src/auth/roles.guard';
 import { LedgerService } from './ledger.service';
 import { Roles } from 'src/auth/roles.decorator';
 
-@UseGuards(AuthGuard('jwt'))
+@UseGuards(AuthGuard('jwt'), RolesGuard)
 @Roles('ADMIN', 'ACCOUNTANT')
 @Controller('ledger')
 export class LedgerController {

@@ -4,7 +4,7 @@ export interface InviteUserPayload {
   name: string;
   email: string;
   password: string;
-  role: "SALES" | "ACCOUNTANT" | "ADMIN";
+  role: "SUPERVISOR" | "SALES" | "ACCOUNTANT";
 }
 
 export const inviteUser = async (payload: InviteUserPayload) => {

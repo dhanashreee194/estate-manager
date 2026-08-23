@@ -5,7 +5,7 @@ import { Roles } from 'src/auth/roles.decorator';
 import { RolesGuard } from 'src/auth/roles.guard';
 
 @UseGuards(AuthGuard('jwt'), RolesGuard)
-@Roles('ADMIN', 'ACCOUNTANT')
+@Roles('ADMIN', 'SUPERVISOR', 'SALES', 'ACCOUNTANT')
 @Controller('dashboard')
 export class DashboardController {
   constructor(private readonly dashboardService: DashboardService) {}

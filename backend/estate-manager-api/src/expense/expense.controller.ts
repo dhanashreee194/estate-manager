@@ -13,7 +13,7 @@ import { Roles } from 'src/auth/roles.decorator';
 import { RolesGuard } from 'src/auth/roles.guard';
 
 @UseGuards(AuthGuard('jwt'), RolesGuard)
-@Roles('ADMIN', 'ACCOUNTANT', 'SALES')
+@Roles('ADMIN', 'ACCOUNTANT', 'SUPERVISOR')
 @Controller('expense')
 export class ExpenseController {
   constructor(private readonly expenseService: ExpenseService) {}

@@ -11,6 +11,8 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
+import { RolesGuard } from 'src/auth/roles.guard';
+import { Roles } from 'src/auth/roles.decorator';
 import { CashbookCategory, CashbookEntryType } from '@prisma/client';
 import { FinanceService } from './finance.service';
 import { CreateBankAccountDto } from './dto/create-bank-account.dto';
@@ -18,7 +20,8 @@ import { UpdateBankAccountDto } from './dto/update-bank-account.dto';
 import { CreateCashbookEntryDto } from './dto/create-cashbook-entry.dto';
 import { TransferDto } from './dto/transfer.dto';
 
-@UseGuards(AuthGuard('jwt'))
+@UseGuards(AuthGuard('jwt'), RolesGuard)
+@Roles('ADMIN', 'ACCOUNTANT')
 @Controller('finance')
 export class FinanceController {
   constructor(private readonly financeService: FinanceService) {}

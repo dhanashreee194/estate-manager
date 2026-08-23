@@ -7,6 +7,12 @@ import InviteUserModal from "../components/InviteUserModal";
 import CreateProjectModal from "../components/CreateProjectModal";
 import LanguageSwitcher from "../components/LanguageSwitcher";
 import ThemeSwitcher from "../components/ThemeSwitcher";
+import {
+  canAccess,
+  getCurrentRole,
+  getStoredUser,
+  NAV_ITEMS,
+} from "../auth/roles";
 
 export default function AdminDashboard() {
   const { t } = useTranslation();
@@ -14,6 +20,8 @@ export default function AdminDashboard() {
   const [inviteOpen, setInviteOpen] = useState(false);
   const [createProjectOpen, setCreateProjectOpen] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const role = getCurrentRole();
+  const user = getStoredUser();
 
   useEffect(() => {
     setSidebarOpen(false);
@@ -41,6 +49,11 @@ export default function AdminDashboard() {
     window.location.href = "/login";
   };
 
+  const navLabel = (key: string) => {
+    if (key === "advancedReports") return `📊 ${t("nav.advancedReports")}`;
+    return t(`nav.${key}`);
+  };
+
   return (
     <div className={`dashboard-layout ${sidebarOpen ? "nav-open" : ""}`}>
       <div
@@ -62,111 +75,23 @@ export default function AdminDashboard() {
           </button>
         </div>
 
+        {role && (
+          <div className="role-badge" title={user?.name || ""}>
+            {t(`roles.${role}`)}
+          </div>
+        )}
+
         <nav className="nav">
-          <NavLink
-            to="/dashboard"
-            end
-            className={({ isActive }) => (isActive ? "active" : "")}
-          >
-            {t("nav.dashboard")}
-          </NavLink>
-
-          <NavLink
-            to="/dashboard/projects"
-            className={({ isActive }) => (isActive ? "active" : "")}
-          >
-            {t("nav.projects")}
-          </NavLink>
-
-          <NavLink
-            to="/dashboard/inventory"
-            className={({ isActive }) => (isActive ? "active" : "")}
-          >
-            {t("nav.inventory")}
-          </NavLink>
-
-          <NavLink
-            to="/dashboard/vendors"
-            className={({ isActive }) => (isActive ? "active" : "")}
-          >
-            {t("nav.vendors")}
-          </NavLink>
-
-          <NavLink
-            to="/dashboard/brokers"
-            className={({ isActive }) => (isActive ? "active" : "")}
-          >
-            {t("nav.brokers")}
-          </NavLink>
-
-          <NavLink
-            to="/dashboard/finance"
-            className={({ isActive }) => (isActive ? "active" : "")}
-          >
-            {t("nav.finance")}
-          </NavLink>
-
-          <NavLink
-            to="/dashboard/land"
-            className={({ isActive }) => (isActive ? "active" : "")}
-          >
-            {t("nav.land")}
-          </NavLink>
-
-          <NavLink
-            to="/dashboard/collections"
-            className={({ isActive }) => (isActive ? "active" : "")}
-          >
-            {t("nav.collections")}
-          </NavLink>
-
-          <NavLink
-            to="/dashboard/reminders"
-            className={({ isActive }) => (isActive ? "active" : "")}
-          >
-            {t("nav.reminders")}
-          </NavLink>
-
-          <NavLink
-            to="/dashboard/marketing"
-            className={({ isActive }) => (isActive ? "active" : "")}
-          >
-            {t("nav.marketing")}
-          </NavLink>
-
-          <NavLink
-            to="/dashboard/bookings"
-            className={({ isActive }) => (isActive ? "active" : "")}
-          >
-            {t("nav.bookings")}
-          </NavLink>
-
-          <NavLink
-            to="/dashboard/users"
-            className={({ isActive }) => (isActive ? "active" : "")}
-          >
-            {t("nav.users")}
-          </NavLink>
-          <NavLink
-            to="/dashboard/leads"
-            className={({ isActive }) => (isActive ? "active" : "")}
-          >
-            {t("nav.leads")}
-          </NavLink>
-
-          <NavLink
-            to="/dashboard/reports"
-            className={({ isActive }) => (isActive ? "active" : "")}
-          >
-            {t("nav.reports")}
-          </NavLink>
-
-          <NavLink
-            to="/dashboard/comprehensive-reports"
-            className={({ isActive }) => (isActive ? "active" : "")}
-          >
-            📊 {t("nav.advancedReports")}
-          </NavLink>
+          {NAV_ITEMS.filter((item) => canAccess(item.key, role)).map((item) => (
+            <NavLink
+              key={item.key}
+              to={item.to}
+              end={item.end}
+              className={({ isActive }) => (isActive ? "active" : "")}
+            >
+              {navLabel(item.key)}
+            </NavLink>
+          ))}
         </nav>
 
         <div className="sidebar-footer">
@@ -192,25 +117,32 @@ export default function AdminDashboard() {
               <span />
               <span />
             </button>
-            <h1>{t("nav.welcome")} 👋</h1>
+            <h1>
+              {t("nav.welcome")}
+              {user?.name ? `, ${user.name}` : ""} 👋
+            </h1>
           </div>
 
           <div className="header-actions">
             <ThemeSwitcher compact />
             <LanguageSwitcher compact />
-            <HeaderActionButton
-              variant="outline"
-              onClick={() => setInviteOpen(true)}
-            >
-              {t("nav.inviteUser")}
-            </HeaderActionButton>
+            {canAccess("inviteUser", role) && (
+              <HeaderActionButton
+                variant="outline"
+                onClick={() => setInviteOpen(true)}
+              >
+                {t("nav.inviteUser")}
+              </HeaderActionButton>
+            )}
 
-            <HeaderActionButton
-              variant="primary"
-              onClick={() => setCreateProjectOpen(true)}
-            >
-              + {t("nav.createProject")}
-            </HeaderActionButton>
+            {canAccess("createProject", role) && (
+              <HeaderActionButton
+                variant="primary"
+                onClick={() => setCreateProjectOpen(true)}
+              >
+                + {t("nav.createProject")}
+              </HeaderActionButton>
+            )}
           </div>
         </div>
 

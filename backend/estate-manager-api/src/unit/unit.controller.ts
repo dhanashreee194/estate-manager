@@ -13,6 +13,7 @@ import {
   UseInterceptors,
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
+import { RolesGuard } from 'src/auth/roles.guard';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
 import { extname } from 'path';
@@ -22,13 +23,13 @@ import { UpdateUnitDto } from './dto/update-unit.dto';
 import { Roles } from 'src/auth/roles.decorator';
 import { CreateBulkFlatsDto } from './dto/create-bulk-flats.dto';
 
-@UseGuards(AuthGuard('jwt'))
+@UseGuards(AuthGuard('jwt'), RolesGuard)
 @Controller('unit')
 export class UnitController {
   constructor(private readonly unitService: UnitService) {}
 
   @Post()
-  @Roles('ADMIN')
+  @Roles('ADMIN', 'SUPERVISOR')
   create(@Body() dto: CreateUnitDto, @Req() req) {
     return this.unitService.createUnit(dto, req.user.companyId);
   }
@@ -46,7 +47,7 @@ export class UnitController {
   }
 
   @Put('project/:projectId/layout-config')
-  @Roles('ADMIN')
+  @Roles('ADMIN', 'SUPERVISOR')
   updateLayoutConfig(
     @Param('projectId') projectId: string,
     @Body() body: any,
@@ -60,7 +61,7 @@ export class UnitController {
   }
 
   @Post('project/:projectId/layout-image')
-  @Roles('ADMIN')
+  @Roles('ADMIN', 'SUPERVISOR')
   @UseInterceptors(
     FileInterceptor('file', {
       storage: diskStorage({
@@ -97,7 +98,7 @@ export class UnitController {
   }
 
   @Delete('project/:projectId/layout-image')
-  @Roles('ADMIN')
+  @Roles('ADMIN', 'SUPERVISOR')
   clearLayoutImage(@Param('projectId') projectId: string, @Req() req) {
     return this.unitService.updateLayoutConfig(
       projectId,
@@ -107,7 +108,7 @@ export class UnitController {
   }
 
   @Post('project/:projectId/layout/auto-arrange')
-  @Roles('ADMIN')
+  @Roles('ADMIN', 'SUPERVISOR')
   autoArrange(@Param('projectId') projectId: string, @Req() req) {
     return this.unitService.autoArrangeLayout(projectId, req.user.companyId);
   }
@@ -119,7 +120,7 @@ export class UnitController {
   }
 
   @Post('bulk/flats')
-  @Roles('ADMIN')
+  @Roles('ADMIN', 'SUPERVISOR')
   createBulkFlats(@Body() dto: CreateBulkFlatsDto, @Req() req) {
     return this.unitService.createBulkFlats(dto, req.user.companyId);
   }

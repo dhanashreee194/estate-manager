@@ -12,10 +12,11 @@ import { CreateMaterialDto } from './dto/create-material.dto';
 import { InventoryInwardDto } from './dto/inventory-inward.dto';
 import { InventoryOutwardDto } from './dto/inventory-outward.dto';
 import { AuthGuard } from '@nestjs/passport';
+import { RolesGuard } from 'src/auth/roles.guard';
 import { Roles } from 'src/auth/roles.decorator';
 
-@UseGuards(AuthGuard('jwt'))
-@Roles('ADMIN', 'ACCOUNTANT')
+@UseGuards(AuthGuard('jwt'), RolesGuard)
+@Roles('ADMIN', 'SUPERVISOR', 'ACCOUNTANT')
 @Controller('inventory')
 export class InventoryController {
   constructor(private readonly inventoryService: InventoryService) {}

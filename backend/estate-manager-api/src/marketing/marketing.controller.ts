@@ -10,6 +10,8 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
+import { RolesGuard } from 'src/auth/roles.guard';
+import { Roles } from 'src/auth/roles.decorator';
 import { CampaignStatus } from '@prisma/client';
 import { MarketingService } from './marketing.service';
 import { MarketingAiService } from './marketing-ai.service';
@@ -18,7 +20,8 @@ import { UpdateCampaignDto } from './dto/update-campaign.dto';
 import { ShareEventDto } from './dto/share-event.dto';
 import { AiGenerateDto } from './dto/ai-generate.dto';
 
-@UseGuards(AuthGuard('jwt'))
+@UseGuards(AuthGuard('jwt'), RolesGuard)
+@Roles('ADMIN', 'SALES')
 @Controller('marketing/campaigns')
 export class MarketingController {
   constructor(

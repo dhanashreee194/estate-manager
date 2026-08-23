@@ -8,13 +8,15 @@ type Props = {
   onClose: () => void;
 };
 
+type InviteRole = "SUPERVISOR" | "SALES" | "ACCOUNTANT";
+
 export default function InviteUserModal({ open, onClose }: Props) {
   const { t } = useTranslation();
   const [form, setForm] = useState({
     name: "",
     email: "",
     password: "",
-    role: "SALES" as "SALES" | "ACCOUNTANT" | "ADMIN",
+    role: "SALES" as InviteRole,
   });
 
   const [loading, setLoading] = useState(false);
@@ -55,14 +57,11 @@ export default function InviteUserModal({ open, onClose }: Props) {
 
       setSuccess(t("invite.success"));
 
-      // Auto-close after 1.5s
       setTimeout(() => {
         handleClose();
       }, 1500);
     } catch (err: any) {
-      setError(
-        err?.response?.data?.message || t("common.failed"),
-      );
+      setError(err?.response?.data?.message || t("common.failed"));
     } finally {
       setLoading(false);
     }
@@ -74,7 +73,6 @@ export default function InviteUserModal({ open, onClose }: Props) {
         <h2>{t("invite.title")}</h2>
 
         <div className="modal-form">
-          {/* Alerts */}
           {success && <div className="alert success">{success}</div>}
           {error && <div className="alert error">{error}</div>}
 
@@ -99,11 +97,13 @@ export default function InviteUserModal({ open, onClose }: Props) {
 
           <select
             value={form.role}
-            onChange={(e) => setForm({ ...form, role: e.target.value as any })}
+            onChange={(e) =>
+              setForm({ ...form, role: e.target.value as InviteRole })
+            }
           >
+            <option value="SUPERVISOR">{t("invite.roleSupervisor")}</option>
             <option value="SALES">{t("invite.roleSales")}</option>
             <option value="ACCOUNTANT">{t("invite.roleAccountant")}</option>
-            <option value="ADMIN">{t("invite.roleAdmin")}</option>
           </select>
 
           <div className="modal-actions">

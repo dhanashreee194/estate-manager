@@ -11,6 +11,8 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
+import { RolesGuard } from 'src/auth/roles.guard';
+import { Roles } from 'src/auth/roles.decorator';
 import { LandService } from './land.service';
 import {
   AddParcelPartnerDto,
@@ -23,7 +25,8 @@ import {
   UpdateLandParcelDto,
 } from './dto/land-parcel.dto';
 
-@UseGuards(AuthGuard('jwt'))
+@UseGuards(AuthGuard('jwt'), RolesGuard)
+@Roles('ADMIN', 'SUPERVISOR', 'ACCOUNTANT')
 @Controller('land')
 export class LandController {
   constructor(private readonly landService: LandService) {}

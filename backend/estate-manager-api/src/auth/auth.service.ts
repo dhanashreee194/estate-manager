@@ -135,7 +135,7 @@ export class AuthService {
       throw new ForbiddenException('Only admin can invite users');
     }
 
-    const allowedRoles = ['SALES', 'ACCOUNTANT'];
+    const allowedRoles = ['SUPERVISOR', 'SALES', 'ACCOUNTANT'];
     if (!allowedRoles.includes(dto.role)) {
       throw new BadRequestException('Invalid role');
     }

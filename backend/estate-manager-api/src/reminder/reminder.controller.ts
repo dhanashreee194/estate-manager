@@ -10,6 +10,8 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
+import { RolesGuard } from 'src/auth/roles.guard';
+import { Roles } from 'src/auth/roles.decorator';
 import { ReminderService } from './reminder.service';
 import {
   CreateReminderDto,
@@ -17,7 +19,8 @@ import {
   UpdateReminderDto,
 } from './dto/reminder.dto';
 
-@UseGuards(AuthGuard('jwt'))
+@UseGuards(AuthGuard('jwt'), RolesGuard)
+@Roles('ADMIN', 'SUPERVISOR', 'SALES', 'ACCOUNTANT')
 @Controller('reminders')
 export class ReminderController {
   constructor(private readonly reminderService: ReminderService) {}

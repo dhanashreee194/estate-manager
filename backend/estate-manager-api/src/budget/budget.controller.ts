@@ -8,11 +8,12 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
+import { RolesGuard } from 'src/auth/roles.guard';
 import { BudgetService } from './budget.service';
 import { Roles } from 'src/auth/roles.decorator';
 
-@UseGuards(AuthGuard('jwt'))
-@Roles('ADMIN', 'ACCOUNTANT')
+@UseGuards(AuthGuard('jwt'), RolesGuard)
+@Roles('ADMIN', 'ACCOUNTANT', 'SUPERVISOR')
 @Controller('budget')
 export class BudgetController {
   constructor(private readonly budgetService: BudgetService) {}

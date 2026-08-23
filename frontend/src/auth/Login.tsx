@@ -31,17 +31,7 @@ export default function Login() {
       localStorage.setItem("token", data.access_token);
       localStorage.setItem("user", JSON.stringify(data.user));
 
-      const role = data.user.role;
-
-      if (role === "ADMIN") {
-        navigate("/dashboard");
-      } else if (role === "SALES") {
-        navigate("/sales");
-      } else if (role === "ACCOUNTANT") {
-        navigate("/accounts");
-      } else {
-        navigate("/login");
-      }
+      navigate("/dashboard");
     } catch (err: any) {
       setError(err.message || t("auth.loginFailed"));
     } finally {

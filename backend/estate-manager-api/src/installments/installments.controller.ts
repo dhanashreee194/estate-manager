@@ -11,10 +11,13 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
+import { RolesGuard } from 'src/auth/roles.guard';
+import { Roles } from 'src/auth/roles.decorator';
 import { InstallmentsService } from './installments.service';
 import type { Response } from 'express';
 
-@UseGuards(AuthGuard('jwt'))
+@UseGuards(AuthGuard('jwt'), RolesGuard)
+@Roles('ADMIN', 'SALES', 'ACCOUNTANT')
 @Controller('installments')
 export class InstallmentsController {
   constructor(private readonly installmentsService: InstallmentsService) {}

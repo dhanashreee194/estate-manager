@@ -1,5 +1,6 @@
 import type { JSX } from "react";
-import { Navigate } from "react-router-dom";
+import { Navigate, useLocation } from "react-router-dom";
+import { canAccess, featureForPath, getCurrentRole } from "../auth/roles";
 
 export default function ProtectedRoute({
   children,
@@ -7,5 +8,21 @@ export default function ProtectedRoute({
   children: JSX.Element;
 }) {
   const token = localStorage.getItem("token");
-  return token ? children : <Navigate to="/login" replace />;
+  const location = useLocation();
+
+  if (!token) {
+    return <Navigate to="/login" replace />;
+  }
+
+  const role = getCurrentRole();
+  if (!role) {
+    return <Navigate to="/login" replace />;
+  }
+
+  const feature = featureForPath(location.pathname);
+  if (feature && !canAccess(feature, role)) {
+    return <Navigate to="/dashboard" replace />;
+  }
+
+  return children;
 }

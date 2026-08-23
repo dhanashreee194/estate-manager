@@ -8,9 +8,12 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
+import { RolesGuard } from 'src/auth/roles.guard';
+import { Roles } from 'src/auth/roles.decorator';
 import { DailyReportService } from './daily-report.service';
 
-@UseGuards(AuthGuard('jwt'))
+@UseGuards(AuthGuard('jwt'), RolesGuard)
+@Roles('ADMIN', 'SUPERVISOR', 'SALES')
 @Controller('daily-report')
 export class DailyReportController {
   constructor(private service: DailyReportService) {}

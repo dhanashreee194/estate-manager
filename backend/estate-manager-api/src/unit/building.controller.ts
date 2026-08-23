@@ -9,6 +9,7 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
+import { RolesGuard } from 'src/auth/roles.guard';
 import { Roles } from 'src/auth/roles.decorator';
 import { BuildingService } from './building.service';
 import {
@@ -16,13 +17,13 @@ import {
   UpdateBuildingDto,
 } from './dto/create-building.dto';
 
-@UseGuards(AuthGuard('jwt'))
+@UseGuards(AuthGuard('jwt'), RolesGuard)
 @Controller('building')
 export class BuildingController {
   constructor(private readonly buildingService: BuildingService) {}
 
   @Post()
-  @Roles('ADMIN')
+  @Roles('ADMIN', 'SUPERVISOR')
   create(@Body() dto: CreateBuildingDto, @Req() req) {
     return this.buildingService.createBuilding(dto, req.user.companyId);
   }
@@ -38,7 +39,7 @@ export class BuildingController {
 
   // Update building
   @Put(':id')
-  @Roles('ADMIN')
+  @Roles('ADMIN', 'SUPERVISOR')
   update(
     @Param('id') buildingId: string,
     @Body() dto: UpdateBuildingDto,

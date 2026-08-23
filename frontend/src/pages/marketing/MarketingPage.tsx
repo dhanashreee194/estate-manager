@@ -3,6 +3,10 @@ import { useMemo, useState } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import {
+  canAccess,
+  getCurrentRole,
+} from "../../auth/roles";
+import {
   composeCampaign,
   createCampaign,
   generateAiCaption,
@@ -62,6 +66,8 @@ export default function MarketingPage() {
   const [aiComments, setAiComments] = useState("");
   const [aiError, setAiError] = useState("");
   const [lastImagePrompt, setLastImagePrompt] = useState("");
+  const role = getCurrentRole();
+  const showAi = canAccess("aiMarketing", role);
 
   const { data: campaigns = [], isLoading } = useQuery({
     queryKey: ["marketing-campaigns", statusFilter],
@@ -374,6 +380,7 @@ export default function MarketingPage() {
             </select>
           </label>
 
+          {showAi && (
           <div className="ai-assist-panel">
             <h4>{t("marketing.aiAssist")}</h4>
             <p className="muted">{t("marketing.aiAssistHint")}</p>
@@ -415,6 +422,7 @@ export default function MarketingPage() {
               </p>
             )}
           </div>
+          )}
 
           <label>
             {t("marketing.headline")}

@@ -11,7 +11,7 @@ export interface LoginResponse {
     id: string;
     name: string;
     email: string;
-    role: "ADMIN" | "SALES" | "ACCOUNTANT";
+    role: "ADMIN" | "SUPERVISOR" | "SALES" | "ACCOUNTANT";
     companyId: string;
     companyName: string;
   };

@@ -151,10 +151,17 @@
     "fullName": "Full Name",
     "tempPassword": "Temporary Password",
     "roleSales": "Sales",
+    "roleSupervisor": "Supervisor",
     "roleAccountant": "Accountant",
     "roleAdmin": "Admin",
     "success": "User invited successfully",
     "allRequired": "All fields are required"
+  },
+  "roles": {
+    "ADMIN": "Admin",
+    "SUPERVISOR": "Supervisor",
+    "SALES": "Sales",
+    "ACCOUNTANT": "Accountant"
   },
   "createProject": {
     "title": "Create Project",

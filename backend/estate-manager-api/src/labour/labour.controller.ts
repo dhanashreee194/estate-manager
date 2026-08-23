@@ -10,13 +10,16 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
+import { RolesGuard } from 'src/auth/roles.guard';
+import { Roles } from 'src/auth/roles.decorator';
 import { LabourService } from './labour.service';
 import { CreateLabourDto } from './dto/create-labour.dto';
 import { AssignLabourDto } from './dto/assign-labour.dto';
 import { MarkAttendanceDto } from './dto/mark-attendance.dto';
 import { UpdateAttendanceDto } from './dto/update-attendance.dto';
 
-@UseGuards(AuthGuard('jwt'))
+@UseGuards(AuthGuard('jwt'), RolesGuard)
+@Roles('ADMIN', 'SUPERVISOR')
 @Controller('labour')
 export class LabourController {
   constructor(private readonly labourService: LabourService) {}

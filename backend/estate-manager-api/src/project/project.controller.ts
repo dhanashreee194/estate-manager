@@ -1,14 +1,18 @@
 import { Controller, Get, Post, Body, Req, UseGuards } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
+import { RolesGuard } from 'src/auth/roles.guard';
+import { Roles } from 'src/auth/roles.decorator';
 import { ProjectService } from './project.service';
 import { CreateProjectDto } from './dto/create-project.dto';
 
-@UseGuards(AuthGuard('jwt'))
+@UseGuards(AuthGuard('jwt'), RolesGuard)
+@Roles('ADMIN', 'SUPERVISOR', 'SALES', 'ACCOUNTANT')
 @Controller('projects')
 export class ProjectController {
   constructor(private readonly projectService: ProjectService) {}
 
   @Post()
+  @Roles('ADMIN', 'SUPERVISOR')
   create(@Body() dto: CreateProjectDto, @Req() req) {
     return this.projectService.create(dto, req.user.companyId);
   }
