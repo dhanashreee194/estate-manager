@@ -16,7 +16,7 @@ async function bootstrap() {
 
   const corsOrigins = (
     process.env.CORS_ORIGIN ||
-    'http://localhost:5173,http://localhost:5174'
+    'http://localhost:5173,http://localhost:5174,https://estate-manager-web.onrender.com'
   )
     .split(',')
     .map((o) => o.trim())

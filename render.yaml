@@ -1,8 +1,5 @@
 # Render Blueprint — free tier uses native Node (Docker requires a paid plan).
-# After first deploy:
-# 1. Set estate-manager-api CORS_ORIGIN to the static site URL
-# 2. Set estate-manager-web VITE_API_URL to the API URL
-# 3. Manual Deploy both services
+# After first deploy, confirm both services are Live, then log in at the web URL.
 
 services:
   - type: web
@@ -23,7 +20,7 @@ services:
       - key: JWT_SECRET
         generateValue: true
       - key: CORS_ORIGIN
-        sync: false
+        value: https://estate-manager-web.onrender.com
 
   - type: web
     name: estate-manager-web
@@ -39,7 +36,7 @@ services:
       - key: NODE_VERSION
         value: "20"
       - key: VITE_API_URL
-        sync: false
+        value: https://estate-manager-api.onrender.com
 
 databases:
   - name: estate-manager-db
