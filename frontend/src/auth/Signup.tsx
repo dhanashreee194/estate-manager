@@ -1,13 +1,14 @@
 import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
+import { useTranslation } from "react-i18next";
+import { API_BASE } from "../api/baseUrl";
 import "./auth.css";
-import { saveAuth } from "./auth.storage";
-import { signupApi } from "./auth.api";
+import LanguageSwitcher from "../components/LanguageSwitcher";
+import ThemeSwitcher from "../components/ThemeSwitcher";
 
 export default function Signup() {
-  const navigate = useNavigate();
+  const { t } = useTranslation();
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
 
   const [form, setForm] = useState({
     companyName: "",
@@ -23,40 +24,49 @@ export default function Signup() {
 
   const handleSignup = async (e: React.FormEvent) => {
     e.preventDefault();
+    setLoading(true);
 
-    const res = await fetch("http://localhost:3000/auth/signup", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(form),
-    });
+    try {
+      const res = await fetch(`${API_BASE}/auth/signup`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(form),
+      });
 
-    if (!res.ok) {
-      alert("Signup failed");
-      return;
+      if (!res.ok) {
+        alert(t("auth.signupFailed"));
+        return;
+      }
+
+      const data = await res.json();
+
+      localStorage.setItem("token", data.access_token);
+      localStorage.setItem("user", JSON.stringify(data.user));
+
+      window.location.href = "/dashboard";
+    } finally {
+      setLoading(false);
     }
-
-    const data = await res.json();
-
-    localStorage.setItem("token", data.access_token);
-    localStorage.setItem("user", JSON.stringify(data.user));
-
-    window.location.href = "/dashboard";
   };
 
   return (
     <div className="auth-container">
+      <div className="auth-controls">
+        <ThemeSwitcher compact />
+        <LanguageSwitcher compact />
+      </div>
       <div className="brand">
-        <h1>🏗️ Estate Manager</h1>
-        <p className="subtitle">Smart Construction & Real Estate ERP</p>
+        <h1>🏗️ {t("nav.brand")}</h1>
+        <p className="subtitle">{t("auth.subtitle")}</p>
       </div>
 
       <div className="auth-card">
-        <h2>Create Company</h2>
-        <p className="muted">Set up your real estate workspace</p>
+        <h2>{t("auth.signup")}</h2>
+        <p className="muted">{t("auth.signupHint")}</p>
 
         <form onSubmit={handleSignup}>
           <div className="field">
-            <label>Company Name</label>
+            <label>{t("auth.companyName")}</label>
             <input
               name="companyName"
               placeholder="Green Valley Builders"
@@ -65,7 +75,7 @@ export default function Signup() {
             />
           </div>
           <div className="field">
-            <label>Company Email</label>
+            <label>{t("auth.companyEmail")}</label>
             <input
               name="companyEmail"
               type="email"
@@ -75,7 +85,7 @@ export default function Signup() {
             />
           </div>
           <div className="field">
-            <label>Admin Name</label>
+            <label>{t("auth.adminName")}</label>
             <input
               name="adminName"
               placeholder="Admin User"
@@ -84,7 +94,7 @@ export default function Signup() {
             />
           </div>
           <div className="field">
-            <label>Admin Email</label>
+            <label>{t("auth.adminEmail")}</label>
             <input
               name="adminEmail"
               type="email"
@@ -94,22 +104,22 @@ export default function Signup() {
             />
           </div>
           <div className="field">
-            <label>Password</label>
+            <label>{t("auth.password")}</label>
             <input
               name="password"
               type="password"
-              placeholder="Minimum 8 characters"
+              placeholder={t("auth.minPassword")}
               onChange={handleChange}
               required
             />
           </div>
           <button className="primary-btn" disabled={loading}>
-            {loading ? "Creating company..." : "Create Company"}
-          </button>{" "}
+            {loading ? t("common.saving") : t("auth.signup")}
+          </button>
         </form>
 
         <p className="footer-text">
-          Already have an account? <Link to="/login">Login</Link>
+          {t("auth.hasAccount")} <Link to="/login">{t("auth.login")}</Link>
         </p>
       </div>
     </div>

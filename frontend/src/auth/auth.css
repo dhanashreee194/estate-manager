@@ -2,14 +2,27 @@
 .auth-container {
   min-height: 100vh;
   width: 100vw;
+  position: relative;
 
-  background: radial-gradient(circle at top left, #1f2933, #020617 70%);
+  background: var(--auth-gradient);
 
   display: flex;
+  flex-direction: column;
   justify-content: center;
   align-items: center;
 
-  color: #e5e7eb;
+  color: var(--text);
+  padding: 24px 16px;
+  box-sizing: border-box;
+}
+
+.auth-controls {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  display: flex;
+  gap: 8px;
+  z-index: 2;
 }
 
 /* Brand */
@@ -36,22 +49,22 @@
   width: 100%;
   max-width: 420px;
 
-  background: rgba(2, 6, 23, 0.95);
+  background: var(--bg-elevated);
+  border: 1px solid var(--border);
   border-radius: 14px;
 
   padding: 36px;
-  box-shadow:
-    0 20px 40px rgba(0, 0, 0, 0.6),
-    inset 0 0 0 1px rgba(255, 255, 255, 0.04);
+  box-shadow: var(--shadow);
 }
 
 .auth-card h2 {
   font-size: 24px;
   margin-bottom: 4px;
+  color: var(--text-strong);
 }
 
 .muted {
-  color: #9ca3af;
+  color: var(--text-muted);
   margin-bottom: 24px;
 }
 
@@ -65,15 +78,15 @@
 .field label {
   font-size: 14px;
   margin-bottom: 6px;
-  color: #d1d5db;
+  color: var(--text-sidebar);
 }
 
 .field input {
   padding: 10px 12px;
   border-radius: 8px;
-  border: 1px solid #334155;
-  background: #020617;
-  color: #e5e7eb;
+  border: 1px solid var(--border-strong);
+  background: var(--bg-input);
+  color: var(--text);
 }
 
 .field input:focus {
@@ -121,9 +134,18 @@
   text-align: center;
 }
 /* Media Queries */
-@media (max-width: 600px) {
+@media (max-width: 720px) {
   .auth-container {
-    padding: 24px;
+    padding: 20px 16px;
+    justify-content: flex-start;
+  }
+
+  .auth-controls {
+    position: static;
+    width: 100%;
+    max-width: 420px;
+    justify-content: flex-end;
+    margin-bottom: 8px;
   }
 
   .auth-card {

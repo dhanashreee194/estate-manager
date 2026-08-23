@@ -5,7 +5,9 @@ import {
   Param,
   Post,
   Put,
+  Query,
   Req,
+  Res,
   UseGuards,
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
@@ -13,6 +15,7 @@ import { BookingService } from './booking.service';
 import { CreateBookingDto } from './dto/create-booking.dto';
 import { Roles } from 'src/auth/roles.decorator';
 import { RolesGuard } from 'src/auth/roles.guard';
+import type { Response } from 'express';
 
 @UseGuards(AuthGuard('jwt'), RolesGuard)
 @Controller('booking')
@@ -35,6 +38,22 @@ export class BookingController {
   @Roles('ADMIN', 'SALES', 'ACCOUNTANT')
   getProjectBookings(@Param('projectId') id: string, @Req() req) {
     return this.bookingService.getProjectBookings(id, req.user.companyId);
+  }
+
+  @Get(':id/agreement')
+  @Roles('ADMIN', 'SALES', 'ACCOUNTANT')
+  getAgreement(
+    @Param('id') id: string,
+    @Req() req,
+    @Res() res: Response,
+    @Query('lang') lang?: string,
+  ) {
+    return this.bookingService.generateAllotmentLetter(
+      id,
+      req.user.companyId,
+      res,
+      lang,
+    );
   }
 
   @Post(':id/cancel')

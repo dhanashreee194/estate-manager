@@ -1,5 +1,7 @@
+import { useTranslation } from "react-i18next";
+
 export default function ActivityOverview({ analytics }: any) {
-  // Use analytics data if available, otherwise show placeholder
+  const { t } = useTranslation();
   const activities = analytics?.recentActivity || [
     "🏠 Flat A-302 booked",
     "💰 ₹5,00,000 payment received",
@@ -11,7 +13,7 @@ export default function ActivityOverview({ analytics }: any) {
 
   return (
     <div className="overview-card">
-      <h4>Recent Activity</h4>
+      <h4>{t("projects.recentActivity")}</h4>
 
       <ul className="activity-list">
         {activities.map((activity: string, index: number) => (

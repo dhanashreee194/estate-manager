@@ -1,4 +1,4 @@
-import { IsNumber, IsString } from 'class-validator';
+import { IsNumber, IsOptional, IsString } from 'class-validator';
 
 export class CreateBookingDto {
   @IsString()
@@ -16,6 +16,16 @@ export class CreateBookingDto {
 
   email?: string;
   address?: string;
+
+  // Channel partner / broker
+  @IsOptional()
+  @IsString()
+  brokerId?: string;
+
+  /** Optional override; defaults to broker.commissionRate */
+  @IsOptional()
+  @IsNumber()
+  commissionRate?: number;
 
   // Builder
   @IsNumber()

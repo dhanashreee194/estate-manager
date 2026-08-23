@@ -5,6 +5,7 @@ import {
   Param,
   Patch,
   Post,
+  Query,
   Req,
   UseGuards,
 } from '@nestjs/common';
@@ -13,7 +14,7 @@ import { CustomerService } from './customer.service';
 import { CreateCustomerDto } from './dto/create-customer.dto';
 
 @UseGuards(AuthGuard('jwt'))
-@Controller('customer')
+@Controller('customers')
 export class CustomerController {
   constructor(private readonly customerService: CustomerService) {}
 
@@ -25,8 +26,8 @@ export class CustomerController {
 
   // List all customers
   @Get()
-  findAll(@Req() req) {
-    return this.customerService.getCustomers(req.user.companyId);
+  findAll(@Req() req, @Query('search') search?: string) {
+    return this.customerService.getCustomers(req.user.companyId, search);
   }
 
   // Get single customer

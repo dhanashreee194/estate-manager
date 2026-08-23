@@ -1,31 +1,38 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { CreatePaymentDto } from './dto/create-payment.dto';
-import { PaymentMode, BookingStatus } from '@prisma/client';
+import {
+  CashbookCategory,
+  CashbookEntryType,
+  InstallmentStatus,
+  PaymentMode,
+  BookingStatus,
+} from '@prisma/client';
+import { FinanceService } from '../finance/finance.service';
 
 @Injectable()
 export class PaymentService {
-  constructor(private prisma: PrismaService) {}
+  constructor(
+    private prisma: PrismaService,
+    private finance: FinanceService,
+  ) {}
 
   // 1️⃣ Add payment (INSTALLMENT SAFE)
   async addPayment(dto: CreatePaymentDto, user: any) {
     return this.prisma.$transaction(async (tx) => {
-      // 1️⃣ create payment
       const payment = await tx.payment.create({
         data: {
           bookingId: dto.bookingId,
           companyId: user.companyId,
-
           amount: dto.amount,
           stage: dto.stage,
           mode: dto.mode as PaymentMode,
-
-          installmentId: dto.installmentId, // NEW
+          installmentId: dto.installmentId,
           remarks: dto.remarks,
+          bankAccountId: dto.bankAccountId || null,
         },
       });
 
-      // 2️⃣ mark installment paid
       if (dto.installmentId) {
         const installment = await tx.installmentPlan.findUnique({
           where: { id: dto.installmentId },
@@ -38,11 +45,18 @@ export class PaymentService {
         const newPaidAmount = (installment.paidAmount || 0) + dto.amount;
 
         let paid = false;
-        let status: any = 'PARTIAL';
+        let status: InstallmentStatus = InstallmentStatus.PARTIAL;
 
         if (newPaidAmount >= installment.amount) {
           paid = true;
-          status = 'PAID';
+          status = InstallmentStatus.PAID;
+        } else {
+          const today = new Date();
+          today.setHours(0, 0, 0, 0);
+          const due = new Date(installment.dueDate);
+          due.setHours(0, 0, 0, 0);
+          if (due < today) status = InstallmentStatus.OVERDUE;
+          else status = InstallmentStatus.PARTIAL;
         }
 
         await tx.installmentPlan.update({
@@ -55,8 +69,6 @@ export class PaymentService {
         });
       }
 
-      // 3️⃣ update booking status
-      // 3️⃣ update booking status
       const booking = await tx.booking.findUnique({
         where: { id: dto.bookingId },
         include: { payments: true },
@@ -80,11 +92,29 @@ export class PaymentService {
         data: { status },
       });
 
+      if (dto.bankAccountId) {
+        await this.finance.postEntry(
+          {
+            companyId: user.companyId,
+            bankAccountId: dto.bankAccountId,
+            type: CashbookEntryType.CREDIT,
+            category: CashbookCategory.BOOKING_RECEIPT,
+            amount: dto.amount,
+            description:
+              dto.remarks ||
+              `Booking receipt — ${dto.stage || 'payment'}`,
+            reference: dto.stage,
+            projectId: booking.projectId,
+            paymentId: payment.id,
+          },
+          tx,
+        );
+      }
+
       return payment;
     });
   }
 
-  // 2️⃣ Get payments for booking (COMPANY SAFE)
   getBookingPayments(bookingId: string, companyId: string) {
     return this.prisma.payment.findMany({
       where: {
@@ -97,9 +127,7 @@ export class PaymentService {
     });
   }
 
-  // 3️⃣ Revenue summary by project (GOLD FEATURE)
   async getProjectRevenue(projectId: string, companyId: string) {
-    // 🔐 Validate project ownership
     const project = await this.prisma.project.findFirst({
       where: {
         id: projectId,

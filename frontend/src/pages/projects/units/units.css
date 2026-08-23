@@ -22,7 +22,7 @@
 
 .unit-section h4 {
   margin-bottom: 14px;
-  color: #e5e7eb;
+  color: var(--text);
 }
 
 /* Card Grid */
@@ -33,7 +33,7 @@
 }
 
 .unit-card {
-  background: #0f172a;
+  background: var(--bg-elevated);
   border: 1px solid #1f2937;
   border-radius: 14px;
   padding: 16px;
@@ -113,7 +113,7 @@
 }
 
 .unit-card {
-  background: #0f172a;
+  background: var(--bg-elevated);
   border: 1px solid #1f2937;
   border-radius: 12px;
   padding: 14px;
@@ -135,7 +135,7 @@
 .building-card {
   margin-top: 16px;
   padding: 12px;
-  background: #020617;
+  background: var(--bg-app);
   border-radius: 12px;
 }
 
@@ -274,7 +274,7 @@
 .toggle-text {
   font-size: 14px;
   font-weight: 500;
-  color: #e5e7eb;
+  color: var(--text);
 }
 
 .toggle-hint {
@@ -335,12 +335,12 @@
 
 /* Modal Scrollable Container */
 .modal-card {
-  background: #020617;
-  border: 1px solid #1e293b;
+  background: var(--bg-app);
+  border: 1px solid var(--border);
   border-radius: 14px;
   width: 420px;
   padding: 24px;
-  color: #e5e7eb;
+  color: var(--text);
   display: flex;
   flex-direction: column;
   max-height: 85vh;
@@ -475,9 +475,9 @@
 .form-control {
   padding: 10px 12px;
   border-radius: 8px;
-  border: 1px solid #334155;
-  background: #020617;
-  color: #e5e7eb;
+  border: 1px solid var(--border-strong);
+  background: var(--bg-app);
+  color: var(--text);
   font-size: 14px;
   margin-bottom: 12px;
 }
@@ -489,7 +489,7 @@
 }
 
 .form-control::placeholder {
-  color: #64748b;
+  color: var(--text-faint);
 }
 
 /* Buttons */
@@ -506,7 +506,7 @@
 
 .primary-btn {
   background: #10b981;
-  color: #020617;
+  color: var(--bg-app);
 }
 
 .primary-btn:hover:not(:disabled) {
@@ -521,8 +521,8 @@
 
 .secondary-btn {
   background: transparent;
-  border: 1px solid #334155;
-  color: #e5e7eb;
+  border: 1px solid var(--border-strong);
+  color: var(--text);
 }
 
 .secondary-btn:hover {
@@ -556,4 +556,28 @@
 
 .toggle-text {
   color: #9ca3af;
+}
+
+@media (max-width: 768px) {
+  .units-header {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
+  }
+
+  .units-actions {
+    flex-wrap: wrap;
+  }
+
+  .units-actions > * {
+    flex: 1 1 auto;
+  }
+
+  .unit-grid {
+    grid-template-columns: repeat(auto-fill, minmax(min(160px, 100%), 1fr));
+  }
+
+  .flat-row {
+    grid-template-columns: repeat(auto-fill, minmax(72px, 1fr)) !important;
+  }
 }

@@ -1,8 +1,10 @@
 import { useState, useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import { getCompanyAnalytics } from "../../api/companyReports";
 import { getProjectAnalytics } from "../../api/projectAnalytics";
 import { getProjects } from "../../api/project";
 import { getKanbanLeads } from "../../api/lead";
+import { leadSourceLabel } from "../../constants/leadSources";
 import {
   exportToCSV,
   exportToJSON,
@@ -23,6 +25,7 @@ interface ReportData {
 }
 
 export default function ComprehensiveReports() {
+  const { t } = useTranslation();
   const [reportData, setReportData] = useState<ReportData>({
     companyAnalytics: null,
     projects: [],
@@ -93,7 +96,7 @@ export default function ComprehensiveReports() {
           summaryData,
           "project-summary",
           headers,
-          "Project Summary Report",
+          t("reports.projectSummary"),
         );
         break;
     }
@@ -121,7 +124,7 @@ export default function ComprehensiveReports() {
           financialData,
           "financial-report",
           headers,
-          "Financial Report",
+          t("reports.financialReport"),
         );
         break;
     }
@@ -142,7 +145,7 @@ export default function ComprehensiveReports() {
         exportToJSON(leadData, "lead-report");
         break;
       case "pdf":
-        exportToPDF(leadData, "lead-report", headers, "Lead Conversion Report");
+        exportToPDF(leadData, "lead-report", headers, t("reports.leadConversion"));
         break;
     }
   };
@@ -169,7 +172,7 @@ export default function ComprehensiveReports() {
           inventoryData,
           "inventory-report",
           headers,
-          "Inventory Report",
+          t("reports.inventoryReport"),
         );
         break;
     }
@@ -189,7 +192,7 @@ export default function ComprehensiveReports() {
           setShowExportMenu(showExportMenu === reportType ? null : reportType)
         }
       >
-        📥 Export ▼
+        📥 {t("common.download")} ▼
       </button>
       {showExportMenu === reportType && (
         <div className="export-menu">
@@ -223,7 +226,7 @@ export default function ComprehensiveReports() {
               setShowExportMenu(null);
             }}
           >
-            📑 PDF
+            📑 {t("common.pdf")}
           </button>
         </div>
       )}
@@ -231,16 +234,14 @@ export default function ComprehensiveReports() {
   );
 
   if (loading) {
-    return <div style={{ padding: 20 }}>Loading comprehensive reports...</div>;
+    return <div style={{ padding: 20 }}>{t("reports.loadingComprehensive")}</div>;
   }
 
   return (
     <div className="reports-page">
       <div className="page-header">
-        <h3>📊 Comprehensive Reports</h3>
-        <p>
-          Detailed insights and analytics for your estate management business
-        </p>
+        <h3>📊 {t("nav.advancedReports")}</h3>
+        <p>{t("reports.comprehensiveHint")}</p>
       </div>
 
       <div className="report-tabs">
@@ -248,32 +249,32 @@ export default function ComprehensiveReports() {
           className={activeTab === "summary" ? "active" : ""}
           onClick={() => setActiveTab("summary")}
         >
-          📋 Summary
+          📋 {t("reports.summary")}
         </button>
         <button
           className={activeTab === "financial" ? "active" : ""}
           onClick={() => setActiveTab("financial")}
         >
-          💰 Financial
+          💰 {t("reports.financial")}
         </button>
         <button
           className={activeTab === "leads" ? "active" : ""}
           onClick={() => setActiveTab("leads")}
         >
-          🎯 Leads
+          🎯 {t("reports.leads")}
         </button>
         <button
           className={activeTab === "inventory" ? "active" : ""}
           onClick={() => setActiveTab("inventory")}
         >
-          📦 Inventory
+          📦 {t("reports.inventory")}
         </button>
       </div>
 
       {activeTab === "summary" && (
         <div className="report-section">
           <div className="report-header">
-            <h4>Project Summary Report</h4>
+            <h4>{t("reports.projectSummary")}</h4>
             <ExportDropdown
               reportType="summary"
               onExport={exportProjectSummary}
@@ -284,16 +285,16 @@ export default function ComprehensiveReports() {
             <table className="report-table">
               <thead>
                 <tr>
-                  <th>Project Name</th>
-                  <th>Location</th>
-                  <th>Status</th>
-                  <th>Total Units</th>
-                  <th>Booked</th>
-                  <th>Available</th>
-                  <th>Revenue (₹)</th>
-                  <th>Total Cost (₹)</th>
-                  <th>Enquiries</th>
-                  <th>Conversion Rate (%)</th>
+                  <th>{t("createProject.name")}</th>
+                  <th>{t("createProject.location")}</th>
+                  <th>{t("common.status")}</th>
+                  <th>{t("reports.totalUnits")}</th>
+                  <th>{t("projects.booked")}</th>
+                  <th>{t("projects.available")}</th>
+                  <th>{t("projects.revenue")} (₹)</th>
+                  <th>{t("expenses.totalCost")} (₹)</th>
+                  <th>{t("reports.totalEnquiries")}</th>
+                  <th>{t("reports.conversionRate")} (%)</th>
                 </tr>
               </thead>
               <tbody>
@@ -307,7 +308,7 @@ export default function ComprehensiveReports() {
                         <span
                           className={`status-badge ${project.status.toLowerCase()}`}
                         >
-                          {project.status}
+                          {t(`status.${project.status}`, { defaultValue: project.status })}
                         </span>
                       </td>
                       <td>{analytics?.overviewStats?.totalUnits || 0}</td>
@@ -326,11 +327,11 @@ export default function ComprehensiveReports() {
 
           <div className="summary-cards">
             <div className="summary-card">
-              <h5>Total Projects</h5>
+              <h5>{t("reports.totalProjects")}</h5>
               <p>{reportData.projects.length}</p>
             </div>
             <div className="summary-card">
-              <h5>Total Revenue</h5>
+              <h5>{t("reports.totalRevenue")}</h5>
               <p>
                 ₹
                 {Object.values(reportData.projectAnalytics)
@@ -344,7 +345,7 @@ export default function ComprehensiveReports() {
               </p>
             </div>
             <div className="summary-card">
-              <h5>Total Cost</h5>
+              <h5>{t("expenses.totalCost")}</h5>
               <p>
                 ₹
                 {Object.values(reportData.projectAnalytics)
@@ -357,7 +358,7 @@ export default function ComprehensiveReports() {
               </p>
             </div>
             <div className="summary-card">
-              <h5>Total Leads</h5>
+              <h5>{t("reports.totalLeads")}</h5>
               <p>{reportData.leads.length}</p>
             </div>
           </div>
@@ -367,7 +368,7 @@ export default function ComprehensiveReports() {
       {activeTab === "financial" && (
         <div className="report-section">
           <div className="report-header">
-            <h4>Financial Report</h4>
+            <h4>{t("reports.financialReport")}</h4>
             <ExportDropdown
               reportType="financial"
               onExport={exportFinancialReport}
@@ -378,15 +379,15 @@ export default function ComprehensiveReports() {
             <table className="report-table">
               <thead>
                 <tr>
-                  <th>Project Name</th>
-                  <th>Total Cost (₹)</th>
-                  <th>Material Cost (₹)</th>
-                  <th>Labour Cost (₹)</th>
-                  <th>Other Cost (₹)</th>
-                  <th>Revenue (₹)</th>
-                  <th>Profit/Loss (₹)</th>
-                  <th>Budget (₹)</th>
-                  <th>Budget Utilization (%)</th>
+                  <th>{t("createProject.name")}</th>
+                  <th>{t("expenses.totalCost")} (₹)</th>
+                  <th>{t("expenses.material")} (₹)</th>
+                  <th>{t("expenses.labour")} (₹)</th>
+                  <th>{t("expenses.other")} (₹)</th>
+                  <th>{t("projects.revenue")} (₹)</th>
+                  <th>{t("dashboard.profit")} (₹)</th>
+                  <th>{t("expenses.budget")} (₹)</th>
+                  <th>{t("expenses.budget")} (%)</th>
                 </tr>
               </thead>
               <tbody>
@@ -430,7 +431,7 @@ export default function ComprehensiveReports() {
       {activeTab === "leads" && (
         <div className="report-section">
           <div className="report-header">
-            <h4>Lead Conversion Report</h4>
+            <h4>{t("reports.leadConversion")}</h4>
             <ExportDropdown reportType="leads" onExport={exportLeadReport} />
           </div>
 
@@ -438,14 +439,14 @@ export default function ComprehensiveReports() {
             <table className="report-table">
               <thead>
                 <tr>
-                  <th>Name</th>
-                  <th>Phone</th>
-                  <th>Email</th>
-                  <th>Source</th>
-                  <th>Budget</th>
-                  <th>Status</th>
-                  <th>Project</th>
-                  <th>Created Date</th>
+                  <th>{t("common.name")}</th>
+                  <th>{t("common.phone")}</th>
+                  <th>{t("common.email")}</th>
+                  <th>{t("reports.source")}</th>
+                  <th>{t("leads.budget")}</th>
+                  <th>{t("common.status")}</th>
+                  <th>{t("common.project")}</th>
+                  <th>{t("reports.createdDate")}</th>
                 </tr>
               </thead>
               <tbody>
@@ -454,13 +455,13 @@ export default function ComprehensiveReports() {
                     <td>{lead.name}</td>
                     <td>{lead.phone}</td>
                     <td>{lead.email}</td>
-                    <td>{lead.source}</td>
+                    <td>{leadSourceLabel(lead.source)}</td>
                     <td>₹{lead.budget?.toLocaleString() || "N/A"}</td>
                     <td>
                       <span
                         className={`status-badge ${lead.status.toLowerCase()}`}
                       >
-                        {lead.status}
+                        {t(`status.${lead.status}`, { defaultValue: lead.status })}
                       </span>
                     </td>
                     <td>
@@ -476,7 +477,7 @@ export default function ComprehensiveReports() {
 
           {reportData.leads.length > 50 && (
             <p className="note">
-              Showing first 50 leads. Export to CSV for complete data.
+              {t("reports.showingLeads")}
             </p>
           )}
         </div>
@@ -485,7 +486,7 @@ export default function ComprehensiveReports() {
       {activeTab === "inventory" && (
         <div className="report-section">
           <div className="report-header">
-            <h4>Inventory Report</h4>
+            <h4>{t("reports.inventoryReport")}</h4>
             <ExportDropdown
               reportType="inventory"
               onExport={exportInventoryReport}
@@ -496,14 +497,14 @@ export default function ComprehensiveReports() {
             <table className="report-table">
               <thead>
                 <tr>
-                  <th>Project Name</th>
-                  <th>Total Units</th>
-                  <th>Plots</th>
-                  <th>Flats</th>
-                  <th>Villas</th>
-                  <th>Booked Units</th>
-                  <th>Available Units</th>
-                  <th>Occupancy Rate (%)</th>
+                  <th>{t("createProject.name")}</th>
+                  <th>{t("reports.totalUnits")}</th>
+                  <th>{t("reports.plots")}</th>
+                  <th>{t("reports.flats")}</th>
+                  <th>{t("reports.villas")}</th>
+                  <th>{t("reports.bookedUnits")}</th>
+                  <th>{t("reports.availableUnits")}</th>
+                  <th>{t("reports.occupancyRate")}</th>
                 </tr>
               </thead>
               <tbody>

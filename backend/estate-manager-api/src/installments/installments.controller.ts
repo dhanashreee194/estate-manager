@@ -7,29 +7,43 @@ import {
   Post,
   Query,
   Req,
+  Res,
+  UseGuards,
 } from '@nestjs/common';
+import { AuthGuard } from '@nestjs/passport';
 import { InstallmentsService } from './installments.service';
-import { Res } from '@nestjs/common';
-import { Response } from 'express';
+import type { Response } from 'express';
 
+@UseGuards(AuthGuard('jwt'))
 @Controller('installments')
 export class InstallmentsController {
   constructor(private readonly installmentsService: InstallmentsService) {}
 
-  @Get(':id/demand-letter')
-  getDemandLetter(
-    @Param('id') id: string,
+  // Static routes first (before :id)
+  @Get()
+  list(
     @Req() req: any,
-    @Res() res: Response,
+    @Query('status') status?: string,
+    @Query('projectId') projectId?: string,
+    @Query('overdueOnly') overdueOnly?: string,
   ) {
-    return this.installmentsService.generateDemandLetter(
-      id,
-      req.user.companyId,
-      res,
-    );
+    return this.installmentsService.list(req.user.companyId, {
+      status,
+      projectId,
+      overdueOnly: overdueOnly === '1' || overdueOnly === 'true',
+    });
   }
 
-  // 1️⃣ Get installments for booking
+  @Get('dashboard')
+  dashboard(@Req() req: any) {
+    return this.installmentsService.dashboard(req.user.companyId);
+  }
+
+  @Post('refresh-status')
+  refreshStatuses(@Req() req: any) {
+    return this.installmentsService.refreshStatuses(req.user.companyId);
+  }
+
   @Get('booking/:bookingId')
   getBookingInstallments(
     @Param('bookingId') bookingId: string,
@@ -41,7 +55,21 @@ export class InstallmentsController {
     );
   }
 
-  // 2️⃣ Pay installment (partial/full)
+  @Get(':id/demand-letter')
+  getDemandLetter(
+    @Param('id') id: string,
+    @Req() req: any,
+    @Res() res: Response,
+    @Query('lang') lang?: string,
+  ) {
+    return this.installmentsService.generateDemandLetter(
+      id,
+      req.user.companyId,
+      res,
+      lang,
+    );
+  }
+
   @Post(':id/pay')
   payInstallment(
     @Param('id') id: string,
@@ -55,7 +83,6 @@ export class InstallmentsController {
     );
   }
 
-  // 3️⃣ Reschedule due date
   @Patch(':id/reschedule')
   reschedule(
     @Param('id') id: string,
@@ -67,17 +94,5 @@ export class InstallmentsController {
       new Date(body.dueDate),
       req.user.companyId,
     );
-  }
-
-  // 4️⃣ Dashboard summary
-  @Get('dashboard')
-  dashboard(@Req() req: any) {
-    return this.installmentsService.dashboard(req.user.companyId);
-  }
-
-  // 5️⃣ Refresh statuses manually
-  @Post('refresh-status')
-  refreshStatuses(@Req() req: any) {
-    return this.installmentsService.refreshStatuses(req.user.companyId);
   }
 }

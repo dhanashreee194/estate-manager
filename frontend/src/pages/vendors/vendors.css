@@ -1,0 +1,40 @@
+.vendors-page {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.vendors-page .hint {
+  opacity: 0.75;
+  margin: 0 0 1rem;
+  font-size: 0.9rem;
+}
+
+.vendors-page .form-row.wrap {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.vendors-page .toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.75rem;
+}
+
+.vendors-page .vendor-grid {
+  display: grid;
+  grid-template-columns: 1.4fr 0.8fr 1fr 1fr 0.6fr 0.6fr 1.2fr;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.vendors-page .actions {
+  display: flex;
+  gap: 0.4rem;
+}
+
+.vendors-page .actions button.danger {
+  color: #b91c1c;
+}

@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 
 import LabourAttendance from "./LabourAttendance";
 import LabourList from "./LabourList";
@@ -7,35 +8,34 @@ import LabourAssign from "./LabourAssign";
 type LabourTab = "labours" | "assign" | "attendance";
 
 export default function ProjectLabour() {
+  const { t } = useTranslation();
   const [activeTab, setActiveTab] = useState<LabourTab>("labours");
 
   return (
     <div>
-      {/* Tabs */}
       <div className="labour-tabs">
         <button
           className={activeTab === "labours" ? "active" : ""}
           onClick={() => setActiveTab("labours")}
         >
-          Labours
+          {t("labour.labours")}
         </button>
 
         <button
           className={activeTab === "assign" ? "active" : ""}
           onClick={() => setActiveTab("assign")}
         >
-          Assign
+          {t("labour.assign")}
         </button>
 
         <button
           className={activeTab === "attendance" ? "active" : ""}
           onClick={() => setActiveTab("attendance")}
         >
-          Attendance
+          {t("labour.attendance")}
         </button>
       </div>
 
-      {/* Body */}
       <div className="labour-body">
         {activeTab === "labours" && <LabourList />}
         {activeTab === "assign" && <LabourAssign />}

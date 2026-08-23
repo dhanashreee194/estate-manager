@@ -1,12 +1,14 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import "./auth.css";
-import { loginApi } from "./auth.api";
-import { saveAuth } from "./auth.storage";
 import api from "../api/axios";
+import LanguageSwitcher from "../components/LanguageSwitcher";
+import ThemeSwitcher from "../components/ThemeSwitcher";
 
 export default function Login() {
   const navigate = useNavigate();
+  const { t } = useTranslation();
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -26,11 +28,9 @@ export default function Login() {
 
       const data = res.data;
 
-      // 🔑 STORE JWT & USER
       localStorage.setItem("token", data.access_token);
       localStorage.setItem("user", JSON.stringify(data.user));
 
-      // 🔀 ROLE BASED REDIRECT
       const role = data.user.role;
 
       if (role === "ADMIN") {
@@ -43,7 +43,7 @@ export default function Login() {
         navigate("/login");
       }
     } catch (err: any) {
-      setError(err.message || "Login failed");
+      setError(err.message || t("auth.loginFailed"));
     } finally {
       setLoading(false);
     }
@@ -51,18 +51,23 @@ export default function Login() {
 
   return (
     <div className="auth-container">
+      <div className="auth-controls">
+        <ThemeSwitcher compact />
+        <LanguageSwitcher compact />
+      </div>
       <div className="brand">
-        <h1>🏗️ Estate Manager</h1>
-        <p className="subtitle">Smart Construction & Real Estate ERP</p>
+        <h1>🏗️ {t("nav.brand")}</h1>
+        <p className="subtitle">{t("auth.subtitle")}</p>
       </div>
 
       <div className="auth-card">
-        <h2>Login</h2>
-        <p className="muted">Access your company dashboard</p>
+        <h2>{t("auth.login")}</h2>
+        <p className="muted">{t("auth.loginHint")}</p>
+        {error && <p className="muted" style={{ color: "#f87171" }}>{error}</p>}
 
         <form onSubmit={handleLogin}>
           <div className="field">
-            <label>Email</label>
+            <label>{t("auth.email")}</label>
             <input
               type="email"
               placeholder="admin@company.com"
@@ -73,7 +78,7 @@ export default function Login() {
           </div>
 
           <div className="field">
-            <label>Password</label>
+            <label>{t("auth.password")}</label>
             <input
               type="password"
               placeholder="••••••••"
@@ -83,11 +88,14 @@ export default function Login() {
             />
           </div>
 
-          <button className="primary-btn">Login</button>
+          <button className="primary-btn" disabled={loading}>
+            {t("auth.login")}
+          </button>
         </form>
 
         <p className="footer-text">
-          Don’t have an account? <Link to="/signup">Create company</Link>
+          {t("auth.noAccount")}{" "}
+          <Link to="/signup">{t("auth.signup")}</Link>
         </p>
       </div>
     </div>

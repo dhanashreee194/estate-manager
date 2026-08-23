@@ -1,5 +1,6 @@
 import { useParams } from "react-router-dom";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useTranslation } from "react-i18next";
 import {
   assignLabour,
   getAssignedLabours,
@@ -10,17 +11,16 @@ import { useState } from "react";
 import "./labour.css";
 
 export default function LabourAssign() {
+  const { t } = useTranslation();
   const { projectId } = useParams();
   const queryClient = useQueryClient();
   const [labourId, setLabourId] = useState("");
 
-  // 🔹 All labours
   const { data: labours = [] } = useQuery({
     queryKey: ["labours"],
     queryFn: getLabours,
   });
 
-  // 🔹 Assigned labours
   const { data: assigned = [] } = useQuery({
     queryKey: ["assigned-labours", projectId],
     queryFn: () => getAssignedLabours(projectId!),
@@ -48,16 +48,15 @@ export default function LabourAssign() {
 
   return (
     <div className="page-card">
-      <h3>Assign Labour to Project</h3>
+      <h3>{t("labour.assignToProject")}</h3>
 
-      {/* 🔹 Beautified Assign Section */}
       <div className="form-row align-center">
         <select
           className="select-box"
           value={labourId}
           onChange={(e) => setLabourId(e.target.value)}
         >
-          <option value="">Select labour</option>
+          <option value="">{t("labour.selectLabour")}</option>
           {labours.map((l: any) => (
             <option key={l.id} value={l.id}>
               {l.name} ({l.category}) – ₹{l.dailyWage}
@@ -75,17 +74,16 @@ export default function LabourAssign() {
             })
           }
         >
-          {assignMutation.isPending ? "Assigning..." : "Assign"}
+          {assignMutation.isPending ? t("common.saving") : t("labour.assign")}
         </button>
       </div>
 
-      {/* 🔽 ASSIGNED LABOURS TABLE */}
       <div className="table">
         <div className="table-header">
-          <span>Name</span>
-          <span>Category</span>
-          <span>Daily Wage</span>
-          <span>Action</span>
+          <span>{t("common.name")}</span>
+          <span>{t("labour.category")}</span>
+          <span>{t("labour.dailyWage")}</span>
+          <span>{t("common.actions")}</span>
         </div>
 
         {assigned.map((a: any) => (
@@ -98,7 +96,7 @@ export default function LabourAssign() {
                 className="danger-btn"
                 onClick={() => removeMutation.mutate(a.id)}
               >
-                Remove
+                {t("common.remove")}
               </button>
             </span>
           </div>
@@ -106,7 +104,7 @@ export default function LabourAssign() {
 
         {assigned.length === 0 && (
           <div className="table-row">
-            <span>No labours assigned yet</span>
+            <span>{t("labour.noAssigned")}</span>
           </div>
         )}
       </div>

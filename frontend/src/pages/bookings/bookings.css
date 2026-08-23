@@ -2,7 +2,7 @@
   width: 100%;
   padding: 10px 14px;
   border-radius: 8px;
-  background: linear-gradient(180deg, #0f172a, #020617);
+  background: linear-gradient(180deg, var(--bg-elevated), var(--bg-app));
   color: #fff;
   border: 1px solid rgba(255, 255, 255, 0.15);
   font-size: 14px;
@@ -18,26 +18,34 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
+  flex-wrap: wrap;
 
-  gap: 16px;
+  gap: 12px;
   margin-bottom: 24px;
 
-  position: sticky; /* ✅ makes it sticky */
-  top: 0; /* stick to top */
+  position: sticky;
+  top: 0;
   z-index: 50;
 
-  background: #020617; /* same as page bg */
+  background: var(--bg-app);
   padding: 12px 0;
 }
 
 .page-header .primary-btn {
   width: auto;
-  min-width: 160px;
+  min-width: 140px;
   white-space: nowrap;
 }
 .page-header .primary-btn {
   background: linear-gradient(135deg, #10b981, #22c55e);
   box-shadow: 0 4px 12px rgba(16, 185, 129, 0.4);
+}
+
+@media (max-width: 640px) {
+  .page-header .primary-btn {
+    width: 100%;
+    min-width: 0;
+  }
 }
 .custom-select:focus {
   border-color: #22c55e;
@@ -45,7 +53,7 @@
 }
 
 .custom-select option {
-  background: #020617;
+  background: var(--bg-app);
   color: white;
 }
 
@@ -122,17 +130,118 @@
   z-index: 9999;
 }
 .installment-row {
-  display: flex;
-  justify-content: space-between;
+  display: grid;
+  grid-template-columns: 1.3fr 0.9fr 0.9fr 0.9fr 0.8fr auto;
+  gap: 8px;
+  align-items: center;
   padding: 10px;
   border-bottom: 1px solid #1f2937;
   cursor: pointer;
+  border-radius: 8px;
 }
 
 .installment-row.paid {
-  opacity: 0.5;
+  opacity: 0.55;
+}
+
+.installment-row.overdue {
+  background: rgba(248, 113, 113, 0.08);
+}
+
+.installment-row.due {
+  background: rgba(251, 191, 36, 0.08);
+}
+
+.installment-row.partial {
+  background: rgba(196, 181, 253, 0.08);
+}
+
+.installment-row.selected {
+  outline: 1px solid #16c784;
 }
 
 .installment-row:hover {
-  background: #020617;
+  background: var(--bg-app);
+}
+
+.installment-row .due-line {
+  font-size: 11px;
+  color: var(--text-muted);
+  margin-top: 2px;
+}
+
+.ledger-summary {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  font-size: 13px;
+  color: var(--text-sidebar);
+  margin-bottom: 8px;
+}
+
+.ledger-error {
+  color: #f87171;
+}
+
+.payment-ledger-modal {
+  width: min(560px, 94vw);
+}
+
+.ghost-btn {
+  background: transparent;
+  border: 1px solid var(--border-strong);
+  color: var(--text);
+  border-radius: 6px;
+  padding: 4px 8px;
+  cursor: pointer;
+}
+
+.ledger-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 8px;
+}
+
+.ledger-header h3 {
+  margin: 0;
+}
+
+.inst-badge {
+  display: inline-block;
+  font-size: 11px;
+  font-weight: 600;
+  padding: 3px 8px;
+  border-radius: 999px;
+  border: 1px solid var(--border-strong);
+}
+
+.inst-badge.overdue {
+  background: #3b1e1e;
+  color: #fca5a5;
+}
+
+.inst-badge.due {
+  background: #3b2f1e;
+  color: #fbbf24;
+}
+
+.inst-badge.partial {
+  background: #2e1e3b;
+  color: #c4b5fd;
+}
+
+.inst-badge.upcoming,
+.inst-badge.pending {
+  background: var(--border);
+  color: var(--text-muted);
+}
+
+.inst-badge.paid,
+.inst-badge.fully_paid,
+.inst-badge.partial_paid,
+.inst-badge.booked {
+  background: #0b2a22;
+  color: #6ee7b7;
 }

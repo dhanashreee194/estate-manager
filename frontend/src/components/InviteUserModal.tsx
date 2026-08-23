@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { inviteUser } from "../api/user";
 import "./inviteUserModal.css";
 
@@ -8,6 +9,7 @@ type Props = {
 };
 
 export default function InviteUserModal({ open, onClose }: Props) {
+  const { t } = useTranslation();
   const [form, setForm] = useState({
     name: "",
     email: "",
@@ -40,7 +42,7 @@ export default function InviteUserModal({ open, onClose }: Props) {
 
   const submit = async () => {
     if (!form.name || !form.email || !form.password) {
-      setError("All fields are required");
+      setError(t("invite.allRequired"));
       return;
     }
 
@@ -51,7 +53,7 @@ export default function InviteUserModal({ open, onClose }: Props) {
 
       await inviteUser(form);
 
-      setSuccess("User invited successfully 🎉");
+      setSuccess(t("invite.success"));
 
       // Auto-close after 1.5s
       setTimeout(() => {
@@ -59,8 +61,7 @@ export default function InviteUserModal({ open, onClose }: Props) {
       }, 1500);
     } catch (err: any) {
       setError(
-        err?.response?.data?.message ||
-          "Failed to invite user. Please try again.",
+        err?.response?.data?.message || t("common.failed"),
       );
     } finally {
       setLoading(false);
@@ -70,7 +71,7 @@ export default function InviteUserModal({ open, onClose }: Props) {
   return (
     <div className="modal-backdrop" onClick={handleClose}>
       <div className="modal" onClick={(e) => e.stopPropagation()}>
-        <h2>Invite User</h2>
+        <h2>{t("invite.title")}</h2>
 
         <div className="modal-form">
           {/* Alerts */}
@@ -78,20 +79,20 @@ export default function InviteUserModal({ open, onClose }: Props) {
           {error && <div className="alert error">{error}</div>}
 
           <input
-            placeholder="Full Name"
+            placeholder={t("invite.fullName")}
             value={form.name}
             onChange={(e) => setForm({ ...form, name: e.target.value })}
           />
 
           <input
-            placeholder="Email"
+            placeholder={t("common.email")}
             value={form.email}
             onChange={(e) => setForm({ ...form, email: e.target.value })}
           />
 
           <input
             type="password"
-            placeholder="Temporary Password"
+            placeholder={t("invite.tempPassword")}
             value={form.password}
             onChange={(e) => setForm({ ...form, password: e.target.value })}
           />
@@ -100,9 +101,9 @@ export default function InviteUserModal({ open, onClose }: Props) {
             value={form.role}
             onChange={(e) => setForm({ ...form, role: e.target.value as any })}
           >
-            <option value="SALES">Sales</option>
-            <option value="ACCOUNTANT">Accountant</option>
-            <option value="ADMIN">Admin</option>
+            <option value="SALES">{t("invite.roleSales")}</option>
+            <option value="ACCOUNTANT">{t("invite.roleAccountant")}</option>
+            <option value="ADMIN">{t("invite.roleAdmin")}</option>
           </select>
 
           <div className="modal-actions">
@@ -111,11 +112,11 @@ export default function InviteUserModal({ open, onClose }: Props) {
               onClick={handleClose}
               disabled={loading}
             >
-              Cancel
+              {t("common.cancel")}
             </button>
 
             <button className="btn-primary" onClick={submit} disabled={loading}>
-              {loading ? "Inviting..." : "Invite User"}
+              {loading ? t("common.saving") : t("nav.inviteUser")}
             </button>
           </div>
         </div>

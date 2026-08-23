@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useTranslation } from "react-i18next";
 
 import {
   getProjectBookings,
@@ -19,6 +20,7 @@ import BookingModal from "./BookingModal";
 import BookingPaymentModal from "./BookingPaymentModal";
 
 export default function BookingsPage() {
+  const { t } = useTranslation();
   const projectId = useAppSelector((s) => s.project.currentProjectId);
 
   const dispatch = useDispatch();
@@ -64,7 +66,7 @@ export default function BookingsPage() {
     mutationFn: cancelBooking,
 
     onSuccess: () => {
-      alert("Booking cancelled");
+      alert(t("bookings.cancelled"));
 
       queryClient.invalidateQueries({
         queryKey: ["bookings", projectId],
@@ -77,7 +79,7 @@ export default function BookingsPage() {
 
     onError: (error: any) => {
       console.error("Cancel failed:", error.response?.data || error);
-      alert(error.response?.data?.message || "Cancel failed. Check console.");
+      alert(error.response?.data?.message || t("bookings.cancelFailed"));
     },
   });
 
@@ -86,7 +88,7 @@ export default function BookingsPage() {
   return (
     <div className="page-container">
       <div className="page-header">
-        <h2>Bookings</h2>
+        <h2>{t("bookings.title")}</h2>
 
         <button
           className="primary-btn"
@@ -95,7 +97,7 @@ export default function BookingsPage() {
             setOpen(true);
           }}
         >
-          + New Booking
+          {t("bookings.newBooking")}
         </button>
       </div>
 
@@ -125,10 +127,11 @@ export default function BookingsPage() {
           setOpen(true);
         }}
         onCancel={(id: string) => {
-          if (confirm("Cancel this booking?")) {
+          if (confirm(t("bookings.cancelBooking"))) {
             cancelMutation.mutate(id);
           }
         }}
+        onPayments={(id: string) => setPaymentBookingId(id)}
       />
 
       {/* Booking Modal */}

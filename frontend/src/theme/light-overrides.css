@@ -1,0 +1,56 @@
+/* Extra light-theme polish for leftover rgba / hardcoded accents */
+
+[data-theme="light"] .modal-backdrop,
+[data-theme="light"] .modal-overlay {
+  background: var(--overlay);
+}
+
+[data-theme="light"] .sidebar {
+  box-shadow: 1px 0 0 var(--border);
+}
+
+[data-theme="light"] .nav a.active,
+[data-theme="light"] .nav a:hover {
+  background: var(--accent-soft);
+  color: var(--accent);
+}
+
+[data-theme="light"] .logout-btn {
+  border-color: var(--border-strong);
+  color: var(--text);
+}
+
+[data-theme="light"] .page-header {
+  background: var(--bg-app);
+}
+
+[data-theme="light"] table,
+[data-theme="light"] .booking-table,
+[data-theme="light"] .table {
+  color: var(--text);
+}
+
+[data-theme="light"] .booking-table thead,
+[data-theme="light"] .table-header {
+  background: var(--bg-muted);
+  color: var(--text-muted);
+}
+
+[data-theme="light"] .booking-table tbody tr:hover,
+[data-theme="light"] .table-row:hover {
+  background: var(--accent-soft);
+}
+
+[data-theme="light"] .primary,
+[data-theme="light"] .primary-btn {
+  background: var(--accent);
+  color: var(--accent-text);
+  border-color: transparent;
+}
+
+[data-theme="light"] .ghost,
+[data-theme="light"] .ghost-btn {
+  background: transparent;
+  border-color: var(--border-strong);
+  color: var(--text);
+}

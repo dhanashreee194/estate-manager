@@ -27,6 +27,12 @@ export class PaymentController {
     });
   }
 
+  // Booking ledger (installments + payments + balance)
+  @Get('booking/:id/ledger')
+  getBookingLedger(@Param('id') id: string, @Req() req) {
+    return this.paymentService.getBookingLedger(id, req.user.companyId);
+  }
+
   // Get payments for booking
   @Get('booking/:id')
   getBookingPayments(@Param('id') id: string, @Req() req) {

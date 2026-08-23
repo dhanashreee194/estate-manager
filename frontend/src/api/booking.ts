@@ -21,3 +21,20 @@ export const updateBooking = async (id: string, data: any) => {
   const res = await api.put(`/booking/${id}`, data);
   return res.data;
 };
+
+export const downloadBookingAgreement = async (bookingId: string) => {
+  const lang = localStorage.getItem("estate-manager-lang") || "en";
+  const res = await api.get(`/booking/${bookingId}/agreement`, {
+    responseType: "blob",
+    params: { lang },
+  });
+  const blob = new Blob([res.data], { type: "application/pdf" });
+  const url = window.URL.createObjectURL(blob);
+  const link = document.createElement("a");
+  link.href = url;
+  link.download = `allotment-agreement-${bookingId.slice(0, 8)}.pdf`;
+  document.body.appendChild(link);
+  link.click();
+  link.remove();
+  window.URL.revokeObjectURL(url);
+};

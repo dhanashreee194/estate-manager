@@ -1,5 +1,7 @@
 // Export utilities for different formats
 
+import { leadSourceLabel } from '../constants/leadSources';
+
 export const exportToCSV = (data: any[], filename: string, headers: string[]) => {
   const csvContent = [
     headers.join(","),
@@ -179,7 +181,7 @@ export const transformLeadData = (leads: any[], projects: any[]) => {
     'Name': lead.name,
     'Phone': lead.phone,
     'Email': lead.email,
-    'Source': lead.source,
+    'Source': leadSourceLabel(lead.source),
     'Budget (₹)': lead.budget || 0,
     'Requirement': lead.requirement || '',
     'Status': lead.status,

@@ -1,29 +1,32 @@
 import { useState, useEffect } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useTranslation } from "react-i18next";
 
 import {
   createBooking,
-  getAvailableUnits,
   updateBooking,
 } from "../../api/booking";
 import { getProjects } from "../../api/project";
-import { getWings, getWingsByBuilding } from "../../api/wing";
+import { getWingsByBuilding } from "../../api/wing";
 import { getProjectBuildings } from "../../api/building";
 import "./bookings.css";
 import { getUnitsByWing } from "../../api/unit";
-import BookingPaymentModal from "./BookingPaymentModal";
+import { getBrokers } from "../../api/broker";
 
 export default function BookingModal({
   onClose,
   booking,
   onBookingSuccess,
 }: any) {
-  // ✅ 1. STATE FIRST
+  const { t } = useTranslation();
+
   const [form, setForm] = useState({
     projectId: "",
     buildingId: "",
     wingId: "",
     unitId: "",
+    brokerId: "",
+    commissionRate: "" as number | "",
 
     name: "",
     phone: "",
@@ -57,6 +60,8 @@ export default function BookingModal({
       buildingId: booking.unit?.wing?.buildingId || "",
       wingId: booking.unit?.wingId || "",
       unitId: booking.unitId || "",
+      brokerId: booking.brokerId || booking.broker?.id || "",
+      commissionRate: booking.commission?.rate ?? "",
 
       name: booking.customer?.name || "",
       phone: booking.customer?.phone || "",
@@ -83,10 +88,14 @@ export default function BookingModal({
     });
   }, [booking]);
 
-  // ✅ 2. THEN QUERIES
   const { data: projects = [] } = useQuery({
     queryKey: ["projects"],
     queryFn: getProjects,
+  });
+
+  const { data: brokers = [] } = useQuery({
+    queryKey: ["brokers"],
+    queryFn: () => getBrokers(),
   });
 
   const { data: buildings = [] } = useQuery({
@@ -107,7 +116,12 @@ export default function BookingModal({
     enabled: !!form.wingId,
   });
 
-  // ✅ 3. HANDLERS
+  const selectedBroker = brokers.find((b: any) => b.id === form.brokerId);
+  const effectiveRate =
+    form.commissionRate !== ""
+      ? Number(form.commissionRate)
+      : selectedBroker?.commissionRate ?? 0;
+
   const handleChange = (key: string, value: any) => {
     setForm({ ...form, [key]: value });
   };
@@ -126,16 +140,16 @@ export default function BookingModal({
       qc.invalidateQueries({ queryKey: ["available-units", form.projectId] });
 
       if (!booking) {
-        onBookingSuccess(data.id); // open payment only for new booking
+        onBookingSuccess(data.id);
       } else {
-        onClose(); // just close for edit
+        onClose();
       }
     },
   });
 
   const handleSubmit = () => {
     if (!form.unitId || !form.name || !form.phone) {
-      alert("Please fill required fields");
+      alert(t("bookings.fillRequired"));
       return;
     }
 
@@ -156,13 +170,16 @@ export default function BookingModal({
       unitId: form.unitId,
       projectId: form.projectId,
 
-      // Customer
       name: form.name,
       phone: form.phone,
       email: form.email,
       address: form.address,
 
-      // Builder
+      brokerId: form.brokerId || undefined,
+      ...(form.commissionRate !== ""
+        ? { commissionRate: Number(form.commissionRate) }
+        : {}),
+
       builtUpSqft: form.builtUpSqft,
       marketRate: form.marketRate,
 
@@ -172,13 +189,11 @@ export default function BookingModal({
       mecbFee: form.mecbFee,
       oneTimeMaint: form.oneTimeMaint,
 
-      // Govt
       govtSqMeter: form.govtSqMeter,
       govtValue: form.govtValue,
       stampDuty: form.stampDuty,
       registrationFee: form.registrationFee,
 
-      // Totals
       totalPrice: total,
       govtAmount: form.govtValue + form.stampDuty + form.registrationFee,
 
@@ -192,12 +207,26 @@ export default function BookingModal({
     });
   };
 
+  const builtUpValue = form.builtUpSqft * form.marketRate;
+  const estCommission =
+    (builtUpValue +
+      form.gstAmount +
+      form.maintenanceFee +
+      form.advocateFee +
+      form.mecbFee +
+      form.oneTimeMaint +
+      form.govtValue +
+      form.stampDuty +
+      form.registrationFee) *
+    (effectiveRate / 100);
+
   return (
     <div className="modal-backdrop">
       <div className="modal-card">
-        <h4>{booking ? "Edit Booking" : "New Booking"}</h4>
+        <h4>
+          {booking ? t("bookings.editBooking") : t("bookings.newBookingTitle")}
+        </h4>
 
-        {/* Project */}
         <select
           className="form-control"
           value={form.projectId}
@@ -211,7 +240,7 @@ export default function BookingModal({
             })
           }
         >
-          <option value="">Select Project</option>
+          <option value="">{t("common.selectProject")}</option>
           {projects.map((p: any) => (
             <option key={p.id} value={p.id}>
               {p.name}
@@ -219,7 +248,6 @@ export default function BookingModal({
           ))}
         </select>
 
-        {/* Building */}
         <select
           className="form-control"
           value={form.buildingId}
@@ -233,7 +261,7 @@ export default function BookingModal({
           }
           disabled={!form.projectId}
         >
-          <option value="">Select Building</option>
+          <option value="">{t("bookings.selectBuilding")}</option>
           {buildings.map((b: any) => (
             <option key={b.id} value={b.id}>
               {b.name}
@@ -241,7 +269,6 @@ export default function BookingModal({
           ))}
         </select>
 
-        {/* Wing */}
         <select
           className="form-control"
           value={form.wingId}
@@ -254,7 +281,7 @@ export default function BookingModal({
           }
           disabled={!form.buildingId}
         >
-          <option value="">Select Wing</option>
+          <option value="">{t("bookings.selectWing")}</option>
           {wings.map((w: any) => (
             <option key={w.id} value={w.id}>
               {w.name}
@@ -262,138 +289,180 @@ export default function BookingModal({
           ))}
         </select>
 
-        {/* Flat / Plot */}
         <select
           className="form-control"
           value={form.unitId}
           onChange={(e) => handleChange("unitId", e.target.value)}
           disabled={!form.wingId}
         >
-          <option value="">Select Unit</option>
+          <option value="">{t("bookings.selectUnit")}</option>
 
           {units.map((u: any) => (
             <option key={u.id} value={u.id}>
-              Flat {u.unitNumber} · {u.areaSqFt} sqft
+              {t("bookings.unitFlatOption", {
+                number: u.unitNumber,
+                area: u.areaSqFt,
+              })}
             </option>
           ))}
         </select>
 
-        {/* Customer Info */}
         <input
-          placeholder="Name"
+          placeholder={t("common.name")}
           value={form.name}
           onChange={(e) => handleChange("name", e.target.value)}
         />
 
         <input
-          placeholder="Phone"
+          placeholder={t("common.phone")}
           value={form.phone}
           onChange={(e) => handleChange("phone", e.target.value)}
         />
 
         <input
-          placeholder="Email"
+          placeholder={t("common.email")}
           value={form.email}
           onChange={(e) => handleChange("email", e.target.value)}
         />
 
-        {/* Payment */}
-        <h5 className="section-title">Builder Cost</h5>
-        <label>Built-up Sqft</label>
+        <h5 className="section-title">{t("bookings.channelPartner")}</h5>
+        <select
+          className="form-control"
+          value={form.brokerId}
+          onChange={(e) => {
+            const brokerId = e.target.value;
+            const broker = brokers.find((b: any) => b.id === brokerId);
+            setForm({
+              ...form,
+              brokerId,
+              commissionRate: broker ? broker.commissionRate : "",
+            });
+          }}
+        >
+          <option value="">{t("bookings.noBroker")}</option>
+          {brokers.map((b: any) => (
+            <option key={b.id} value={b.id}>
+              {b.name} · {b.commissionRate}%
+            </option>
+          ))}
+        </select>
+        {form.brokerId && (
+          <>
+            <label>{t("bookings.commissionOverride")}</label>
+            <input
+              type="number"
+              step="0.1"
+              value={form.commissionRate}
+              onChange={(e) =>
+                handleChange(
+                  "commissionRate",
+                  e.target.value === "" ? "" : +e.target.value,
+                )
+              }
+            />
+            <div className="calc-box">
+              {t("bookings.estCommission", { rate: effectiveRate })}: ₹
+              {estCommission.toLocaleString("en-IN")}
+            </div>
+          </>
+        )}
+
+        <h5 className="section-title">{t("bookings.builderCost")}</h5>
+        <label>{t("bookings.builtUpSqft")}</label>
         <input
           type="number"
-          placeholder="Built-up Sqft"
+          placeholder={t("bookings.builtUpSqft")}
           value={form.builtUpSqft}
           onChange={(e) => handleChange("builtUpSqft", +e.target.value)}
         />
-        <label>Rate / Sqft</label>
+        <label>{t("bookings.rateSqft")}</label>
         <input
           type="number"
-          placeholder="Market Rate / Sqft"
+          placeholder={t("bookings.marketRate")}
           value={form.marketRate}
           onChange={(e) => handleChange("marketRate", +e.target.value)}
         />
 
         <div className="calc-box">
-          Built-up Value: ₹{form.builtUpSqft * form.marketRate}
+          {t("bookings.builtUpValue")}: ₹{builtUpValue}
         </div>
-        <label>GST Amount</label>
+        <label>{t("bookings.gstAmount")}</label>
         <input
           type="number"
-          placeholder="GST Amount"
+          placeholder={t("bookings.gstAmount")}
           value={form.gstAmount}
           onChange={(e) => handleChange("gstAmount", +e.target.value)}
         />
-        <label>Maintenance Fee</label>
+        <label>{t("bookings.maintenanceFee")}</label>
         <input
           type="number"
-          placeholder="Maintenance Fee"
+          placeholder={t("bookings.maintenanceFee")}
           value={form.maintenanceFee}
           onChange={(e) => handleChange("maintenanceFee", +e.target.value)}
         />
-        <label>Advocate Fee</label>
+        <label>{t("bookings.advocateFee")}</label>
         <input
           type="number"
-          placeholder="Advocate Fee"
+          placeholder={t("bookings.advocateFee")}
           value={form.advocateFee}
           onChange={(e) => handleChange("advocateFee", +e.target.value)}
         />
-        <label>MECB Fee</label>
+        <label>{t("bookings.mecbFee")}</label>
         <input
           type="number"
-          placeholder="MECB Fee"
+          placeholder={t("bookings.mecbFee")}
           value={form.mecbFee}
           onChange={(e) => handleChange("mecbFee", +e.target.value)}
         />
-        <label>One Time Maintenance</label>
+        <label>{t("bookings.oneTimeMaint")}</label>
         <input
           type="number"
-          placeholder="One Time Maintenance"
+          placeholder={t("bookings.oneTimeMaint")}
           value={form.oneTimeMaint}
           onChange={(e) => handleChange("oneTimeMaint", +e.target.value)}
         />
 
-        <h5 className="section-title">Government Details</h5>
-        <label>One Time Maintenance</label>
+        <h5 className="section-title">{t("bookings.govtDetails")}</h5>
+        <label>{t("bookings.govtSqMeter")}</label>
         <input
           type="number"
-          placeholder="Govt Sq Meter"
+          placeholder={t("bookings.govtSqMeter")}
           value={form.govtSqMeter}
           onChange={(e) => handleChange("govtSqMeter", +e.target.value)}
         />
-        <label>Govt Value</label>
+        <label>{t("bookings.govtValue")}</label>
         <input
           type="number"
-          placeholder="Govt Value"
+          placeholder={t("bookings.govtValue")}
           value={form.govtValue}
           onChange={(e) => handleChange("govtValue", +e.target.value)}
         />
-        <label>Stamp Duty</label>
+        <label>{t("bookings.stampDuty")}</label>
         <input
           type="number"
-          placeholder="Stamp Duty"
+          placeholder={t("bookings.stampDuty")}
           value={form.stampDuty}
           onChange={(e) => handleChange("stampDuty", +e.target.value)}
         />
-        <label>Registration Fee</label>
+        <label>{t("bookings.registrationFee")}</label>
         <input
           type="number"
-          placeholder="Registration Fee"
+          placeholder={t("bookings.registrationFee")}
           value={form.registrationFee}
           onChange={(e) => handleChange("registrationFee", +e.target.value)}
         />
 
-        <button onClick={onClose}>Cancel</button>
+        <button onClick={onClose}>{t("common.cancel")}</button>
         <button
           className="primary-btn"
           onClick={handleSubmit}
           disabled={bookingMutation.isPending}
         >
           {booking
-            ? "Update Booking"
+            ? t("bookings.updateBooking")
             : bookingMutation.isPending
-              ? "Booking..."
-              : "Book Now"}
+              ? t("bookings.bookingInProgress")
+              : t("bookings.bookNow")}
         </button>
       </div>
     </div>

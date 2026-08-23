@@ -107,3 +107,41 @@
   background: rgba(255, 200, 0, 0.15);
   color: #ffd166;
 }
+
+.booking-table .actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.booking-table .btn-edit,
+.booking-table .btn-pdf,
+.booking-table .btn-ledger,
+.booking-table .btn-cancel {
+  border: none;
+  border-radius: 6px;
+  padding: 6px 10px;
+  font-size: 12px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.booking-table .btn-edit {
+  background: rgba(59, 130, 246, 0.2);
+  color: #93c5fd;
+}
+
+.booking-table .btn-pdf {
+  background: rgba(16, 185, 129, 0.2);
+  color: #6ee7b7;
+}
+
+.booking-table .btn-ledger {
+  background: rgba(251, 191, 36, 0.15);
+  color: #fbbf24;
+}
+
+.booking-table .btn-cancel {
+  background: rgba(239, 68, 68, 0.15);
+  color: #fca5a5;
+}

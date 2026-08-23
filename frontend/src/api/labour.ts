@@ -5,7 +5,8 @@ export const createLabour = (data: {
   name: string;
   category: string;
   dailyWage: number;
-}) => api.post("/labour", data);
+  vendorId?: string;
+}) => api.post("/labour", data).then((r) => r.data);
 
 // 3. Mark attendance
 export const markAttendance = (data: {

@@ -1,5 +1,6 @@
 import { useParams } from "react-router-dom";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useTranslation } from "react-i18next";
 import {
   outwardInventory,
   getProjectOutwardHistory,
@@ -9,6 +10,7 @@ import { useState } from "react";
 import MaterialSelect from "./MaterialSelect";
 
 export default function ProjectInventoryOutward() {
+  const { t } = useTranslation();
   const { projectId } = useParams();
   const queryClient = useQueryClient();
 
@@ -50,7 +52,7 @@ export default function ProjectInventoryOutward() {
 
     if (!materialId || quantity <= 0) return;
     if (quantity > availableQty) {
-      alert(`Only ${availableQty} available`);
+      alert(t("inventory.onlyAvailable", { qty: availableQty }));
       return;
     }
 
@@ -63,9 +65,8 @@ export default function ProjectInventoryOutward() {
 
   return (
     <div className="material-card">
-      {/* Outward Form */}
       <form onSubmit={handleSubmit} className="inventory-form">
-        <h3 className="section-title">Outward Material</h3>
+        <h3 className="section-title">{t("inventory.outwardMaterial")}</h3>
 
         <div className="form-row">
           <MaterialSelect value={materialId} onChange={setMaterialId} />
@@ -73,7 +74,7 @@ export default function ProjectInventoryOutward() {
           <input
             type="number"
             min={1}
-            placeholder={`Available: ${availableQty}`}
+            placeholder={`${t("inventory.availableQty")}: ${availableQty}`}
             value={quantity}
             onChange={(e) => setQuantity(Number(e.target.value))}
           />
@@ -83,24 +84,23 @@ export default function ProjectInventoryOutward() {
             className="primary-btn"
             disabled={mutation.isPending}
           >
-            {mutation.isPending ? "Saving..." : "Remove Stock"}
+            {mutation.isPending ? t("common.saving") : t("inventory.removeStock")}
           </button>
         </div>
       </form>
 
-      {/* Outward History */}
       <div className="material-table">
         <div className="material-table-header">
-          <span>Name</span>
-          <span>Outward Qty</span>
-          <span>Available Qty</span>
-          <span>Date</span>
+          <span>{t("common.name")}</span>
+          <span>{t("inventory.outward")}</span>
+          <span>{t("inventory.availableQty")}</span>
+          <span>{t("common.date")}</span>
         </div>
 
         {isLoading ? (
-          <p className="empty-state">Loading outward history…</p>
+          <p className="empty-state">{t("common.loading")}</p>
         ) : data.length === 0 ? (
-          <p className="empty-state">No outward records yet</p>
+          <p className="empty-state">{t("inventory.noOutward")}</p>
         ) : (
           data.map((row: any) => {
             const availableQty =

@@ -1,9 +1,11 @@
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import type { AdminDashboardData } from "./dashboard";
 import { getAdminDashboard } from "../api/dashboard";
 import "./dashboard.css";
 
 export default function DashboardOverview() {
+  const { t } = useTranslation();
   const [data, setData] = useState<AdminDashboardData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
@@ -53,11 +55,11 @@ export default function DashboardOverview() {
 
   // ✅ Conditional rendering AFTER hooks
   if (loading) {
-    return <div className="dashboard-loading">Loading dashboard...</div>;
+    return <div className="dashboard-loading">{t("dashboard.loading")}</div>;
   }
 
   if (error || !data) {
-    return <div className="dashboard-error">Failed to load dashboard</div>;
+    return <div className="dashboard-error">{t("dashboard.failed")}</div>;
   }
   return (
     <>
@@ -66,17 +68,17 @@ export default function DashboardOverview() {
         {/* 🔑 vertical container */}
         {/* STATS */}
         <div className="stats-grid">
-          <StatCard title="Projects" value={data.stats?.projects ?? 0} />
-          <StatCard title="Units Sold" value={data.stats?.unitsSold ?? 0} />
-          <StatCard title="Revenue" value={`₹${data.sales?.total ?? 0}`} />
-          <StatCard title="Expenses" value={`₹${data.expenses?.total ?? 0}`} />
-          <StatCard title="Profit" value={`₹${data.profit ?? 0}`} />
+          <StatCard title={t("dashboard.projects")} value={data.stats?.projects ?? 0} />
+          <StatCard title={t("dashboard.unitsSold")} value={data.stats?.unitsSold ?? 0} />
+          <StatCard title={t("dashboard.revenue")} value={`₹${data.sales?.total ?? 0}`} />
+          <StatCard title={t("dashboard.expenses")} value={`₹${data.expenses?.total ?? 0}`} />
+          <StatCard title={t("dashboard.profit")} value={`₹${data.profit ?? 0}`} />
         </div>
         {/* BOTTOM SECTION */}
         <div className="dashboard-bottom">
           {/* Recent Activities */}
           <div className="activity-card">
-            <h2 className="section-title">Recent Activities</h2>
+            <h2 className="section-title">{t("dashboard.recentActivities")}</h2>
             <ul className="activity-list scrollable">
               {data.activities?.map((activity, index) => (
                 <li key={index} className="activity-item">
@@ -92,7 +94,7 @@ export default function DashboardOverview() {
 
           {/* Profit Chart */}
           <div className="chart-card">
-            <h2 className="section-title">Top Profitable Projects</h2>
+            <h2 className="section-title">{t("dashboard.topProfitable")}</h2>
             <div className="bar-chart">
               {mockProfitChart.map((item) => (
                 <div key={item.name} className="bar-row">

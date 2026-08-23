@@ -1,16 +1,17 @@
 import { NavLink, Outlet, useParams, useLocation } from "react-router-dom";
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 
 export default function ProjectDashboard() {
   const { projectId } = useParams();
   const location = useLocation();
+  const { t } = useTranslation();
 
   const [project, setProject] = useState<{
     name: string;
     status: string;
   } | null>(null);
 
-  // Capture project data ONCE
   useEffect(() => {
     if (location.state?.projectName) {
       setProject({
@@ -20,36 +21,36 @@ export default function ProjectDashboard() {
     }
   }, [location.state]);
 
+  void projectId;
+
   return (
     <div className="project-dashboard">
-      {/* Header */}
       <div className="project-header">
         <NavLink to="/dashboard/projects" className="back-to-projects">
-          ← Projects
+          {t("nav.backToProjects")}
         </NavLink>
 
         <div className="project-title">
-          <h2>{project?.name ?? "Project"}</h2>
+          <h2>{project?.name ?? t("common.project")}</h2>
           {project?.status && (
             <span className={`project-status ${project.status.toLowerCase()}`}>
-              {project.status}
+              {t(`status.${project.status}`, { defaultValue: project.status })}
             </span>
           )}
         </div>
       </div>
 
-      {/* Tabs */}
       <div className="project-tabs">
-        <NavLink to="overview">Overview</NavLink>
-        <NavLink to="units">Units</NavLink>
-        <NavLink to="inventory">Inventory</NavLink>
-        <NavLink to="labour">Labour</NavLink>
-        <NavLink to="expenses">Expenses</NavLink>
-        <NavLink to="reports">Reports</NavLink>
-        <NavLink to="leads">Leads</NavLink>
+        <NavLink to="overview">{t("nav.overview")}</NavLink>
+        <NavLink to="units">{t("nav.units")}</NavLink>
+        <NavLink to="layout">{t("nav.layoutMap")}</NavLink>
+        <NavLink to="inventory">{t("nav.inventory")}</NavLink>
+        <NavLink to="labour">{t("nav.labour")}</NavLink>
+        <NavLink to="expenses">{t("nav.expenses")}</NavLink>
+        <NavLink to="reports">{t("nav.reports")}</NavLink>
+        <NavLink to="leads">{t("nav.leads")}</NavLink>
       </div>
 
-      {/* 🔑 Pass project to all tabs */}
       <Outlet context={{ project }} />
     </div>
   );

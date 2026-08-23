@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 
 import "./inviteUserModal.css"; // reuse modal styles
 import { createProject } from "../api/project";
@@ -14,6 +15,7 @@ export default function CreateProjectModal({
   onClose,
   onSuccess,
 }: Props) {
+  const { t } = useTranslation();
   const [form, setForm] = useState({
     name: "",
     location: "",
@@ -40,7 +42,7 @@ export default function CreateProjectModal({
 
   const submit = async () => {
     if (!form.name || !form.location) {
-      setError("Project name and location are required");
+      setError(t("createProject.required"));
       return;
     }
 
@@ -50,14 +52,14 @@ export default function CreateProjectModal({
 
       await createProject(form);
 
-      setSuccess("Project created successfully 🎉");
+      setSuccess(t("createProject.success"));
 
       setTimeout(() => {
         handleClose();
         onSuccess?.();
       }, 1200);
     } catch (err: any) {
-      setError(err?.response?.data?.message || "Failed to create project");
+      setError(err?.response?.data?.message || t("common.failed"));
     } finally {
       setLoading(false);
     }
@@ -66,20 +68,20 @@ export default function CreateProjectModal({
   return (
     <div className="modal-backdrop" onClick={handleClose}>
       <div className="modal" onClick={(e) => e.stopPropagation()}>
-        <h2>Create Project</h2>
+        <h2>{t("createProject.title")}</h2>
 
         <div className="modal-form">
           {success && <div className="alert success">{success}</div>}
           {error && <div className="alert error">{error}</div>}
 
           <input
-            placeholder="Project Name"
+            placeholder={t("createProject.name")}
             value={form.name}
             onChange={(e) => setForm({ ...form, name: e.target.value })}
           />
 
           <input
-            placeholder="Location"
+            placeholder={t("createProject.location")}
             value={form.location}
             onChange={(e) => setForm({ ...form, location: e.target.value })}
           />
@@ -93,8 +95,8 @@ export default function CreateProjectModal({
               })
             }
           >
-            <option value="ACTIVE">Active</option>
-            <option value="INACTIVE">Inactive</option>
+            <option value="ACTIVE">{t("common.active")}</option>
+            <option value="INACTIVE">{t("common.inactive")}</option>
           </select>
 
           <div className="modal-actions">
@@ -103,11 +105,11 @@ export default function CreateProjectModal({
               onClick={handleClose}
               disabled={loading}
             >
-              Cancel
+              {t("common.cancel")}
             </button>
 
             <button className="btn-primary" onClick={submit} disabled={loading}>
-              {loading ? "Creating..." : "Create Project"}
+              {loading ? t("common.saving") : t("nav.createProject")}
             </button>
           </div>
         </div>

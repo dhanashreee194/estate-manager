@@ -2,8 +2,20 @@
 
 import api from "./axios";
 
-export const getKanbanLeads = async () => {
-  const res = await api.get("/lead/kanban");
+export type LeadKanbanFilters = {
+  source?: string;
+  projectId?: string;
+};
+
+export const getKanbanLeads = async (filters?: LeadKanbanFilters) => {
+  const res = await api.get("/lead/kanban", { params: filters });
+  return res.data;
+};
+
+export const getLeadSourceSummary = async (projectId?: string) => {
+  const res = await api.get("/lead/sources/summary", {
+    params: projectId ? { projectId } : undefined,
+  });
   return res.data;
 };
 

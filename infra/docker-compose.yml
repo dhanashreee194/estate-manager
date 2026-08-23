@@ -13,7 +13,42 @@ services:
       - "5432:5432"
     volumes:
       - estate_manager_pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U estate_manager_user -d estate_manager_db"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  api:
+    build:
+      context: ../backend/estate-manager-api
+    container_name: estate_manager_api
+    restart: always
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: postgresql://estate_manager_user:estate_manager_password@postgres:5432/estate_manager_db?schema=public
+      JWT_SECRET: change-me-in-production
+      PORT: "3000"
+      CORS_ORIGIN: http://localhost:5173,http://localhost:8080
+    ports:
+      - "3000:3000"
+    volumes:
+      - estate_manager_uploads:/app/uploads
+
+  web:
+    build:
+      context: ../frontend
+      args:
+        VITE_API_URL: http://localhost:3000
+    container_name: estate_manager_web
+    restart: always
+    depends_on:
+      - api
+    ports:
+      - "8080:80"
 
 volumes:
   estate_manager_pgdata:
-
+  estate_manager_uploads:

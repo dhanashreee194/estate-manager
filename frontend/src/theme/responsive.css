@@ -1,0 +1,282 @@
+/* Global responsive helpers for Estate Manager pages */
+
+/* Prevent horizontal page bleed */
+html,
+body,
+#root {
+  max-width: 100%;
+  overflow-x: hidden;
+}
+
+img,
+svg,
+video,
+canvas {
+  max-width: 100%;
+  height: auto;
+}
+
+/* Page chrome */
+.page-container,
+.page-card,
+.projects-page,
+.collections-page,
+.reminders-page,
+.finance-page,
+.land-page,
+.brokers-page,
+.vendors-page,
+.leads-page,
+.kanban-page {
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+}
+
+.page-header,
+.toolbar,
+.sheet-section-head,
+.ledger-header,
+.layout-header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.filters,
+.header-actions,
+.intake-chips,
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+}
+
+/* Summary / KPI grids */
+.collections-summary,
+.reminders-summary,
+.finance-summary,
+.land-summary,
+.brokers-summary,
+.vendors-summary,
+.stats-grid,
+.overview-stats,
+.booking-stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(160px, 100%), 1fr));
+  gap: 12px;
+}
+
+/* Tables: always scroll horizontally on small screens */
+.table-wrapper,
+.table-card .table-wrapper,
+.booking-table-wrap,
+.page-card .table,
+.collections-page .table,
+.reminders-page .table,
+.finance-page .table,
+.land-page .table {
+  width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+table.booking-table,
+table.data-table,
+.booking-table {
+  min-width: 640px;
+}
+
+/* CSS-grid “tables” used in collections/reminders/etc. */
+.collections-page .grid,
+.reminders-page .grid,
+.finance-page .grid,
+.land-page .grid,
+.brokers-page .grid {
+  min-width: 720px;
+}
+
+/* Forms / filter rows */
+.manual-form,
+.form-row,
+.form-grid,
+.expense-form,
+.transfer-form {
+  display: grid;
+  gap: 10px;
+}
+
+/* Project dashboard tabs */
+.project-tabs {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  padding-bottom: 6px;
+  scrollbar-width: thin;
+}
+
+.project-tabs a {
+  flex: 0 0 auto;
+  white-space: nowrap;
+}
+
+.project-header {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: center;
+}
+
+/* Kanban */
+.kanban-board,
+.lead-board {
+  display: flex;
+  gap: 12px;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  padding-bottom: 12px;
+}
+
+.kanban-column,
+.lead-column {
+  flex: 0 0 min(280px, 85vw);
+  max-width: 320px;
+}
+
+/* Modals */
+.modal-backdrop,
+.modal-overlay {
+  padding: 12px;
+  align-items: flex-start;
+  overflow-y: auto;
+}
+
+.modal,
+.modal-card,
+.modal-wide,
+.daily-sheet-modal,
+.payment-ledger-modal {
+  width: min(920px, calc(100vw - 24px)) !important;
+  max-width: calc(100vw - 24px);
+  max-height: min(90dvh, 900px);
+  overflow-y: auto;
+}
+
+/* Auth */
+.auth-container {
+  padding: 24px 16px;
+  box-sizing: border-box;
+}
+
+.auth-card {
+  width: 100%;
+  max-width: 420px;
+}
+
+/* Layout map */
+.layout-body {
+  display: grid;
+  gap: 16px;
+}
+
+@media (max-width: 1100px) {
+  .collections-summary,
+  .reminders-summary,
+  .finance-summary,
+  .land-summary {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .manual-form,
+  .collections-page .grid,
+  .reminders-page .grid,
+  .finance-page .grid,
+  .land-page .grid {
+    min-width: 0;
+    grid-template-columns: 1fr !important;
+  }
+
+  .collections-page .table-header.grid,
+  .reminders-page .table-header.grid {
+    display: none;
+  }
+
+  .collections-page .table-row.grid,
+  .reminders-page .table-row.grid,
+  .finance-page .table-row.grid,
+  .land-page .table-row.grid {
+    display: grid;
+    grid-template-columns: 1fr !important;
+    gap: 6px;
+    padding: 12px 8px;
+  }
+}
+
+@media (max-width: 960px) {
+  .layout-body {
+    grid-template-columns: 1fr !important;
+  }
+
+  .layout-side {
+    order: -1;
+  }
+}
+
+@media (max-width: 720px) {
+  .page-header h2,
+  .page-header h3,
+  .toolbar h3 {
+    font-size: 1.15rem;
+  }
+
+  .collections-summary,
+  .reminders-summary,
+  .finance-summary,
+  .land-summary,
+  .brokers-summary,
+  .vendors-summary {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .auth-container .lang-switcher,
+  .auth-container .theme-switcher {
+    position: static;
+    margin: 0;
+  }
+
+  .auth-container {
+    flex-direction: column;
+    justify-content: flex-start;
+    padding-top: 20px;
+  }
+
+  .auth-controls {
+    display: flex;
+    gap: 8px;
+    width: 100%;
+    max-width: 420px;
+    justify-content: flex-end;
+  }
+}
+
+@media (max-width: 480px) {
+  .collections-summary,
+  .reminders-summary,
+  .finance-summary,
+  .land-summary,
+  .brokers-summary,
+  .vendors-summary {
+    grid-template-columns: 1fr;
+  }
+
+  .header-btn,
+  .primary-btn,
+  .ghost,
+  .ghost-btn {
+    width: 100%;
+  }
+}

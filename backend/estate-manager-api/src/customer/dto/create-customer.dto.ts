@@ -14,4 +14,17 @@ export class CreateCustomerDto {
   @IsOptional()
   @IsString()
   address?: string;
+
+  // ✅ NEW
+  @IsOptional()
+  @IsString()
+  panNumber?: string;
+
+  @IsOptional()
+  @IsString()
+  aadharNumber?: string;
+
+  @IsOptional()
+  @IsString()
+  notes?: string;
 }

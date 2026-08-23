@@ -20,7 +20,14 @@ import { TaskModule } from './task/task.module';
 import { LeadModule } from './lead/lead.module';
 import { CompanyReportsModule } from './company-reports/company-reports.module';
 import { InstallmentsModule } from './installments/installments.module';
-
+import { KycModule } from './kyc/kyc.module';
+import { DocumentModule } from './document/document.module';
+import { UploadModule } from './upload/upload.module';
+import { VendorModule } from './vendor/vendor.module';
+import { BrokerModule } from './broker/broker.module';
+import { FinanceModule } from './finance/finance.module';
+import { LandModule } from './land/land.module';
+import { ReminderModule } from './reminder/reminder.module';
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -46,6 +53,14 @@ import { InstallmentsModule } from './installments/installments.module';
     LeadModule,
     CompanyReportsModule,
     InstallmentsModule,
+    KycModule,
+    DocumentModule,
+    UploadModule,
+    VendorModule,
+    BrokerModule,
+    FinanceModule,
+    LandModule,
+    ReminderModule,
   ],
 })
 export class AppModule {}

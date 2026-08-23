@@ -1,10 +1,19 @@
 import "./table.css";
+import { useTranslation } from "react-i18next";
+import { downloadBookingAgreement } from "../../api/booking";
 
-export default function BookingTable({ bookings, onEdit, onCancel }: any) {
+export default function BookingTable({
+  bookings,
+  onEdit,
+  onCancel,
+  onPayments,
+}: any) {
+  const { t } = useTranslation();
+
   if (!bookings.length) {
     return (
       <div className="table-card empty">
-        <p>No bookings found for this project.</p>
+        <p>{t("bookings.empty")}</p>
       </div>
     );
   }
@@ -15,13 +24,14 @@ export default function BookingTable({ bookings, onEdit, onCancel }: any) {
         <table className="booking-table">
           <thead>
             <tr>
-              <th>Date</th>
-              <th>Customer</th>
-              <th>Unit</th>
-              <th>Amount</th>
-              <th>Agent</th>
-              <th>Status</th>
-              <th>Actions</th> {/* ✅ NEW */}
+              <th>{t("common.date")}</th>
+              <th>{t("common.customer")}</th>
+              <th>{t("common.unit")}</th>
+              <th>{t("common.amount")}</th>
+              <th>{t("common.broker")}</th>
+              <th>{t("common.commission")}</th>
+              <th>{t("common.status")}</th>
+              <th>{t("common.actions")}</th>
             </tr>
           </thead>
 
@@ -45,26 +55,70 @@ export default function BookingTable({ bookings, onEdit, onCancel }: any) {
                   ₹ {b.totalPrice?.toLocaleString("en-IN")}
                 </td>
 
-                <td>{b.createdBy?.name || "-"}</td>
+                <td>
+                  {b.broker?.name || (
+                    <span style={{ opacity: 0.5 }}>{t("common.direct")}</span>
+                  )}
+                </td>
+
+                <td>
+                  {b.commission ? (
+                    <div className="customer-cell">
+                      <span className="name">
+                        ₹{" "}
+                        {Number(b.commission.commissionAmount).toLocaleString(
+                          "en-IN",
+                        )}
+                      </span>
+                      <span className="phone">
+                        {b.commission.rate}% ·{" "}
+                        {t(`status.${b.commission.status}`, {
+                          defaultValue: b.commission.status,
+                        })}
+                      </span>
+                    </div>
+                  ) : (
+                    "—"
+                  )}
+                </td>
 
                 <td>
                   <span className={`status-badge ${b.status?.toLowerCase()}`}>
-                    {b.status}
+                    {t(`status.${b.status}`, { defaultValue: b.status })}
                   </span>
                 </td>
 
-                {/* ✅ ACTION BUTTONS */}
                 <td className="actions">
                   <button className="btn-edit" onClick={() => onEdit(b)}>
-                    ✏️ Edit
+                    {t("common.edit")}
                   </button>
+
+                  <button
+                    className="btn-pdf"
+                    onClick={() =>
+                      downloadBookingAgreement(b.id).catch(() =>
+                        alert(t("bookings.agreementFailed")),
+                      )
+                    }
+                  >
+                    {t("bookings.agreementPdf")}
+                  </button>
+
+                  {onPayments && b.status === "BOOKED" && (
+                    <button
+                      className="btn-ledger"
+                      onClick={() => onPayments(b.id)}
+                    >
+                      {t("bookings.ledger")}
+                    </button>
+                  )}
 
                   {b.status === "BOOKED" && (
                     <button
                       className="btn-cancel"
                       onClick={() => onCancel(b.id)}
                     >
-                      ❌ Cancel
+                      {t("common.cancel")}
                     </button>
                   )}
                 </td>

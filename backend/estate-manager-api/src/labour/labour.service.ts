@@ -17,15 +17,21 @@ export class LabourService {
   createLabour(dto: CreateLabourDto, companyId: string) {
     return this.prisma.labour.create({
       data: {
-        ...dto,
+        name: dto.name,
+        category: dto.category,
+        dailyWage: dto.dailyWage,
         companyId,
+        vendorId: dto.vendorId || null,
       },
+      include: { vendor: true },
     });
   }
 
   getLabours(companyId: string) {
     return this.prisma.labour.findMany({
       where: { companyId },
+      include: { vendor: true },
+      orderBy: { name: 'asc' },
     });
   }
 
@@ -114,7 +120,7 @@ export class LabourService {
         project: { companyId },
       },
       include: {
-        labour: true,
+        labour: { include: { vendor: true } },
       },
     });
   }
@@ -126,7 +132,7 @@ export class LabourService {
         project: { companyId },
       },
       include: {
-        labour: true,
+        labour: { include: { vendor: true } },
       },
     });
   }

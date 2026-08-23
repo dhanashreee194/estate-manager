@@ -1,7 +1,8 @@
 import axios from "axios";
+import { API_BASE } from "../api/baseUrl";
 
 export const api = axios.create({
-  baseURL: "http://localhost:3000", // backend URL
+  baseURL: API_BASE,
 });
 
 export interface LoginResponse {

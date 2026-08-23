@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { getCompanyAnalytics } from "../../api/companyReports";
 
 import {
@@ -14,6 +15,7 @@ import "../projects/projects.css";
 import Chart from "../../components/Chart";
 
 export default function CompanyReportsPage() {
+  const { t } = useTranslation();
   const [analytics, setAnalytics] = useState<any>(null);
 
   useEffect(() => {
@@ -25,7 +27,6 @@ export default function CompanyReportsPage() {
       .catch(console.error);
   }, []);
 
-  // build last 7 days timeline
   const timelineData = useMemo(() => {
     if (!analytics?.timeline) {
       console.log("📅 No timeline data available");
@@ -51,7 +52,6 @@ export default function CompanyReportsPage() {
     return result;
   }, [analytics]);
 
-  // Create separate data for non-cost charts (showing cumulative data)
   const cumulativeData = useMemo(() => {
     if (!analytics?.cumulativeTimeline) {
       console.log("📅 No cumulative timeline data available");
@@ -80,14 +80,13 @@ export default function CompanyReportsPage() {
   return (
     <div className="reports-page">
       <div className="page-header">
-        <h3>📊 Company Reports</h3>
+        <h3>📊 {t("reports.companyReports")}</h3>
       </div>
 
       <div className="cost-grid">
-        {/* TOTAL COST */}
         <div className="cost-card">
           <div className="cost-header">
-            <span>Total Cost</span>
+            <span>{t("expenses.totalCost")}</span>
             <span className="cost-value">₹ {analytics?.totalCost ?? 0}</span>
           </div>
 
@@ -116,30 +115,27 @@ export default function CompanyReportsPage() {
           </ResponsiveContainer>
         </div>
 
-        {/* MATERIAL */}
         <div className="cost-card">
           <div className="cost-header">
-            <span>Material</span>
+            <span>{t("expenses.material")}</span>
             <span className="cost-value">₹ {analytics?.materialCost ?? 0}</span>
           </div>
 
           <Chart data={cumulativeData} color="#38bdf8" />
         </div>
 
-        {/* LABOUR */}
         <div className="cost-card">
           <div className="cost-header">
-            <span>Labour</span>
+            <span>{t("expenses.labour")}</span>
             <span className="cost-value">₹ {analytics?.labourCost ?? 0}</span>
           </div>
 
           <Chart data={cumulativeData} color="#f59e0b" />
         </div>
 
-        {/* PROJECTS */}
         <div className="cost-card">
           <div className="cost-header">
-            <span>Total Projects</span>
+            <span>{t("reports.totalProjects")}</span>
             <span className="cost-value">{analytics?.totalProjects ?? 0}</span>
           </div>
 
@@ -152,14 +148,13 @@ export default function CompanyReportsPage() {
               color: "#6b7280",
             }}
           >
-            No timeline data available
+            {t("reports.noTimeline")}
           </div>
         </div>
 
-        {/* ENQUIRIES */}
         <div className="cost-card">
           <div className="cost-header">
-            <span>Total Enquiries</span>
+            <span>{t("reports.totalEnquiries")}</span>
             <span className="cost-value">{analytics?.totalEnquiries ?? 0}</span>
           </div>
 
@@ -172,14 +167,13 @@ export default function CompanyReportsPage() {
               color: "#6b7280",
             }}
           >
-            No timeline data available
+            {t("reports.noTimeline")}
           </div>
         </div>
 
-        {/* CONVERTED */}
         <div className="cost-card">
           <div className="cost-header">
-            <span>Converted Leads</span>
+            <span>{t("reports.convertedLeads")}</span>
             <span className="cost-value">{analytics?.convertedLeads ?? 0}</span>
           </div>
 
@@ -192,14 +186,13 @@ export default function CompanyReportsPage() {
               color: "#6b7280",
             }}
           >
-            No timeline data available
+            {t("reports.noTimeline")}
           </div>
         </div>
 
-        {/* CONVERSION */}
         <div className="cost-card">
           <div className="cost-header">
-            <span>Conversion Rate</span>
+            <span>{t("reports.conversionRate")}</span>
             <span className="cost-value">
               {analytics?.conversionRate?.toFixed(1)}%
             </span>
@@ -213,7 +206,7 @@ export default function CompanyReportsPage() {
               color: "#6b7280",
             }}
           >
-            No timeline data available
+            {t("reports.noTimeline")}
           </div>
         </div>
       </div>

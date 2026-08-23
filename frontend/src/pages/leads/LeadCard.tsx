@@ -1,4 +1,5 @@
 import { useDraggable } from "@dnd-kit/core";
+import { leadSourceLabel } from "../../constants/leadSources";
 import "./lead.css";
 
 export default function LeadCard({ lead, onClick }: any) {
@@ -12,6 +13,8 @@ export default function LeadCard({ lead, onClick }: any) {
       : undefined,
   };
 
+  const sourceClass = `source-badge source-${(lead.source || "OTHER").toLowerCase()}`;
+
   return (
     <div
       ref={setNodeRef}
@@ -19,14 +22,16 @@ export default function LeadCard({ lead, onClick }: any) {
       className="lead-card"
       onClick={() => onClick(lead)}
     >
-      {/* drag handle */}
       <div className="drag-handle" {...listeners} {...attributes}>
         ☰
       </div>
 
       <div className="lead-name">{lead.name}</div>
       <div className="lead-phone">{lead.phone}</div>
-      <div className="lead-source">{lead.source || "No Source"}</div>
+      <div className={sourceClass}>{leadSourceLabel(lead.source)}</div>
+      {lead.sourceDetail && (
+        <div className="lead-source-detail">{lead.sourceDetail}</div>
+      )}
     </div>
   );
 }

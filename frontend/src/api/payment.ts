@@ -10,4 +10,5 @@ export const addPayment = (data: {
   mode: string;
   installmentId?: string;
   remarks?: string;
+  bankAccountId?: string;
 }) => api.post("/payment", data).then((r) => r.data);

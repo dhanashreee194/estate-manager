@@ -26,6 +26,12 @@ export class CustomerService {
         phone: dto.phone,
         email: dto.email,
         address: dto.address,
+
+        // ✅ NEW
+        panNumber: dto.panNumber,
+        aadharNumber: dto.aadharNumber,
+        notes: dto.notes,
+
         company: {
           connect: { id: companyId },
         },
@@ -34,11 +40,28 @@ export class CustomerService {
   }
 
   // List customers for company
-  getCustomers(companyId: string) {
+  getCustomers(companyId: string, search?: string) {
     return this.prisma.customer.findMany({
       where: {
         companyId,
+
+        OR: search
+          ? [
+              {
+                name: {
+                  contains: search,
+                  mode: 'insensitive',
+                },
+              },
+              {
+                phone: {
+                  contains: search,
+                },
+              },
+            ]
+          : undefined,
       },
+
       orderBy: {
         name: 'asc',
       },
@@ -53,7 +76,16 @@ export class CustomerService {
         companyId,
       },
       include: {
-        bookings: true,
+        bookings: {
+          include: {
+            payments: true,
+            unit: true,
+            project: true,
+          },
+        },
+
+        documents: true,
+        kycDocs: true,
       },
     });
   }
@@ -74,6 +106,11 @@ export class CustomerService {
         phone: dto.phone,
         email: dto.email,
         address: dto.address,
+
+        // ✅ NEW
+        panNumber: dto.panNumber,
+        aadharNumber: dto.aadharNumber,
+        notes: dto.notes,
       },
     });
   }

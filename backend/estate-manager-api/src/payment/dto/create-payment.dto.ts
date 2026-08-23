@@ -15,9 +15,17 @@ export class CreatePaymentDto {
   @IsEnum(PaymentMode)
   mode: PaymentMode;
 
+  @IsOptional()
+  @IsString()
   remarks?: string;
 
+  @IsOptional()
+  @IsString()
   installmentId?: string;
+
+  @IsOptional()
+  @IsString()
+  bankAccountId?: string;
 }
 
 export class UpdatePaymentDto {

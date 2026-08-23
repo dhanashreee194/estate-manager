@@ -1,11 +1,13 @@
 import { useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
+import { useTranslation } from "react-i18next";
 import { getProjects } from "../../api/project";
 import { useAppDispatch } from "../../store/hooks";
 import { setCurrentProjectId } from "../../store/projectSlice";
 import "./projects.css";
 
 export default function ProjectsList() {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
 
@@ -30,12 +32,12 @@ export default function ProjectsList() {
     });
   };
 
-  if (isLoading) return <p>Loading projects...</p>;
-  if (error) return <p>Failed to load projects</p>;
+  if (isLoading) return <p>{t("projects.loading")}</p>;
+  if (error) return <p>{t("projects.failed")}</p>;
 
   return (
     <div className="projects-page">
-      <h2 className="page-title">Projects</h2>
+      <h2 className="page-title">{t("projects.title")}</h2>
 
       <div className="projects-grid">
         {data.map((project: any) => (
@@ -51,14 +53,21 @@ export default function ProjectsList() {
                   project.status === "ACTIVE" ? "active" : "inactive"
                 }`}
               >
-                {project.status}
+                {t(`status.${project.status}`, {
+                  defaultValue:
+                    project.status === "ACTIVE"
+                      ? t("common.active")
+                      : project.status === "INACTIVE"
+                        ? t("common.inactive")
+                        : project.status,
+                })}
               </span>
             </div>
 
             <p className="project-location">{project.location}</p>
 
             <div className="project-card-footer">
-              <span>View Project →</span>
+              <span>{t("projects.viewProject")}</span>
             </div>
           </div>
         ))}

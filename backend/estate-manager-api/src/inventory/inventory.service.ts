@@ -56,15 +56,33 @@ export class InventoryService {
       },
     });
 
-    console.log('🔥 BEFORE INWARD CREATE');
     // ✅ RECORD INWARD HISTORY (MANDATORY)
     await this.prisma.inventoryInward.create({
       data: {
         projectId: dto.projectId,
         materialId: dto.materialId,
         quantity: dto.quantity,
+        vendorId: dto.vendorId || null,
+        unitCost: dto.unitCost ?? null,
+        invoiceNo: dto.invoiceNo || null,
+        remarks: dto.remarks || null,
       },
     });
+
+    // Optional: auto expense for material purchase from vendor
+    if (dto.vendorId && (dto.unitCost || 0) > 0) {
+      await this.prisma.expense.create({
+        data: {
+          projectId: dto.projectId,
+          type: 'MATERIAL_PURCHASE',
+          amount: dto.quantity * (dto.unitCost || 0),
+          date: new Date(),
+          description: `Inward invoice ${dto.invoiceNo || ''}`.trim(),
+          vendorId: dto.vendorId,
+        },
+      });
+    }
+
     console.log('🔥 AFTER INWARD CREATE');
     return inventory;
   }
@@ -159,11 +177,16 @@ export class InventoryService {
             unit: true,
           },
         },
+        vendor: {
+          select: {
+            id: true,
+            name: true,
+            gstNumber: true,
+          },
+        },
       },
     });
   }
-
-  // 7️⃣ Material-wise Inward History (Drawer)
   getMaterialInwardHistory(
     projectId: string,
     materialId: string,
@@ -303,12 +326,60 @@ export class InventoryService {
     });
   }
 
-  // Get requirements
-  getRequirements(projectId: string) {
-    return this.prisma.inventoryRequirement.findMany({
+  // Get requirements (with pendingQty)
+  async getRequirements(projectId: string) {
+    const rows = await this.prisma.inventoryRequirement.findMany({
       where: { projectId },
       include: { material: true },
       orderBy: { createdAt: 'desc' },
+    });
+
+    return rows.map((r) => ({
+      ...r,
+      pendingQty: Math.max(0, r.requiredQty - r.fulfilledQty),
+    }));
+  }
+
+  async fulfillRequirement(
+    requirementId: string,
+    quantity: number,
+    companyId: string,
+    opts?: { vendorId?: string; unitCost?: number; invoiceNo?: string },
+  ) {
+    const req = await this.prisma.inventoryRequirement.findFirst({
+      where: {
+        id: requirementId,
+        project: { companyId },
+      },
+    });
+
+    if (!req) throw new BadRequestException('Requirement not found');
+
+    const pending = req.requiredQty - req.fulfilledQty;
+    if (quantity <= 0 || quantity > pending) {
+      throw new BadRequestException(
+        `Fulfill qty must be between 1 and ${pending}`,
+      );
+    }
+
+    // Stock inward + mark fulfilled
+    await this.addStock(
+      {
+        projectId: req.projectId,
+        materialId: req.materialId,
+        quantity,
+        vendorId: opts?.vendorId,
+        unitCost: opts?.unitCost,
+        invoiceNo: opts?.invoiceNo,
+        remarks: `Fulfilled requirement ${requirementId}`,
+      },
+      companyId,
+    );
+
+    return this.prisma.inventoryRequirement.update({
+      where: { id: requirementId },
+      data: { fulfilledQty: { increment: quantity } },
+      include: { material: true },
     });
   }
 }

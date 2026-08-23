@@ -1,5 +1,6 @@
 import { useParams } from "react-router-dom";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useTranslation } from "react-i18next";
 import {
   deleteAttendance,
   getAssignedLabours,
@@ -9,7 +10,9 @@ import {
 } from "../../api/labour";
 import { useEffect, useState } from "react";
 import "./labour.css";
+
 export default function LabourAttendance() {
+  const { t } = useTranslation();
   const { projectId } = useParams();
   const [labourId, setLabourId] = useState("");
   const [present, setPresent] = useState(true);
@@ -54,24 +57,24 @@ export default function LabourAttendance() {
   const mutation = useMutation({
     mutationFn: markAttendance,
     onSuccess: () => {
-      // 🔁 Refetch attendance immediately
       queryClient.invalidateQueries({
         queryKey: ["attendance", projectId],
       });
 
-      // optional UX cleanup
       setLabourId("");
     },
   });
+
   useEffect(() => {
     const selected = assigned.find((a: any) => a.labour.id === labourId);
     if (selected) {
       setWage(selected.labour.dailyWage);
     }
   }, [labourId, assigned]);
+
   return (
     <div className="page-card">
-      <h3>Mark Attendance</h3>
+      <h3>{t("labour.markAttendance")}</h3>
 
       <div className="form-row">
         <select
@@ -79,7 +82,7 @@ export default function LabourAttendance() {
           value={labourId}
           onChange={(e) => setLabourId(e.target.value)}
         >
-          <option value="">Select labour</option>
+          <option value="">{t("labour.selectLabour")}</option>
           {assigned.map((a: any) => (
             <option key={a.labour.id} value={a.labour.id}>
               {a.labour.name} ({a.labour.category})
@@ -90,7 +93,7 @@ export default function LabourAttendance() {
         <input
           type="number"
           className="form-control"
-          placeholder="Wage"
+          placeholder={t("labour.wage")}
           value={wage}
           onChange={(e) => setWage(+e.target.value)}
         />
@@ -101,7 +104,7 @@ export default function LabourAttendance() {
             checked={present}
             onChange={(e) => setPresent(e.target.checked)}
           />
-          <span>Present</span>
+          <span>{t("labour.present")}</span>
         </div>
 
         <button
@@ -116,17 +119,17 @@ export default function LabourAttendance() {
             })
           }
         >
-          {mutation.isPending ? "Marking..." : "Mark"}
+          {mutation.isPending ? t("common.saving") : t("common.confirm")}
         </button>
       </div>
 
       <div className="table">
         <div className="table-header1">
-          <span>Name</span>
-          <span>Status</span>
-          <span>Wage</span>
-          <span>Date</span>
-          <span className="actions-col">Actions</span>
+          <span>{t("common.name")}</span>
+          <span>{t("common.status")}</span>
+          <span>{t("labour.wage")}</span>
+          <span>{t("common.date")}</span>
+          <span className="actions-col">{t("common.actions")}</span>
         </div>
 
         {data.map((row: any) => (
@@ -134,7 +137,7 @@ export default function LabourAttendance() {
             <span>{row.labour.name}</span>
 
             <span className={row.present ? "positive" : "negative"}>
-              {row.present ? "Present" : "Absent"}
+              {row.present ? t("labour.present") : "Absent"}
             </span>
 
             <span>₹{row.wageForDay}</span>
@@ -144,7 +147,7 @@ export default function LabourAttendance() {
             <span className="actions-col">
               <button
                 className="icon-btn edit"
-                title="Edit attendance"
+                title={t("labour.editAttendance")}
                 onClick={() => setEditingId(row)}
               >
                 ✏️
@@ -152,7 +155,7 @@ export default function LabourAttendance() {
 
               <button
                 className="icon-btn delete"
-                title="Delete attendance"
+                title={t("labour.deleteAttendance")}
                 onClick={() => deleteMutation.mutate(row.id)}
               >
                 🗑️

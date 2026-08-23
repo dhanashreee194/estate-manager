@@ -1,6 +1,16 @@
-import { Controller, Post, Body, Param, Get, Put } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Param,
+  Post,
+  Put,
+  UseGuards,
+} from '@nestjs/common';
+import { AuthGuard } from '@nestjs/passport';
 import { DailyReportService } from './daily-report.service';
 
+@UseGuards(AuthGuard('jwt'))
 @Controller('daily-report')
 export class DailyReportController {
   constructor(private service: DailyReportService) {}
@@ -11,6 +21,13 @@ export class DailyReportController {
       body.projectId,
       new Date(body.date),
       body.workDetails,
+      {
+        siteName: body.siteName,
+        meterFrom: body.meterFrom,
+        meterTo: body.meterTo,
+        meterUnits: body.meterUnits,
+        checkedBy: body.checkedBy,
+      },
     );
   }
 
@@ -37,6 +54,12 @@ export class DailyReportController {
   @Post(':reportId/goods')
   addGoods(@Param('reportId') id: string, @Body() body: any) {
     return this.service.addGoods(id, body);
+  }
+
+  /** Full daily sheet upsert (multi-row labour/material/payment/goods) */
+  @Post(':reportId/sheet')
+  saveSheet(@Param('reportId') id: string, @Body() body: any) {
+    return this.service.saveSheet(id, body);
   }
 
   @Put(':id')

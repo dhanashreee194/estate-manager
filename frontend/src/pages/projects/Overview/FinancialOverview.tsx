@@ -1,5 +1,7 @@
+import { useTranslation } from "react-i18next";
+
 export default function FinancialOverview({ analytics }: any) {
-  // Use analytics data if available, otherwise show placeholder
+  const { t } = useTranslation();
   const financialData = analytics?.financialOverview || {};
 
   console.log("💰 FinancialOverview received analytics:", analytics);
@@ -7,10 +9,10 @@ export default function FinancialOverview({ analytics }: any) {
 
   return (
     <div className="overview-card">
-      <h4>Financial Snapshot</h4>
+      <h4>{t("projects.financialSnapshot")}</h4>
 
       <div className="finance-row">
-        <span>Total Value</span>
+        <span>{t("expenses.totalValue")}</span>
         <span>
           {financialData.totalValue !== undefined
             ? `₹${financialData.totalValue} Cr`
@@ -19,7 +21,7 @@ export default function FinancialOverview({ analytics }: any) {
       </div>
 
       <div className="finance-row">
-        <span>Collected</span>
+        <span>{t("common.collected")}</span>
         <span className="positive">
           {financialData.collected !== undefined
             ? `₹${financialData.collected} Cr`
@@ -28,7 +30,7 @@ export default function FinancialOverview({ analytics }: any) {
       </div>
 
       <div className="finance-row">
-        <span>Pending</span>
+        <span>{t("common.pending")}</span>
         <span className="warning">
           {financialData.pending !== undefined
             ? `₹${financialData.pending} Cr`

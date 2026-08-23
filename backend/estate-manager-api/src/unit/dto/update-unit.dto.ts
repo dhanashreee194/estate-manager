@@ -46,4 +46,12 @@ export class UpdateUnitDto {
   @IsOptional()
   @IsUUID()
   wingId?: string;
+
+  @IsOptional()
+  @IsNumber()
+  layoutRow?: number | null;
+
+  @IsOptional()
+  @IsNumber()
+  layoutCol?: number | null;
 }

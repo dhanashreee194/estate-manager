@@ -1,5 +1,6 @@
 import { useParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
+import { useTranslation } from "react-i18next";
 import { getProjectStock } from "../../api/inventory";
 import { useState } from "react";
 import StockHistoryDrawer from "./StockHistoryDrawer";
@@ -7,6 +8,7 @@ import StockHistoryDrawer from "./StockHistoryDrawer";
 const MAX_STOCK = 200;
 
 export default function ProjectInventoryStock() {
+  const { t } = useTranslation();
   const { projectId } = useParams();
   const [selected, setSelected] = useState<any>(null);
 
@@ -16,8 +18,8 @@ export default function ProjectInventoryStock() {
     enabled: !!projectId,
   });
 
-  if (isLoading) return <p>Loading stock...</p>;
-  if (!data?.length) return <p className="empty-state">No stock available</p>;
+  if (isLoading) return <p>{t("inventory.loadingStock")}</p>;
+  if (!data?.length) return <p className="empty-state">{t("inventory.noStock")}</p>;
 
   return (
     <div className="stock-grid">
@@ -57,7 +59,7 @@ export default function ProjectInventoryStock() {
               <span className="stock-unit">{item.material.unit}</span>
             </div>
 
-            <div className="stock-meta">Available stock</div>
+            <div className="stock-meta">{t("inventory.availableQty")}</div>
             {selected && (
               <StockHistoryDrawer
                 material={selected}

@@ -26,6 +26,43 @@ model Company {
   buildings Building[]
   wings     Wing[]
   leads     Lead[]
+  vendors   Vendor[]
+  bankAccounts BankAccount[]
+  cashbookEntries CashbookEntry[]
+  brokers   Broker[]
+  landPartners LandPartner[]
+  landParcels  LandParcel[]
+  reminders    Reminder[]
+}
+
+enum VendorType {
+  LABOUR
+  MATERIAL
+  BOTH
+}
+
+// ================= VENDORS (labour contractors / material suppliers)
+model Vendor {
+  id        String     @id @default(uuid())
+  companyId String
+  name      String
+  phone     String?
+  email     String?
+  gstNumber String?
+  address   String?
+  type      VendorType @default(BOTH)
+  isActive  Boolean    @default(true)
+  createdAt DateTime   @default(now())
+
+  company          Company           @relation(fields: [companyId], references: [id])
+  labours          Labour[]
+  inventoryInwards InventoryInward[]
+  expenses         Expense[]
+  dailyLabours     DailyLabour[]
+  dailyPayments    DailyPayment[]
+  dailyGoods       DailyGoods[]
+
+  @@index([companyId])
 }
 
 enum UserRole {
@@ -57,6 +94,11 @@ model Project {
   createdAt DateTime @default(now())
   companyId String
 
+  // Site layout map grid (Easy Colonizer–style)
+  layoutRows     Int     @default(10)
+  layoutCols     Int     @default(10)
+  layoutImageUrl String?
+
   company           Company                @relation(fields: [companyId], references: [id])
   inventories       Inventory[]
   inventoryInwards  InventoryInward[]
@@ -72,6 +114,8 @@ model Project {
   tasks             Task[]
   budget            ProjectBudget?
   leads             Lead[]
+  cashbookEntries   CashbookEntry[]
+  landParcels       LandParcel[]
 }
 
 // ================= MATERIALS (COMPANY-SCOPED)
@@ -122,10 +166,16 @@ model Labour {
   companyId String?
   company   Company? @relation(fields: [companyId], references: [id])
 
+  // Labour supplied through a vendor/contractor
+  vendorId String?
+  vendor   Vendor? @relation(fields: [vendorId], references: [id])
+
   assignments LabourAssignment[]
   attendances LabourAttendance[]
 
   createdAt DateTime @default(now())
+
+  @@index([vendorId])
 }
 
 // ================= EXPENSES (SINGLE LEDGER)
@@ -135,15 +185,26 @@ model Expense {
   type      String
   amount    Float
   date      DateTime
+  description String?
   gstRate   Float? // 5, 12, 18, 28
   gstAmount Float?
   vendorGST String?
 
+  vendorId String?
+  vendor   Vendor? @relation(fields: [vendorId], references: [id])
+
   inventoryId String?
   inventory   Inventory? @relation(fields: [inventoryId], references: [id])
 
+  bankAccountId String?
+  bankAccount   BankAccount? @relation(fields: [bankAccountId], references: [id])
+
   project          Project           @relation(fields: [projectId], references: [id])
   LabourAttendance LabourAttendance?
+  cashbookEntry    CashbookEntry?
+
+  @@index([vendorId])
+  @@index([bankAccountId])
 }
 
 // ================= LABOUR ASSIGNMENT
@@ -248,11 +309,17 @@ model Unit {
   basePrice  Float
   status     UnitStatus @default(AVAILABLE)
 
+  // Position on project layout map (0-based grid)
+  layoutRow Int?
+  layoutCol Int?
+
   project Project @relation(fields: [projectId], references: [id])
   wing    Wing?   @relation(fields: [wingId], references: [id])
   Company Company @relation(fields: [companyId], references: [id])
 
   Booking Booking? // ✅ One unit → one booking
+
+  @@index([projectId, layoutRow, layoutCol])
 }
 
 model Customer {
@@ -262,12 +329,21 @@ model Customer {
   phone     String
   email     String?
   address   String?
+
+  // ✅ NEW
+  panNumber     String?
+  aadharNumber  String?
+  notes         String?
+
   createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
-  company  Company   @relation(fields: [companyId], references: [id])
-  bookings Booking[]
+  company   Company   @relation(fields: [companyId], references: [id])
+  bookings  Booking[]
+  documents Document[]
+  kycDocs   KycDocument[]
 
-  @@unique([companyId, phone]) // optional but recommended
+  @@unique([companyId, phone])
   @@index([companyId])
 }
 
@@ -334,6 +410,8 @@ model Booking {
 
   payments Payment[]
   installments InstallmentPlan[]  // NEW
+  documents Document[]
+  commission BrokerCommission?
 }
 
 model Payment {
@@ -352,8 +430,14 @@ model Payment {
   mode    PaymentMode
   remarks String?
 
+  bankAccountId String?
+  bankAccount   BankAccount? @relation(fields: [bankAccountId], references: [id])
+
   booking Booking @relation(fields: [bookingId], references: [id])
   company Company @relation(fields: [companyId], references: [id])
+  cashbookEntry CashbookEntry?
+
+  @@index([bankAccountId])
 }
 
 model ProjectBudget {
@@ -371,13 +455,19 @@ model InventoryInward {
   projectId  String
   materialId String
   quantity   Float
+  unitCost   Float?
+  invoiceNo  String?
+  remarks    String?
+  vendorId   String?
   createdAt  DateTime @default(now())
 
   project  Project  @relation(fields: [projectId], references: [id])
   material Material @relation(fields: [materialId], references: [id])
+  vendor   Vendor?  @relation(fields: [vendorId], references: [id])
 
   @@index([projectId])
   @@index([materialId])
+  @@index([vendorId])
 }
 
 model InventoryOutward {
@@ -415,6 +505,13 @@ model DailyReport {
 
   workDetails String
 
+  // Paper form fields
+  siteName      String?
+  meterFrom     Float?
+  meterTo       Float?
+  meterUnits    Float?
+  checkedBy     String?
+
   project Project @relation(fields: [projectId], references: [id])
 
   labours   DailyLabour[]
@@ -433,12 +530,17 @@ model DailyLabour {
   reportId String
   agency   String
 
+  vendorId String?
+  vendor   Vendor? @relation(fields: [vendorId], references: [id])
+
   skilled Int
   men     Int
   women   Int
   total   Int
 
   report DailyReport @relation(fields: [reportId], references: [id])
+
+  @@index([vendorId])
 }
 
 model DailyMaterial {
@@ -446,14 +548,17 @@ model DailyMaterial {
 
   reportId String
 
-  material String // Cement / Steel / etc
-  size     String? // 6mm, 8mm etc
+  material   String // Cement / Steel / etc
+  materialId String? // optional link to company Material master
+  size       String? // 6mm, 8mm etc
 
   stock    Float
   consumed Float
   balance  Float
 
   report DailyReport @relation(fields: [reportId], references: [id])
+
+  @@index([materialId])
 }
 
 model DailyPayment {
@@ -461,10 +566,14 @@ model DailyPayment {
 
   reportId String
 
-  party  String
-  amount Float
+  party    String
+  amount   Float
+  vendorId String?
+  vendor   Vendor? @relation(fields: [vendorId], references: [id])
 
   report DailyReport @relation(fields: [reportId], references: [id])
+
+  @@index([vendorId])
 }
 
 model DailyGoods {
@@ -472,11 +581,17 @@ model DailyGoods {
 
   reportId String
 
-  material String
-  quantity Float
-  remarks  String?
+  material   String
+  materialId String? // link to Material master for inventory inward
+  quantity   Float
+  remarks    String?
+  vendorId   String?
+  vendor     Vendor? @relation(fields: [vendorId], references: [id])
 
   report DailyReport @relation(fields: [reportId], references: [id])
+
+  @@index([materialId])
+  @@index([vendorId])
 }
 
 model Task {
@@ -505,7 +620,11 @@ model Lead {
   name        String
   phone       String
   email       String?
-  source      String?
+  source      LeadSource @default(OTHER)
+  sourceDetail     String? // campaign / listing title / notes
+  portalListingId  String? // portal property/lead id
+  portalUrl        String?
+  referredBy       String? // for REFERRAL / BROKER name
   budget      Float?
   requirement String?
 
@@ -522,6 +641,25 @@ model Lead {
 
   company Company  @relation(fields: [companyId], references: [id])
   project Project? @relation(fields: [projectId], references: [id])
+
+  @@index([companyId, source])
+  @@index([companyId, status])
+}
+
+enum LeadSource {
+  PORTAL_99ACRES
+  MAGICBRICKS
+  HOUSING
+  MAKAAN
+  FACEBOOK
+  INSTAGRAM
+  GOOGLE_ADS
+  WALK_IN
+  REFERRAL
+  BROKER
+  WEBSITE
+  WHATSAPP
+  OTHER
 }
 
 enum LeadStatus {
@@ -538,6 +676,7 @@ enum InstallmentStatus {
   UPCOMING
   DUE
   OVERDUE
+  PARTIAL
   PAID
   CANCELLED
 }
@@ -549,7 +688,7 @@ model InstallmentPlan {
   amount    Float
   dueDate   DateTime
   paid      Boolean @default(false)
-
+    paidAmount Float @default(0)
   reminderSent Boolean @default(false)
   reminderSentAt DateTime?
 
@@ -566,27 +705,343 @@ model InstallmentPlan {
 
 model Document {
   id         String  @id @default(uuid())
+
+  // Existing
   bookingId  String?
   customerId String?
 
+  // Relations ✅ ADD THESE
+  booking   Booking?  @relation(fields: [bookingId], references: [id])
+  customer  Customer? @relation(fields: [customerId], references: [id])
+
+  // New scalable system
+  entityType DocumentEntityType?
+  entityId   String?
+googleDriveFileId String?
+  // Improvements
+  name       String?
   type       String
   url        String
+
   uploadedAt DateTime @default(now())
+
+  @@index([entityType, entityId])
+}
+
+enum DocumentEntityType {
+  CUSTOMER
+  BOOKING
+  PROJECT
 }
 
 model BankAccount {
-  id        String @id @default(uuid())
-  companyId String
-  name      String
-  balance   Float
+  id             String           @id @default(uuid())
+  companyId      String
+  name           String
+  accountType    BankAccountType  @default(BANK)
+  bankName       String?
+  accountNumber  String?
+  ifsc           String?
+  openingBalance Float            @default(0)
+  balance        Float            @default(0)
+  isDefault      Boolean          @default(false)
+  isActive       Boolean          @default(true)
+  notes          String?
+  createdAt      DateTime         @default(now())
+  updatedAt      DateTime         @updatedAt
+
+  company         Company         @relation(fields: [companyId], references: [id])
+  cashbookEntries CashbookEntry[]
+  payments        Payment[]
+  expenses        Expense[]
+  landPayments    LandParcelPayment[]
+
+  @@index([companyId])
+}
+
+enum BankAccountType {
+  BANK
+  CASH
+  UPI
+  OTHER
+}
+
+enum CashbookEntryType {
+  CREDIT
+  DEBIT
+}
+
+enum CashbookCategory {
+  OPENING
+  BOOKING_RECEIPT
+  EXPENSE
+  VENDOR_PAYMENT
+  BROKER_COMMISSION
+  LAND_PURCHASE
+  JV_PAYOUT
+  TRANSFER
+  ADJUSTMENT
+  OTHER
+}
+
+model CashbookEntry {
+  id            String            @id @default(uuid())
+  companyId     String
+  bankAccountId String
+  type          CashbookEntryType
+  category      CashbookCategory  @default(OTHER)
+  amount        Float
+  balanceAfter  Float
+  date          DateTime          @default(now())
+  description   String?
+  reference     String? // cheque / UTR / voucher no
+  projectId     String?
+  paymentId     String?           @unique
+  expenseId     String?           @unique
+  transferGroupId String? // pairs transfer in/out
+  createdAt     DateTime          @default(now())
+
+  bankAccount BankAccount @relation(fields: [bankAccountId], references: [id])
+  company     Company     @relation(fields: [companyId], references: [id])
+  project     Project?    @relation(fields: [projectId], references: [id])
+  payment     Payment?    @relation(fields: [paymentId], references: [id])
+  expense     Expense?    @relation(fields: [expenseId], references: [id])
+
+  @@index([companyId, date])
+  @@index([bankAccountId, date])
+  @@index([transferGroupId])
+}
+
+enum CommissionStatus {
+  PENDING
+  PAID
+  CANCELLED
 }
 
 model Broker {
-  id             String @id @default(uuid())
+  id             String   @id @default(uuid())
   companyId      String
   name           String
   phone          String
-  commissionRate Float
+  email          String?
+  panNumber      String?
+  address        String?
+  commissionRate Float // percent, e.g. 2.5
+  isActive       Boolean  @default(true)
+  createdAt      DateTime @default(now())
 
-  bookings Booking[]  // NEW
+  company     Company            @relation(fields: [companyId], references: [id])
+  bookings    Booking[]
+  commissions BrokerCommission[]
+
+  @@index([companyId])
+}
+
+model BrokerCommission {
+  id               String           @id @default(uuid())
+  companyId        String
+  brokerId         String
+  bookingId        String           @unique
+  rate             Float // snapshot % at booking time
+  dealAmount       Float
+  commissionAmount Float
+  status           CommissionStatus @default(PENDING)
+  paidAt           DateTime?
+  paidAmount       Float?
+  notes            String?
+  createdAt        DateTime         @default(now())
+
+  broker  Broker  @relation(fields: [brokerId], references: [id])
+  booking Booking @relation(fields: [bookingId], references: [id])
+
+  @@index([companyId])
+  @@index([brokerId])
+  @@index([status])
+}
+
+model KycDocument {
+  id          String   @id @default(uuid())
+  customerId  String
+
+  type        KycType
+  number      String?
+  fileUrl     String
+
+  verified    Boolean  @default(false)
+  verifiedBy  String?
+  verifiedAt  DateTime?
+  googleDriveFileId String?
+  createdAt   DateTime @default(now())
+
+  customer    Customer @relation(fields: [customerId], references: [id])
+
+  @@index([customerId])
+}
+
+enum KycType {
+  PAN
+  AADHAR
+  PASSPORT
+  DRIVING_LICENSE
+}
+
+// ================= LAND ACQUISITION (Easy Colonizer–style)
+enum LandAcquisitionType {
+  OUTRIGHT
+  JV
+  DEVELOPMENT_AGREEMENT
+  OTHER
+}
+
+enum LandParcelStatus {
+  PROSPECT
+  UNDER_NEGOTIATION
+  AGREED
+  REGISTERED
+  LINKED_TO_PROJECT
+  CANCELLED
+}
+
+enum LandPartnerRole {
+  LANDOWNER
+  INVESTOR
+  DEVELOPER
+  OTHER
+}
+
+model LandPartner {
+  id           String   @id @default(uuid())
+  companyId    String
+  name         String
+  phone        String?
+  email        String?
+  panNumber    String?
+  aadharNumber String?
+  address      String?
+  notes        String?
+  isActive     Boolean  @default(true)
+  createdAt    DateTime @default(now())
+
+  company  Company             @relation(fields: [companyId], references: [id])
+  shares   LandParcelPartner[]
+  payments LandParcelPayment[]
+
+  @@index([companyId])
+}
+
+model LandParcel {
+  id               String              @id @default(uuid())
+  companyId        String
+  projectId        String?
+  name             String
+  surveyNumber     String?
+  gatNumber        String?
+  village          String?
+  taluka           String?
+  district         String?
+  areaSqFt         Float?
+  areaAcres        Float?
+  acquisitionType  LandAcquisitionType @default(OUTRIGHT)
+  status           LandParcelStatus    @default(PROSPECT)
+  purchasePrice    Float?
+  agreementDate    DateTime?
+  registrationDate DateTime?
+  notes            String?
+  createdAt        DateTime            @default(now())
+  updatedAt        DateTime            @updatedAt
+
+  company  Company             @relation(fields: [companyId], references: [id])
+  project  Project?            @relation(fields: [projectId], references: [id])
+  partners LandParcelPartner[]
+  payments LandParcelPayment[]
+
+  @@index([companyId])
+  @@index([projectId])
+  @@index([status])
+}
+
+model LandParcelPartner {
+  id            String          @id @default(uuid())
+  landParcelId  String
+  partnerId     String
+  role          LandPartnerRole @default(LANDOWNER)
+  sharePercent  Float?
+  landShareSqFt Float?
+  notes         String?
+
+  parcel  LandParcel  @relation(fields: [landParcelId], references: [id], onDelete: Cascade)
+  partner LandPartner @relation(fields: [partnerId], references: [id])
+
+  @@unique([landParcelId, partnerId])
+  @@index([partnerId])
+}
+
+model LandParcelPayment {
+  id            String   @id @default(uuid())
+  companyId     String
+  landParcelId  String
+  partnerId     String?
+  amount        Float
+  date          DateTime @default(now())
+  description   String?
+  reference     String?
+  bankAccountId String?
+  createdAt     DateTime @default(now())
+
+  parcel      LandParcel   @relation(fields: [landParcelId], references: [id], onDelete: Cascade)
+  partner     LandPartner? @relation(fields: [partnerId], references: [id])
+  bankAccount BankAccount? @relation(fields: [bankAccountId], references: [id])
+
+  @@index([companyId])
+  @@index([landParcelId])
+  @@index([partnerId])
+  @@index([bankAccountId])
+}
+
+// ================= REMINDERS / FOLLOW-UPS
+enum ReminderType {
+  LEAD_FOLLOW_UP
+  INSTALLMENT_DUE
+  INSTALLMENT_OVERDUE
+  MANUAL
+}
+
+enum ReminderChannel {
+  WHATSAPP
+  SMS
+  IN_APP
+  MANUAL
+}
+
+enum ReminderStatus {
+  PENDING
+  SENT
+  DONE
+  SKIPPED
+  CANCELLED
+}
+
+model Reminder {
+  id          String          @id @default(uuid())
+  companyId   String
+  type        ReminderType
+  channel     ReminderChannel @default(IN_APP)
+  status      ReminderStatus  @default(PENDING)
+  entityType  String // Lead | InstallmentPlan | Manual
+  entityId    String?
+  title       String
+  message     String?
+  phone       String?
+  dueAt       DateTime
+  sentAt      DateTime?
+  completedAt DateTime?
+  createdById String?
+  createdAt   DateTime        @default(now())
+  updatedAt   DateTime        @updatedAt
+
+  company Company @relation(fields: [companyId], references: [id])
+
+  @@index([companyId, status, dueAt])
+  @@index([companyId, type])
+  @@index([entityType, entityId])
 }

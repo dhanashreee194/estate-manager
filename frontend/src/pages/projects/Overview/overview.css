@@ -12,8 +12,8 @@
 }
 
 .stat-card {
-  background: #0b1220;
-  border: 1px solid #1e293b;
+  background: var(--bg-app-soft);
+  border: 1px solid var(--border);
   border-radius: 14px;
   padding: 16px;
 }
@@ -45,7 +45,7 @@
 }
 
 .overview-card {
-  background: #0f172a;
+  background: var(--bg-elevated);
   border-radius: 16px;
   padding: 20px;
 }
@@ -67,5 +67,5 @@
 
 .activity-list li {
   padding: 6px 0;
-  color: #e5e7eb;
+  color: var(--text);
 }

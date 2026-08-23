@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 
 import { getReports, getReportById } from "../../../api/report";
 import DailyReportModal from "./DailyReportModal";
@@ -16,6 +17,7 @@ import {
 } from "recharts";
 
 export default function ReportsPage() {
+  const { t } = useTranslation();
   const { projectId } = useParams();
 
   const [reports, setReports] = useState<any[]>([]);
@@ -122,10 +124,10 @@ export default function ReportsPage() {
     <div className="reports-page">
       {/* Header */}
       <div className="page-header">
-        <h3>📋 Daily Reports</h3>
+        <h3>{t("reports.dailySheet")}</h3>
 
         <button className="primary-btn" onClick={() => setOpen(true)}>
-          + Add Report
+          {t("reports.newDailySheet")}
         </button>
       </div>
 
@@ -274,21 +276,21 @@ export default function ReportsPage() {
             className={filterType === "daily" ? "active" : ""}
             onClick={() => changeFilterType("daily")}
           >
-            Daily
+            {t("reports.daily")}
           </button>
 
           <button
             className={filterType === "monthly" ? "active" : ""}
             onClick={() => changeFilterType("monthly")}
           >
-            Monthly
+            {t("reports.monthly")}
           </button>
 
           <button
             className={filterType === "range" ? "active" : ""}
             onClick={() => changeFilterType("range")}
           >
-            Custom
+            {t("reports.custom")}
           </button>
         </div>
 
@@ -327,14 +329,14 @@ export default function ReportsPage() {
         )}
 
         <button className="apply-btn" onClick={applyFilter}>
-          Apply
+          {t("common.apply")}
         </button>
       </div>
 
       {/* Reports List */}
 
       <div className="report-list">
-        {reports.length === 0 && <p className="muted">No reports added yet</p>}
+        {reports.length === 0 && <p className="muted">{t("reports.noReports")}</p>}
 
         {reports.map((r) => (
           <div
@@ -348,14 +350,36 @@ export default function ReportsPage() {
           >
             <div className="report-top">
               <b>{new Date(r.date).toDateString()}</b>
-              <span>{r.labours.length} Labours</span>
+              <span>
+                {(r.labours || []).reduce(
+                  (s: number, l: any) => s + (l.total || 0),
+                  0,
+                )}{" "}
+                {t("labour.labours")}
+              </span>
             </div>
 
             <p>{r.workDetails}</p>
 
+            <div className="muted" style={{ fontSize: 12, marginTop: 4 }}>
+              {(r.labours || [])
+                .map((l: any) => l.vendor?.name || l.agency)
+                .filter(Boolean)
+                .join(", ") || t("labour.noVendor")}
+              {r.meterUnits != null ? ` · ${t("common.unit")} ${r.meterUnits}` : ""}
+              {r.checkedBy ? ` · ${r.checkedBy}` : ""}
+            </div>
+
             <div className="report-footer">
-              <span>🧱 {r.materials.length} Materials</span>
-              <span>💰 {r.payments.length} Payments</span>
+              <span>🧱 {(r.materials || []).length} {t("expenses.material")}</span>
+              <span>
+                💰 ₹
+                {(r.payments || []).reduce(
+                  (s: number, p: any) => s + (p.amount || 0),
+                  0,
+                )}
+              </span>
+              <span>📦 {(r.goods || []).length} {t("inventory.stock")}</span>
             </div>
           </div>
         ))}

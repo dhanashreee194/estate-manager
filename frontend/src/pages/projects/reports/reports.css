@@ -5,8 +5,8 @@
   margin-bottom: 30px;
 }
 .cost-card {
-  background: linear-gradient(180deg, #020617, #020617dd);
-  border: 1px solid #1e293b;
+  background: var(--sidebar-gradient);
+  border: 1px solid var(--border);
   border-radius: 14px;
   padding: 20px;
 }

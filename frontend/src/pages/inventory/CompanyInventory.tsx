@@ -1,11 +1,13 @@
 import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { getMaterials } from "../../api/inventory";
 import MaterialForm from "./MaterialForm";
 import MaterialTable from "./MaterialTable";
 import "./inventory.css";
 
 export default function CompanyInventory() {
+  const { t } = useTranslation();
   const [open, setOpen] = useState(false);
 
   const { data, isLoading } = useQuery({
@@ -18,10 +20,8 @@ export default function CompanyInventory() {
       <section className="page-hero">
         <div className="page-hero-header">
           <div>
-            <h1 className="page-title">Company Inventory</h1>
-            <p className="page-subtitle">
-              Manage company-wide materials and base costs
-            </p>
+            <h1 className="page-title">{t("inventory.companyTitle")}</h1>
+            <p className="page-subtitle">{t("inventory.companyHint")}</p>
           </div>
 
           <div className="inventory-cta">
@@ -29,7 +29,7 @@ export default function CompanyInventory() {
               className="primary-btn add-btn"
               onClick={() => setOpen(true)}
             >
-              + Add Material
+              {t("inventory.addMaterial")}
             </button>
           </div>
         </div>
@@ -37,7 +37,7 @@ export default function CompanyInventory() {
 
       <section className="page-section">
         {isLoading ? (
-          <p>Loading materials...</p>
+          <p>{t("inventory.loadingMaterials")}</p>
         ) : (
           <MaterialTable materials={data || []} />
         )}

@@ -48,7 +48,6 @@ export class InventoryController {
     return this.inventoryService.findMaterials(req.user.companyId);
   }
 
-  // 🔹 Project-wise Inward History
   @Get('inward/project/:projectId')
   getProjectInward(@Param('projectId') projectId: string, @Req() req) {
     return this.inventoryService.getProjectInwardHistory(
@@ -57,7 +56,6 @@ export class InventoryController {
     );
   }
 
-  // 🔹 Material-wise Inward History
   @Get('inward/:projectId/:materialId')
   getMaterialInward(
     @Param('projectId') projectId: string,
@@ -71,7 +69,6 @@ export class InventoryController {
     );
   }
 
-  // 🔹 Project-wise Outward History
   @Get('outward/project/:projectId')
   getProjectOutward(@Param('projectId') projectId: string, @Req() req) {
     return this.inventoryService.getProjectOutwardHistory(
@@ -80,7 +77,6 @@ export class InventoryController {
     );
   }
 
-  // 🔹 Material-wise Outward History
   @Get('outward/:projectId/:materialId')
   getMaterialOutward(
     @Param('projectId') projectId: string,
@@ -122,5 +118,19 @@ export class InventoryController {
   @Get('requirement/:projectId')
   getRequirements(@Param('projectId') projectId: string) {
     return this.inventoryService.getRequirements(projectId);
+  }
+
+  @Post('requirement/:id/fulfill')
+  fulfillRequirement(@Param('id') id: string, @Body() body, @Req() req) {
+    return this.inventoryService.fulfillRequirement(
+      id,
+      Number(body.quantity),
+      req.user.companyId,
+      {
+        vendorId: body.vendorId,
+        unitCost: body.unitCost,
+        invoiceNo: body.invoiceNo,
+      },
+    );
   }
 }

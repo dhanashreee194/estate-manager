@@ -9,12 +9,12 @@
 }
 
 .modal {
-  background: #020617;
-  border: 1px solid #1e293b;
+  background: var(--bg-app);
+  border: 1px solid var(--border);
   border-radius: 14px;
   width: 420px;
   padding: 24px;
-  color: #e5e7eb;
+  color: var(--text);
 }
 
 .modal h2 {
@@ -31,9 +31,9 @@
 .modal-form select {
   padding: 10px 12px;
   border-radius: 8px;
-  border: 1px solid #334155;
-  background: #020617;
-  color: #e5e7eb;
+  border: 1px solid var(--border-strong);
+  background: var(--bg-app);
+  color: var(--text);
 }
 
 .modal-actions {
@@ -45,8 +45,8 @@
 
 .btn-outline {
   background: transparent;
-  border: 1px solid #334155;
-  color: #e5e7eb;
+  border: 1px solid var(--border-strong);
+  color: var(--text);
   padding: 8px 14px;
   border-radius: 8px;
 }

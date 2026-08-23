@@ -23,6 +23,13 @@ import UsersPage from "../pages/users/UsersPage";
 import CompanyReportsPage from "../pages/reports/CompanyReportsPage";
 import ProjectLeads from "../pages/projects/leads/ProjectLeads";
 import ComprehensiveReports from "../pages/reports/ComprehensiveReports";
+import VendorsPage from "../pages/vendors/VendorsPage";
+import ProjectLayoutMap from "../pages/projects/layout/ProjectLayoutMap";
+import BrokersPage from "../pages/brokers/BrokersPage";
+import FinancePage from "../pages/finance/FinancePage";
+import LandPage from "../pages/land/LandPage";
+import CollectionsPage from "../pages/collections/CollectionsPage";
+import RemindersPage from "../pages/reminders/RemindersPage";
 
 export default function AppRouter() {
   return (
@@ -43,6 +50,12 @@ export default function AppRouter() {
       >
         <Route index element={<DashboardOverview />} />
         <Route path="/dashboard/inventory" element={<CompanyInventory />} />
+        <Route path="/dashboard/vendors" element={<VendorsPage />} />
+        <Route path="/dashboard/brokers" element={<BrokersPage />} />
+        <Route path="/dashboard/finance" element={<FinancePage />} />
+        <Route path="/dashboard/land" element={<LandPage />} />
+        <Route path="/dashboard/collections" element={<CollectionsPage />} />
+        <Route path="/dashboard/reminders" element={<RemindersPage />} />
         <Route path="bookings" element={<BookingsPage />} />
         <Route path="/dashboard/leads" element={<LeadKanban />} />
         <Route path="/dashboard/users" element={<UsersPage />} />
@@ -57,6 +70,7 @@ export default function AppRouter() {
         <Route path="projects/:projectId" element={<ProjectDashboard />}>
           <Route path="overview" element={<ProjectOverview />} />
           <Route path="units" element={<ProjectUnits />} />
+          <Route path="layout" element={<ProjectLayoutMap />} />
           <Route path="inventory" element={<ProjectInventory />}>
             <Route path="stock" element={<ProjectInventoryStock />} />
             <Route path="inward" element={<ProjectInventoryInward />} />

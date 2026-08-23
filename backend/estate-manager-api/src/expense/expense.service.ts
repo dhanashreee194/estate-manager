@@ -1,9 +1,13 @@
 import { Injectable, BadRequestException } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
+import { FinanceService } from '../finance/finance.service';
 
 @Injectable()
 export class ExpenseService {
-  constructor(private prisma: PrismaService) {}
+  constructor(
+    private prisma: PrismaService,
+    private finance: FinanceService,
+  ) {}
 
   // ================================
   // 1️⃣ Get expenses (SAFE)
@@ -14,6 +18,7 @@ export class ExpenseService {
         projectId,
         project: { companyId },
       },
+      include: { vendor: true },
       orderBy: { date: 'desc' },
     });
   }
@@ -64,9 +69,11 @@ export class ExpenseService {
       return sum + l.wageForDay;
     }, 0);
 
-    // Other
+    // Other (manual + vendor payments + purchases)
     const otherCost = expenses
-      .filter((e) => e.type === 'OTHER')
+      .filter((e) =>
+        ['OTHER', 'VENDOR_PAYMENT', 'MATERIAL_PURCHASE'].includes(e.type),
+      )
       .reduce((sum, e) => sum + e.amount, 0);
 
     const totalCost = materialCost + labourCost + otherCost;
@@ -164,7 +171,9 @@ export class ExpenseService {
     }, 0);
 
     const otherCost = expenses
-      .filter((e) => e.type === 'OTHER')
+      .filter((e) =>
+        ['OTHER', 'VENDOR_PAYMENT', 'MATERIAL_PURCHASE'].includes(e.type),
+      )
       .reduce((sum, e) => sum + e.amount, 0);
 
     const totalCost = materialCost + labourCost + otherCost;
@@ -417,13 +426,61 @@ export class ExpenseService {
       throw new BadRequestException('Invalid project');
     }
 
-    return this.prisma.expense.create({
-      data: {
-        projectId: data.projectId,
-        type: data.type,
-        amount: data.amount,
-        date: new Date(data.date),
-      },
+    if (data.vendorId) {
+      const vendor = await this.prisma.vendor.findFirst({
+        where: { id: data.vendorId, companyId },
+      });
+      if (!vendor) throw new BadRequestException('Invalid vendor');
+    }
+
+    const gstRate = Number(data.gstRate || 0);
+    const baseAmount = Number(data.amount || 0);
+    const gstAmount =
+      data.gstAmount != null
+        ? Number(data.gstAmount)
+        : gstRate
+          ? (baseAmount * gstRate) / 100
+          : 0;
+
+    const totalAmount = baseAmount + gstAmount;
+
+    return this.prisma.$transaction(async (tx) => {
+      const expense = await tx.expense.create({
+        data: {
+          projectId: data.projectId,
+          type: data.type || 'OTHER',
+          amount: totalAmount,
+          date: new Date(data.date),
+          description: data.description || null,
+          gstRate: gstRate || null,
+          gstAmount: gstAmount || null,
+          vendorGST: data.vendorGST || null,
+          vendorId: data.vendorId || null,
+          bankAccountId: data.bankAccountId || null,
+        },
+        include: { vendor: true },
+      });
+
+      if (data.bankAccountId && totalAmount > 0) {
+        await this.finance.postEntry(
+          {
+            companyId,
+            bankAccountId: data.bankAccountId,
+            type: 'DEBIT',
+            category:
+              data.type === 'VENDOR_PAYMENT' ? 'VENDOR_PAYMENT' : 'EXPENSE',
+            amount: totalAmount,
+            date: new Date(data.date),
+            description:
+              data.description || `Expense — ${data.type || 'OTHER'}`,
+            projectId: data.projectId,
+            expenseId: expense.id,
+          },
+          tx,
+        );
+      }
+
+      return expense;
     });
   }
 }

@@ -37,6 +37,10 @@ export async function inwardInventory(payload: {
   projectId: string;
   materialId: string;
   quantity: number;
+  vendorId?: string;
+  unitCost?: number;
+  invoiceNo?: string;
+  remarks?: string;
 }) {
   const res = await api.post("/inventory/inward", payload);
   return res.data;
@@ -82,3 +86,10 @@ export const createRequirement = (payload: {
 export const getProjectRequirements = (projectId: string) => {
   return api.get(`/inventory/requirement/${projectId}`).then((res) => res.data);
 };
+
+export const fulfillRequirement = (id: string, data: {
+  quantity: number;
+  vendorId?: string;
+  unitCost?: number;
+  invoiceNo?: string;
+}) => api.post(`/inventory/requirement/${id}/fulfill`, data).then((r) => r.data);
