@@ -10,7 +10,9 @@ services:
     plan: free
     rootDir: backend/estate-manager-api
     buildCommand: npm ci --include=dev && npx prisma generate && npm run build
-    startCommand: npx prisma migrate deploy && npm run start:prod
+    # migrate deploy applies tracked SQL; db push syncs remaining schema drift
+    # (many models were evolved locally with `prisma db push` without migrations).
+    startCommand: npx prisma migrate deploy && npx prisma db push && npm run start:prod
     healthCheckPath: /health
     envVars:
       - key: NODE_VERSION
