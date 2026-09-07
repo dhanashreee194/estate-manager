@@ -88,11 +88,16 @@ export default function UnitCreateModal({
     mutationFn: createWing,
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ["units", projectId] });
+      qc.invalidateQueries({ queryKey: ["buildings", projectId] });
       onClose();
     },
-    onError: (err) => {
+    onError: (err: any) => {
       console.error("Create wing failed", err);
-      alert("Failed to create wing");
+      const message =
+        err?.response?.data?.message ||
+        err?.message ||
+        "Failed to create wing";
+      alert(Array.isArray(message) ? message.join(", ") : message);
     },
   });
 
@@ -123,19 +128,48 @@ export default function UnitCreateModal({
     }
 
     if (type === "WING") {
+      const totalFloors = Number(form.totalFloors);
+      const flatsPerFloor = Number(form.flatsPerFloor);
+      const autoCreateFlats = Boolean(form.autoCreateFlats);
+      const startFloor = Number(form.startFloor ?? 1);
+      const endFloor = Number(form.endFloor ?? totalFloors);
+
+      if (!form.buildingId || !form.name?.trim()) {
+        alert("Select a building and enter a wing name.");
+        return;
+      }
+      if (!totalFloors || totalFloors < 1 || !flatsPerFloor || flatsPerFloor < 1) {
+        alert("Enter total floors and flats per floor.");
+        return;
+      }
+      if (autoCreateFlats) {
+        if (!form.areaSqFt || !form.basePrice) {
+          alert("Enter area (sq ft) and base price to auto-create flats.");
+          return;
+        }
+        if (!startFloor || !endFloor || startFloor > endFloor) {
+          alert("Start floor must be less than or equal to end floor.");
+          return;
+        }
+        if (endFloor > totalFloors) {
+          alert("End floor cannot exceed total floors.");
+          return;
+        }
+      }
+
       createWingMutation.mutate({
         buildingId: form.buildingId,
-        name: form.name,
-        totalFloors: form.totalFloors,
-        flatsPerFloor: form.flatsPerFloor,
+        name: form.name.trim(),
+        totalFloors,
+        flatsPerFloor,
         hasLift: form.hasLift || false,
-        autoCreateFlats: form.autoCreateFlats || false,
-        flatConfig: form.autoCreateFlats
+        autoCreateFlats,
+        flatConfig: autoCreateFlats
           ? {
-              startFloor: form.startFloor,
-              endFloor: form.endFloor,
-              areaSqFt: form.areaSqFt,
-              basePrice: form.basePrice,
+              startFloor,
+              endFloor,
+              areaSqFt: Number(form.areaSqFt),
+              basePrice: Number(form.basePrice),
               direction: form.direction || undefined,
               bhkType: form.bhkType || undefined,
             }
@@ -246,16 +280,31 @@ export default function UnitCreateModal({
               <input
                 className="form-control"
                 type="number"
+                min={1}
                 placeholder="Total Floors"
-                onChange={(e) =>
-                  setForm({ ...form, totalFloors: +e.target.value })
-                }
+                value={form.totalFloors ?? ""}
+                onChange={(e) => {
+                  const totalFloors = +e.target.value;
+                  setForm({
+                    ...form,
+                    totalFloors,
+                    // Keep auto-create range aligned with wing floors by default
+                    ...(form.autoCreateFlats
+                      ? {
+                          startFloor: form.startFloor || 1,
+                          endFloor: totalFloors || form.endFloor,
+                        }
+                      : {}),
+                  });
+                }}
               />
 
               <input
                 className="form-control"
                 type="number"
+                min={1}
                 placeholder="Flats Per Floor"
+                value={form.flatsPerFloor ?? ""}
                 onChange={(e) =>
                   setForm({ ...form, flatsPerFloor: +e.target.value })
                 }
@@ -289,9 +338,19 @@ export default function UnitCreateModal({
                   <input
                     type="checkbox"
                     checked={form.autoCreateFlats || false}
-                    onChange={(e) =>
-                      setForm({ ...form, autoCreateFlats: e.target.checked })
-                    }
+                    onChange={(e) => {
+                      const autoCreateFlats = e.target.checked;
+                      setForm({
+                        ...form,
+                        autoCreateFlats,
+                        startFloor: autoCreateFlats
+                          ? form.startFloor || 1
+                          : form.startFloor,
+                        endFloor: autoCreateFlats
+                          ? form.endFloor || form.totalFloors || 1
+                          : form.endFloor,
+                      });
+                    }}
                     className="toggle-checkbox"
                   />
                   <span className="toggle-text">
@@ -302,7 +361,7 @@ export default function UnitCreateModal({
                 </label>
                 <p className="toggle-hint">
                   {form.autoCreateFlats
-                    ? "Flats will be automatically created for all floors"
+                    ? "Flats will be created for floors 1 through total floors (or your custom range)"
                     : "Add flats individually later"}
                 </p>
               </div>
@@ -316,7 +375,9 @@ export default function UnitCreateModal({
                     <input
                       className="form-control"
                       type="number"
+                      min={1}
                       placeholder="Start Floor"
+                      value={form.startFloor ?? 1}
                       onChange={(e) =>
                         setForm({ ...form, startFloor: +e.target.value })
                       }
@@ -325,7 +386,9 @@ export default function UnitCreateModal({
                     <input
                       className="form-control"
                       type="number"
+                      min={1}
                       placeholder="End Floor"
+                      value={form.endFloor ?? form.totalFloors ?? ""}
                       onChange={(e) =>
                         setForm({ ...form, endFloor: +e.target.value })
                       }
@@ -334,7 +397,9 @@ export default function UnitCreateModal({
                     <input
                       className="form-control"
                       type="number"
-                      placeholder="Area (Sq Ft)"
+                      min={1}
+                      placeholder="Area (Sq Ft) *"
+                      value={form.areaSqFt ?? ""}
                       onChange={(e) =>
                         setForm({ ...form, areaSqFt: +e.target.value })
                       }
@@ -343,7 +408,9 @@ export default function UnitCreateModal({
                     <input
                       className="form-control"
                       type="number"
-                      placeholder="Base Price"
+                      min={1}
+                      placeholder="Base Price *"
+                      value={form.basePrice ?? ""}
                       onChange={(e) =>
                         setForm({ ...form, basePrice: +e.target.value })
                       }
@@ -379,26 +446,34 @@ export default function UnitCreateModal({
                     </select>
 
                     {/* Calculated Summary */}
-                    {form.startFloor &&
-                      form.endFloor &&
-                      form.flatsPerFloor &&
-                      form.startFloor <= form.endFloor && (
+                    {(() => {
+                      const startFloor = Number(form.startFloor ?? 1);
+                      const endFloor = Number(
+                        form.endFloor ?? form.totalFloors ?? 0,
+                      );
+                      const flatsPerFloor = Number(form.flatsPerFloor ?? 0);
+                      if (
+                        !startFloor ||
+                        !endFloor ||
+                        !flatsPerFloor ||
+                        startFloor > endFloor
+                      ) {
+                        return null;
+                      }
+                      return (
                         <div className="calculation-summary">
                           <p className="summary-text">
                             This will create{" "}
                             <strong>
-                              {(form.endFloor - form.startFloor + 1) *
-                                form.flatsPerFloor}{" "}
+                              {(endFloor - startFloor + 1) * flatsPerFloor}{" "}
                               flats
                             </strong>{" "}
-                            across{" "}
-                            <strong>
-                              {form.endFloor - form.startFloor + 1}
-                            </strong>{" "}
+                            across <strong>{endFloor - startFloor + 1}</strong>{" "}
                             floors
                           </p>
                         </div>
-                      )}
+                      );
+                    })()}
                   </div>
                 </>
               )}
@@ -524,12 +599,19 @@ export default function UnitCreateModal({
             className="primary-btn"
             disabled={
               mutation.isPending ||
+              createWingMutation.isPending ||
+              createBuildingMutation.isPending ||
+              createUnitMutation.isPending ||
               !projectId ||
               (type === "WING" && !form.buildingId)
             }
             onClick={submit}
           >
-            {mutation.isPending ? "Creating..." : "Create"}
+            {createWingMutation.isPending ||
+            createBuildingMutation.isPending ||
+            createUnitMutation.isPending
+              ? "Creating..."
+              : "Create"}
           </button>
         </div>
       </div>

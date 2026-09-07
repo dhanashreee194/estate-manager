@@ -35,7 +35,7 @@ export class UnitController {
   }
 
   @Get('project/:projectId')
-  @Roles('ADMIN', 'SALES')
+  @Roles('ADMIN', 'SUPERVISOR', 'SALES', 'ACCOUNTANT')
   getUnits(@Param('projectId') projectId: string, @Req() req) {
     return this.unitService.getUnitsByProject(projectId, req.user.companyId);
   }
