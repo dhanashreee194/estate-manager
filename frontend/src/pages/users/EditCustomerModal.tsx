@@ -2,6 +2,9 @@ import { useState, useEffect } from "react";
 import { createCustomer, updateCustomer } from "../../api/customer";
 import FileUpload from "../../components/FileUpload";
 import { uploadKyc, getCustomerKyc } from "../../api/kyc";
+import ModalPortal from "../../components/ModalPortal";
+import "../leads/lead.css";
+
 export default function EditCustomerModal({ customer, onClose, onSaved }: any) {
   const [form, setForm] = useState<any>({});
   const [kycDocs, setKycDocs] = useState<any[]>([]);
@@ -61,8 +64,9 @@ export default function EditCustomerModal({ customer, onClose, onSaved }: any) {
     }
   };
   return (
-    <div className="modal-overlay">
-      <div className="modal">
+    <ModalPortal>
+    <div className="modal-overlay lead-modal-overlay">
+      <div className="modal lead-modal modal-wide" onClick={(e) => e.stopPropagation()}>
         <h2>{customer?.id ? "Edit Customer" : "Create Customer"}</h2>
 
         <div className="form-grid">
@@ -226,5 +230,6 @@ export default function EditCustomerModal({ customer, onClose, onSaved }: any) {
         </div>
       </div>
     </div>
+    </ModalPortal>
   );
 }

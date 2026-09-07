@@ -3,6 +3,7 @@ import { useState } from "react";
 import "./units.css";
 import { createBulkFlats } from "../../../api/unit";
 import { useAppSelector } from "../../../store/hooks";
+import ModalPortal from "../../../components/ModalPortal";
 
 interface Props {
   wingId: string;
@@ -60,6 +61,7 @@ export default function BulkFlatCreateModal({ wingId, onClose }: Props) {
   const totalFlats = (form.endFloor - form.startFloor + 1) * form.flatsPerFloor;
 
   return (
+    <ModalPortal>
     <div className="modal-backdrop">
       <div className="modal-card large">
         <h4>Bulk Create Flats</h4>
@@ -138,5 +140,6 @@ export default function BulkFlatCreateModal({ wingId, onClose }: Props) {
         </div>
       </div>
     </div>
+    </ModalPortal>
   );
 }

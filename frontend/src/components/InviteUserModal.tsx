@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { inviteUser } from "../api/user";
 import "./inviteUserModal.css";
+import ModalPortal from "./ModalPortal";
 
 type Props = {
   open: boolean;
@@ -68,6 +69,7 @@ export default function InviteUserModal({ open, onClose }: Props) {
   };
 
   return (
+    <ModalPortal>
     <div className="modal-backdrop" onClick={handleClose}>
       <div className="modal" onClick={(e) => e.stopPropagation()}>
         <h2>{t("invite.title")}</h2>
@@ -122,5 +124,6 @@ export default function InviteUserModal({ open, onClose }: Props) {
         </div>
       </div>
     </div>
+    </ModalPortal>
   );
 }

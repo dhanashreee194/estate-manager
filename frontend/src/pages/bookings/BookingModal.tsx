@@ -12,6 +12,7 @@ import { getProjectBuildings } from "../../api/building";
 import "./bookings.css";
 import { getUnitsByWing } from "../../api/unit";
 import { getBrokers } from "../../api/broker";
+import ModalPortal from "../../components/ModalPortal";
 
 export default function BookingModal({
   onClose,
@@ -221,6 +222,7 @@ export default function BookingModal({
     (effectiveRate / 100);
 
   return (
+    <ModalPortal>
     <div className="modal-backdrop">
       <div className="modal-card">
         <h4>
@@ -466,5 +468,6 @@ export default function BookingModal({
         </button>
       </div>
     </div>
+    </ModalPortal>
   );
 }

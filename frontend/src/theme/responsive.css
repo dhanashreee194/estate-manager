@@ -147,26 +147,51 @@ table.data-table,
   max-width: 320px;
 }
 
-/* Modals */
+/* Modals — always viewport-safe when portaled to body */
 .modal-backdrop,
-.modal-overlay {
-  padding: 12px;
-  align-items: flex-start;
+.modal-overlay,
+.pages-inventory .modal,
+.inventory-page .modal {
+  position: fixed !important;
+  inset: 0 !important;
+  z-index: 1000 !important;
+  display: flex !important;
+  justify-content: center;
+  align-items: center;
+  padding: max(12px, env(safe-area-inset-top))
+    max(12px, env(safe-area-inset-right))
+    max(12px, env(safe-area-inset-bottom))
+    max(12px, env(safe-area-inset-left));
+  box-sizing: border-box;
   overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
 }
 
 .modal-backdrop .modal,
 .modal-backdrop .modal-card,
 .modal-backdrop .modal-wide,
 .modal-backdrop .daily-sheet-modal,
+.modal-backdrop .daily-paper-modal,
 .modal-backdrop .payment-ledger-modal,
 .modal-overlay:not(.lead-modal-overlay) .modal,
 .modal-overlay:not(.lead-modal-overlay) .modal-card,
-.modal-overlay:not(.lead-modal-overlay) .modal-wide {
+.modal-overlay:not(.lead-modal-overlay) .modal-wide,
+.modal > .modal-card {
   width: min(920px, calc(100vw - 24px)) !important;
-  max-width: calc(100vw - 24px);
-  max-height: min(90dvh, 900px);
+  max-width: calc(100vw - 24px) !important;
+  max-height: min(90dvh, 900px) !important;
   overflow-y: auto;
+  box-sizing: border-box;
+  margin: auto;
+}
+
+/* Compact dialogs stay narrower */
+.modal-backdrop > .modal:not(.modal-wide):not(.daily-paper-modal):not(.payment-ledger-modal):not(.large),
+.modal-backdrop > .modal-card:not(.daily-paper-modal):not(.payment-ledger-modal):not(.large),
+.invite-user-modal .modal,
+.modal-backdrop .modal-card:not(.large):not(.daily-paper-modal):not(.payment-ledger-modal) {
+  width: min(480px, calc(100vw - 32px)) !important;
+  max-width: calc(100vw - 32px) !important;
 }
 
 /* Lead modals are portaled + self-sized; don't stretch them to 920px */
@@ -181,6 +206,26 @@ table.data-table,
 .lead-modal-overlay .modal-wide {
   width: min(480px, calc(100vw - 32px)) !important;
   max-width: calc(100vw - 32px) !important;
+}
+
+@media (max-width: 640px) {
+  .modal-backdrop,
+  .modal-overlay:not(.lead-modal-overlay),
+  .pages-inventory .modal {
+    align-items: flex-end !important;
+    padding: 0 !important;
+  }
+
+  .modal-backdrop .modal,
+  .modal-backdrop .modal-card,
+  .modal-overlay:not(.lead-modal-overlay) .modal,
+  .modal > .modal-card {
+    width: 100% !important;
+    max-width: 100% !important;
+    max-height: min(92dvh, 100%) !important;
+    border-radius: 16px 16px 0 0 !important;
+    margin: 0 !important;
+  }
 }
 
 /* Auth */

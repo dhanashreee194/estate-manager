@@ -10,6 +10,7 @@ import {
 } from "../../api/vendor";
 import { getProjects } from "../../api/project";
 import "./vendors.css";
+import ModalPortal from "../../components/ModalPortal";
 
 const emptyForm = {
   name: "",
@@ -177,6 +178,7 @@ export default function VendorsPage() {
       </div>
 
       {payVendor && (
+        <ModalPortal>
         <div className="modal-backdrop">
           <div className="modal-card">
             <div className="modal-header">
@@ -252,6 +254,7 @@ export default function VendorsPage() {
             </div>
           </div>
         </div>
+        </ModalPortal>
       )}
     </div>
   );

@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { createMaterial } from "../../api/inventory";
 import "./inventory.css";
+import ModalPortal from "../../components/ModalPortal";
 
 export default function MaterialForm({ onClose }: { onClose: () => void }) {
   const [name, setName] = useState("");
@@ -28,8 +29,9 @@ export default function MaterialForm({ onClose }: { onClose: () => void }) {
   };
 
   return (
-    <div className="modal">
-      <div className="modal-card">
+    <ModalPortal>
+    <div className="modal" onClick={onClose}>
+      <div className="modal-card" onClick={(e) => e.stopPropagation()}>
         <h3>Add Material</h3>
 
         <input
@@ -67,5 +69,6 @@ export default function MaterialForm({ onClose }: { onClose: () => void }) {
         </div>
       </div>
     </div>
+    </ModalPortal>
   );
 }

@@ -9,6 +9,7 @@ import { getVendors, type Vendor } from "../../../api/vendor";
 import { getMaterials, getProjectStock } from "../../../api/inventory";
 import { getProject } from "../../../api/project";
 import "../projects.css";
+import ModalPortal from "../../../components/ModalPortal";
 
 const STEEL_SIZES = ["6 mm", "8 mm", "10 mm", "12 mm", "16 mm", "20 mm"];
 const LABOUR_ROWS = 2;
@@ -407,6 +408,7 @@ export default function DailyReportModal({
   };
 
   return (
+    <ModalPortal>
     <div className="modal-backdrop">
       <div className="modal-card daily-paper-modal">
         <div className="modal-header">
@@ -1158,5 +1160,6 @@ export default function DailyReportModal({
         </div>
       </div>
     </div>
+    </ModalPortal>
   );
 }

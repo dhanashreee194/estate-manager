@@ -8,6 +8,7 @@ import { downloadDemandLetter } from "../../api/installments";
 import { downloadBookingAgreement } from "../../api/booking";
 import { useAppSelector } from "../../store/hooks";
 import "./bookings.css";
+import ModalPortal from "../../components/ModalPortal";
 
 export default function BookingPaymentModal({
   bookingId,
@@ -97,6 +98,7 @@ export default function BookingPaymentModal({
   };
 
   return (
+    <ModalPortal>
     <div className="modal-backdrop">
       <div className="modal-card payment-ledger-modal">
         <div className="ledger-header">
@@ -249,5 +251,6 @@ export default function BookingPaymentModal({
         </div>
       </div>
     </div>
+    </ModalPortal>
   );
 }

@@ -9,6 +9,7 @@ import {
   getProjectRequirements,
 } from "../../api/inventory";
 import { getVendors } from "../../api/vendor";
+import ModalPortal from "../../components/ModalPortal";
 
 export default function ProjectInventoryRequirements() {
   const { t } = useTranslation();
@@ -148,6 +149,7 @@ export default function ProjectInventoryRequirements() {
       </div>
 
       {fulfillId && (
+        <ModalPortal>
         <div className="modal-backdrop">
           <div className="modal-card">
             <div className="modal-header">
@@ -200,6 +202,7 @@ export default function ProjectInventoryRequirements() {
             </div>
           </div>
         </div>
+        </ModalPortal>
       )}
     </div>
   );

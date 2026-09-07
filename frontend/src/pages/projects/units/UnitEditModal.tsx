@@ -4,6 +4,7 @@ import { updateUnitPut } from "../../../api/unit";
 import { updateBuilding } from "../../../api/building";
 import { updateWing } from "../../../api/wing";
 import "./units.css";
+import ModalPortal from "../../../components/ModalPortal";
 
 type UnitType = "PLOT" | "BUILDING" | "WING" | "FLAT";
 
@@ -105,6 +106,7 @@ export default function UnitEditModal({
     updateWingMutation.isPending;
 
   return (
+    <ModalPortal>
     <div className="modal-backdrop">
       <div className="modal-card">
         <h4>Edit {type.charAt(0) + type.slice(1).toLowerCase()}</h4>
@@ -280,5 +282,6 @@ export default function UnitEditModal({
         </div>
       </div>
     </div>
+    </ModalPortal>
   );
 }

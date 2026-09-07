@@ -3,6 +3,7 @@ import { useTranslation } from "react-i18next";
 
 import "./inviteUserModal.css"; // reuse modal styles
 import { createProject } from "../api/project";
+import ModalPortal from "./ModalPortal";
 
 type Props = {
   open: boolean;
@@ -66,6 +67,7 @@ export default function CreateProjectModal({
   };
 
   return (
+    <ModalPortal>
     <div className="modal-backdrop" onClick={handleClose}>
       <div className="modal" onClick={(e) => e.stopPropagation()}>
         <h2>{t("createProject.title")}</h2>
@@ -115,5 +117,6 @@ export default function CreateProjectModal({
         </div>
       </div>
     </div>
+    </ModalPortal>
   );
 }

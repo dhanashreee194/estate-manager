@@ -6,6 +6,7 @@ import "./units.css";
 import { createWing } from "../../../api/wing";
 import { createBuilding, getProjectBuildings } from "../../../api/building";
 import { useAppSelector } from "../../../store/hooks";
+import ModalPortal from "../../../components/ModalPortal";
 
 type UnitType = "PLOT" | "BUILDING" | "WING" | "FLAT" | "ROW_HOUSE";
 
@@ -195,6 +196,7 @@ export default function UnitCreateModal({
   };
 
   return (
+    <ModalPortal>
     <div className="modal-backdrop">
       <div className="modal-card">
         <h4>Create {type.replace("_", " ")}</h4>
@@ -616,5 +618,6 @@ export default function UnitCreateModal({
         </div>
       </div>
     </div>
+    </ModalPortal>
   );
 }
