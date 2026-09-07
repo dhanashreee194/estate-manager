@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { createPortal } from "react-dom";
 import { useTranslation } from "react-i18next";
 import { updateLead } from "../../api/lead";
 import { LEAD_SOURCES } from "../../constants/leadSources";
@@ -25,6 +26,11 @@ export default function LeadEditModal({ lead, onClose, onSaved }: any) {
           ? new Date(lead.nextFollowUp).toISOString().slice(0, 10)
           : "",
       });
+      const prev = document.body.style.overflow;
+      document.body.style.overflow = "hidden";
+      return () => {
+        document.body.style.overflow = prev;
+      };
     }
   }, [lead]);
 
@@ -53,7 +59,10 @@ export default function LeadEditModal({ lead, onClose, onSaved }: any) {
         portalListingId: form.portalListingId || undefined,
         portalUrl: form.portalUrl || undefined,
         referredBy: form.referredBy || undefined,
-        budget: form.budget === "" || form.budget == null ? undefined : Number(form.budget),
+        budget:
+          form.budget === "" || form.budget == null
+            ? undefined
+            : Number(form.budget),
         requirement: form.requirement || undefined,
         nextFollowUp: form.nextFollowUp
           ? new Date(form.nextFollowUp).toISOString()
@@ -66,88 +75,127 @@ export default function LeadEditModal({ lead, onClose, onSaved }: any) {
     }
   };
 
-  return (
-    <div className="modal-overlay">
-      <div className="modal modal-wide">
-        <h2>{t("leads.editLead")}</h2>
+  return createPortal(
+    <div
+      className="modal-overlay lead-modal-overlay"
+      role="dialog"
+      aria-modal="true"
+      onClick={onClose}
+    >
+      <div
+        className="modal modal-wide lead-modal"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <div className="lead-modal-header">
+          <h2>{t("leads.editLead")}</h2>
+          <button
+            type="button"
+            className="lead-modal-close"
+            onClick={onClose}
+            aria-label={t("common.close")}
+          >
+            ×
+          </button>
+        </div>
 
-        <input name="name" value={form.name || ""} onChange={handleChange} />
+        <div className="lead-modal-body">
+          <input name="name" value={form.name || ""} onChange={handleChange} />
 
-        <input name="phone" value={form.phone || ""} onChange={handleChange} />
-
-        <input name="email" value={form.email || ""} onChange={handleChange} />
-
-        <label className="field-label">{t("leads.source")}</label>
-        <select name="source" value={form.source || "OTHER"} onChange={handleChange}>
-          {LEAD_SOURCES.map((s) => (
-            <option key={s.value} value={s.value}>
-              {s.group} — {s.label}
-            </option>
-          ))}
-        </select>
-
-        {isPortal && (
-          <>
-            <input
-              name="sourceDetail"
-              placeholder={t("leads.campaignTitle")}
-              value={form.sourceDetail || ""}
-              onChange={handleChange}
-            />
-            <input
-              name="portalListingId"
-              placeholder={t("leads.portalListingId")}
-              value={form.portalListingId || ""}
-              onChange={handleChange}
-            />
-            <input
-              name="portalUrl"
-              placeholder={t("leads.portalUrl")}
-              value={form.portalUrl || ""}
-              onChange={handleChange}
-            />
-          </>
-        )}
-
-        {needsReferral && (
           <input
-            name="referredBy"
-            placeholder={form.source === "BROKER" ? t("leads.brokerName") : t("leads.referredBy")}
-            value={form.referredBy || ""}
+            name="phone"
+            value={form.phone || ""}
             onChange={handleChange}
           />
-        )}
 
-        <input
-          name="budget"
-          value={form.budget ?? ""}
-          onChange={handleChange}
-          placeholder={t("leads.budget")}
-        />
+          <input
+            name="email"
+            value={form.email || ""}
+            onChange={handleChange}
+          />
 
-        <textarea
-          name="requirement"
-          value={form.requirement || ""}
-          onChange={handleChange}
-          placeholder={t("leads.requirement")}
-        />
+          <label className="field-label">{t("leads.source")}</label>
+          <select
+            name="source"
+            value={form.source || "OTHER"}
+            onChange={handleChange}
+          >
+            {LEAD_SOURCES.map((s) => (
+              <option key={s.value} value={s.value}>
+                {s.group} — {s.label}
+              </option>
+            ))}
+          </select>
 
-        <label className="field-label">{t("leads.nextFollowUp")}</label>
-        <input
-          type="date"
-          name="nextFollowUp"
-          value={form.nextFollowUp || ""}
-          onChange={handleChange}
-        />
+          {isPortal && (
+            <>
+              <input
+                name="sourceDetail"
+                placeholder={t("leads.campaignTitle")}
+                value={form.sourceDetail || ""}
+                onChange={handleChange}
+              />
+              <input
+                name="portalListingId"
+                placeholder={t("leads.portalListingId")}
+                value={form.portalListingId || ""}
+                onChange={handleChange}
+              />
+              <input
+                name="portalUrl"
+                placeholder={t("leads.portalUrl")}
+                value={form.portalUrl || ""}
+                onChange={handleChange}
+              />
+            </>
+          )}
 
-        <div className="modal-actions">
-          <button onClick={onClose}>{t("common.close")}</button>
+          {needsReferral && (
+            <input
+              name="referredBy"
+              placeholder={
+                form.source === "BROKER"
+                  ? t("leads.brokerName")
+                  : t("leads.referredBy")
+              }
+              value={form.referredBy || ""}
+              onChange={handleChange}
+            />
+          )}
 
-          <button className="primary" onClick={save}>
+          <input
+            name="budget"
+            value={form.budget ?? ""}
+            onChange={handleChange}
+            placeholder={t("leads.budget")}
+          />
+
+          <textarea
+            name="requirement"
+            value={form.requirement || ""}
+            onChange={handleChange}
+            placeholder={t("leads.requirement")}
+            rows={3}
+          />
+
+          <label className="field-label">{t("leads.nextFollowUp")}</label>
+          <input
+            type="date"
+            name="nextFollowUp"
+            value={form.nextFollowUp || ""}
+            onChange={handleChange}
+          />
+        </div>
+
+        <div className="modal-actions lead-modal-actions">
+          <button type="button" onClick={onClose}>
+            {t("common.close")}
+          </button>
+          <button type="button" className="primary" onClick={save}>
             {t("common.save")}
           </button>
         </div>
       </div>
-    </div>
+    </div>,
+    document.body,
   );
 }

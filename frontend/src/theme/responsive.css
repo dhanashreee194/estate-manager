@@ -155,15 +155,32 @@ table.data-table,
   overflow-y: auto;
 }
 
-.modal,
-.modal-card,
-.modal-wide,
-.daily-sheet-modal,
-.payment-ledger-modal {
+.modal-backdrop .modal,
+.modal-backdrop .modal-card,
+.modal-backdrop .modal-wide,
+.modal-backdrop .daily-sheet-modal,
+.modal-backdrop .payment-ledger-modal,
+.modal-overlay:not(.lead-modal-overlay) .modal,
+.modal-overlay:not(.lead-modal-overlay) .modal-card,
+.modal-overlay:not(.lead-modal-overlay) .modal-wide {
   width: min(920px, calc(100vw - 24px)) !important;
   max-width: calc(100vw - 24px);
   max-height: min(90dvh, 900px);
   overflow-y: auto;
+}
+
+/* Lead modals are portaled + self-sized; don't stretch them to 920px */
+.lead-modal-overlay {
+  padding: max(12px, env(safe-area-inset-top)) 12px
+    max(12px, env(safe-area-inset-bottom));
+  align-items: center !important;
+  z-index: 1000;
+}
+
+.lead-modal-overlay .lead-modal,
+.lead-modal-overlay .modal-wide {
+  width: min(480px, calc(100vw - 32px)) !important;
+  max-width: calc(100vw - 32px) !important;
 }
 
 /* Auth */
