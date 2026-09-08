@@ -416,7 +416,13 @@
     "labours": "Labours",
     "inwards": "Inwards",
     "empty": "No vendors yet",
-    "recordPayment": "Record payment"
+    "recordPayment": "Record payment",
+    "view": "View",
+    "paymentHistory": "Payment history",
+    "noPayments": "No payments recorded yet",
+    "billOrReason": "Against bill / payment reason",
+    "billOrReasonPlaceholder": "Bill no. or reason (e.g. Invoice #112, Cement supply)",
+    "totalPaid": "Total paid"
   },
   "brokers": {
     "title": "Brokers / Channel partners",

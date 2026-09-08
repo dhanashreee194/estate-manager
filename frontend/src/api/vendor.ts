@@ -29,6 +29,28 @@ export const deactivateVendor = (id: string) =>
 export const getVendor = (id: string) =>
   api.get(`/vendors/${id}`).then((r) => r.data);
 
+export type VendorPayment = {
+  id: string;
+  date: string;
+  amount: number;
+  type: string;
+  description: string;
+  billOrReason: string;
+  gstRate?: number | null;
+  gstAmount?: number | null;
+  projectId: string;
+  projectName: string;
+};
+
+export type VendorPaymentList = {
+  vendor: { id: string; name: string };
+  payments: VendorPayment[];
+  totalAmount: number;
+};
+
+export const getVendorPayments = (id: string) =>
+  api.get(`/vendors/${id}/payments`).then((r) => r.data as VendorPaymentList);
+
 export const recordVendorPayment = (
   id: string,
   data: {

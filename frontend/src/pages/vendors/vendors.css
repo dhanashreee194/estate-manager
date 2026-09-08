@@ -25,16 +25,53 @@
 
 .vendors-page .vendor-grid {
   display: grid;
-  grid-template-columns: 1.4fr 0.8fr 1fr 1fr 0.6fr 0.6fr 1.2fr;
+  grid-template-columns: 1.4fr 0.8fr 1fr 1fr 0.6fr 0.6fr 1.8fr;
   gap: 0.5rem;
   align-items: center;
 }
 
 .vendors-page .actions {
   display: flex;
+  flex-wrap: wrap;
   gap: 0.4rem;
 }
 
 .vendors-page .actions button.danger {
   color: #b91c1c;
+}
+
+.vendor-payments-modal {
+  width: min(720px, calc(100vw - 32px)) !important;
+  max-width: calc(100vw - 32px);
+}
+
+.payment-history-table {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  margin: 0.5rem 0 1rem;
+  max-height: min(50vh, 420px);
+  overflow: auto;
+}
+
+.payment-grid {
+  display: grid;
+  grid-template-columns: 0.9fr 1.6fr 1.1fr 0.8fr;
+  gap: 0.5rem;
+  align-items: start;
+}
+
+.payment-total {
+  margin-bottom: 0.75rem;
+  font-size: 0.95rem;
+}
+
+@media (max-width: 720px) {
+  .vendors-page .vendor-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .payment-grid {
+    grid-template-columns: 1fr;
+  }
 }

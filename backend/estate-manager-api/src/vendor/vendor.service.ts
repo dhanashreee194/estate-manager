@@ -61,6 +61,43 @@ export class VendorService {
     return vendor;
   }
 
+  /** Payment / expense history for a vendor (date + bill/reason) */
+  async listPayments(vendorId: string, companyId: string) {
+    const vendor = await this.prisma.vendor.findFirst({
+      where: { id: vendorId, companyId },
+      select: { id: true, name: true },
+    });
+    if (!vendor) throw new NotFoundException('Vendor not found');
+
+    const payments = await this.prisma.expense.findMany({
+      where: {
+        vendorId,
+        project: { companyId },
+      },
+      include: {
+        project: { select: { id: true, name: true } },
+      },
+      orderBy: { date: 'desc' },
+    });
+
+    return {
+      vendor,
+      payments: payments.map((p) => ({
+        id: p.id,
+        date: p.date,
+        amount: p.amount,
+        type: p.type,
+        description: p.description || '',
+        billOrReason: p.description || '',
+        gstRate: p.gstRate,
+        gstAmount: p.gstAmount,
+        projectId: p.projectId,
+        projectName: p.project?.name || '',
+      })),
+      totalAmount: payments.reduce((sum, p) => sum + p.amount, 0),
+    };
+  }
+
   async update(id: string, dto: UpdateVendorDto, companyId: string) {
     const vendor = await this.prisma.vendor.findFirst({
       where: { id, companyId },

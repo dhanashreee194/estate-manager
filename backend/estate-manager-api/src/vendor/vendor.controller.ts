@@ -33,6 +33,11 @@ export class VendorController {
     return this.vendorService.findAll(req.user.companyId, type);
   }
 
+  @Get(':id/payments')
+  listPayments(@Param('id') id: string, @Req() req) {
+    return this.vendorService.listPayments(id, req.user.companyId);
+  }
+
   @Get(':id')
   findOne(@Param('id') id: string, @Req() req) {
     return this.vendorService.findOne(id, req.user.companyId);

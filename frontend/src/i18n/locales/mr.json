@@ -416,7 +416,13 @@
     "labours": "मजूर",
     "inwards": "आवक",
     "empty": "अजून विक्रेते नाहीत",
-    "recordPayment": "पेमेंट नोंदवा"
+    "recordPayment": "पेमेंट नोंदवा",
+    "view": "पहा",
+    "paymentHistory": "पेमेंट इतिहास",
+    "noPayments": "अजून पेमेंट नोंदवले नाहीत",
+    "billOrReason": "बिल / पेमेंट कारण",
+    "billOrReasonPlaceholder": "बिल क्र. किंवा कारण (उदा. Invoice #112)",
+    "totalPaid": "एकूण भरले"
   },
   "brokers": {
     "title": "दलाल / चॅनेल पार्टनर",

@@ -4,6 +4,7 @@ import { useTranslation } from "react-i18next";
 import {
   createVendor,
   deactivateVendor,
+  getVendorPayments,
   getVendors,
   recordVendorPayment,
   type Vendor,
@@ -21,12 +22,31 @@ const emptyForm = {
   type: "BOTH" as Vendor["type"],
 };
 
+function formatMoney(amount: number) {
+  return new Intl.NumberFormat("en-IN", {
+    style: "currency",
+    currency: "INR",
+    maximumFractionDigits: 0,
+  }).format(amount || 0);
+}
+
+function formatDate(value: string) {
+  const d = new Date(value);
+  if (Number.isNaN(d.getTime())) return "—";
+  return d.toLocaleDateString("en-IN", {
+    day: "2-digit",
+    month: "short",
+    year: "numeric",
+  });
+}
+
 export default function VendorsPage() {
   const { t } = useTranslation();
   const queryClient = useQueryClient();
   const [form, setForm] = useState(emptyForm);
   const [filter, setFilter] = useState<string>("");
   const [payVendor, setPayVendor] = useState<Vendor | null>(null);
+  const [viewVendor, setViewVendor] = useState<Vendor | null>(null);
   const [payForm, setPayForm] = useState({
     projectId: "",
     amount: 0,
@@ -43,6 +63,12 @@ export default function VendorsPage() {
   const { data: projects = [] } = useQuery({
     queryKey: ["projects"],
     queryFn: getProjects,
+  });
+
+  const { data: paymentHistory, isLoading: paymentsLoading } = useQuery({
+    queryKey: ["vendor-payments", viewVendor?.id],
+    queryFn: () => getVendorPayments(viewVendor!.id),
+    enabled: !!viewVendor?.id,
   });
 
   const createMut = useMutation({
@@ -66,8 +92,21 @@ export default function VendorsPage() {
         gstRate: Number(payForm.gstRate) || undefined,
       }),
     onSuccess: () => {
+      const vendorId = payVendor?.id;
       setPayVendor(null);
+      setPayForm({
+        projectId: "",
+        amount: 0,
+        date: new Date().toISOString().slice(0, 10),
+        description: "",
+        gstRate: 0,
+      });
       queryClient.invalidateQueries({ queryKey: ["vendors"] });
+      if (vendorId) {
+        queryClient.invalidateQueries({
+          queryKey: ["vendor-payments", vendorId],
+        });
+      }
     },
   });
 
@@ -155,11 +194,19 @@ export default function VendorsPage() {
               <span>{v._count?.labours ?? 0}</span>
               <span>{v._count?.inventoryInwards ?? 0}</span>
               <span className="actions">
-                <button onClick={() => setPayVendor(v)}>{t("common.pay")}</button>
+                <button type="button" onClick={() => setViewVendor(v)}>
+                  {t("vendors.view")}
+                </button>
+                <button type="button" onClick={() => setPayVendor(v)}>
+                  {t("common.pay")}
+                </button>
                 <button
+                  type="button"
                   className="danger"
                   onClick={() => {
-                    if (confirm(t("common.deactivateConfirm", { name: v.name })))
+                    if (
+                      confirm(t("common.deactivateConfirm", { name: v.name }))
+                    )
                       deactivateMut.mutate(v.id);
                   }}
                 >
@@ -177,83 +224,172 @@ export default function VendorsPage() {
         </div>
       </div>
 
-      {payVendor && (
+      {viewVendor && (
         <ModalPortal>
-        <div className="modal-backdrop">
-          <div className="modal-card">
-            <div className="modal-header">
-              <h3>{t("common.pay")} {payVendor.name}</h3>
-              <button className="close-btn" onClick={() => setPayVendor(null)}>
-                ✕
-              </button>
-            </div>
-            <div className="form-group">
-              <label>{t("common.project")}</label>
-              <select
-                value={payForm.projectId}
-                onChange={(e) =>
-                  setPayForm({ ...payForm, projectId: e.target.value })
-                }
-              >
-                <option value="">{t("common.selectProject")}</option>
-                {projects.map((p: any) => (
-                  <option key={p.id} value={p.id}>
-                    {p.name}
-                  </option>
-                ))}
-              </select>
-            </div>
-            <div className="form-group">
-              <label>{t("common.amount")}</label>
-              <input
-                type="number"
-                value={payForm.amount}
-                onChange={(e) =>
-                  setPayForm({ ...payForm, amount: +e.target.value })
-                }
-              />
-            </div>
-            <div className="form-group">
-              <label>{t("common.gstPercent")}</label>
-              <input
-                type="number"
-                value={payForm.gstRate}
-                onChange={(e) =>
-                  setPayForm({ ...payForm, gstRate: +e.target.value })
-                }
-              />
-            </div>
-            <div className="form-group">
-              <label>{t("common.date")}</label>
-              <input
-                type="date"
-                value={payForm.date}
-                onChange={(e) =>
-                  setPayForm({ ...payForm, date: e.target.value })
-                }
-              />
-            </div>
-            <div className="form-group">
-              <label>{t("common.description")}</label>
-              <input
-                value={payForm.description}
-                onChange={(e) =>
-                  setPayForm({ ...payForm, description: e.target.value })
-                }
-              />
-            </div>
-            <div className="modal-actions">
-              <button onClick={() => setPayVendor(null)}>{t("common.cancel")}</button>
-              <button
-                className="primary-btn"
-                disabled={!payForm.projectId || !payForm.amount || payMut.isPending}
-                onClick={() => payMut.mutate()}
-              >
-                {t("vendors.recordPayment")}
-              </button>
+          <div className="modal-backdrop" onClick={() => setViewVendor(null)}>
+            <div
+              className="modal-card vendor-payments-modal"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="modal-header">
+                <h3>
+                  {t("vendors.paymentHistory")} — {viewVendor.name}
+                </h3>
+                <button
+                  type="button"
+                  className="close-btn"
+                  onClick={() => setViewVendor(null)}
+                >
+                  ✕
+                </button>
+              </div>
+
+              {paymentsLoading && <p>{t("common.loading")}</p>}
+
+              {!paymentsLoading &&
+                (!paymentHistory?.payments ||
+                  paymentHistory.payments.length === 0) && (
+                  <p className="hint">{t("vendors.noPayments")}</p>
+                )}
+
+              {!paymentsLoading &&
+                paymentHistory?.payments &&
+                paymentHistory.payments.length > 0 && (
+                  <>
+                    <div className="payment-history-table">
+                      <div className="table-header payment-grid">
+                        <span>{t("common.date")}</span>
+                        <span>{t("vendors.billOrReason")}</span>
+                        <span>{t("common.project")}</span>
+                        <span>{t("common.amount")}</span>
+                      </div>
+                      {paymentHistory.payments.map((p) => (
+                        <div key={p.id} className="table-row payment-grid">
+                          <span>{formatDate(p.date)}</span>
+                          <span>
+                            {p.billOrReason || p.description || "—"}
+                          </span>
+                          <span>{p.projectName || "—"}</span>
+                          <span>{formatMoney(p.amount)}</span>
+                        </div>
+                      ))}
+                    </div>
+                    <div className="payment-total">
+                      <strong>{t("vendors.totalPaid")}:</strong>{" "}
+                      {formatMoney(paymentHistory.totalAmount)}
+                    </div>
+                  </>
+                )}
+
+              <div className="modal-actions">
+                <button type="button" onClick={() => setViewVendor(null)}>
+                  {t("common.close")}
+                </button>
+                <button
+                  type="button"
+                  className="primary-btn"
+                  onClick={() => {
+                    setPayVendor(viewVendor);
+                    setViewVendor(null);
+                  }}
+                >
+                  {t("common.pay")}
+                </button>
+              </div>
             </div>
           </div>
-        </div>
+        </ModalPortal>
+      )}
+
+      {payVendor && (
+        <ModalPortal>
+          <div className="modal-backdrop">
+            <div className="modal-card">
+              <div className="modal-header">
+                <h3>
+                  {t("common.pay")} {payVendor.name}
+                </h3>
+                <button
+                  type="button"
+                  className="close-btn"
+                  onClick={() => setPayVendor(null)}
+                >
+                  ✕
+                </button>
+              </div>
+              <div className="form-group">
+                <label>{t("common.project")}</label>
+                <select
+                  value={payForm.projectId}
+                  onChange={(e) =>
+                    setPayForm({ ...payForm, projectId: e.target.value })
+                  }
+                >
+                  <option value="">{t("common.selectProject")}</option>
+                  {projects.map((p: any) => (
+                    <option key={p.id} value={p.id}>
+                      {p.name}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              <div className="form-group">
+                <label>{t("common.amount")}</label>
+                <input
+                  type="number"
+                  value={payForm.amount}
+                  onChange={(e) =>
+                    setPayForm({ ...payForm, amount: +e.target.value })
+                  }
+                />
+              </div>
+              <div className="form-group">
+                <label>{t("common.gstPercent")}</label>
+                <input
+                  type="number"
+                  value={payForm.gstRate}
+                  onChange={(e) =>
+                    setPayForm({ ...payForm, gstRate: +e.target.value })
+                  }
+                />
+              </div>
+              <div className="form-group">
+                <label>{t("common.date")}</label>
+                <input
+                  type="date"
+                  value={payForm.date}
+                  onChange={(e) =>
+                    setPayForm({ ...payForm, date: e.target.value })
+                  }
+                />
+              </div>
+              <div className="form-group">
+                <label>{t("vendors.billOrReason")}</label>
+                <input
+                  value={payForm.description}
+                  placeholder={t("vendors.billOrReasonPlaceholder")}
+                  onChange={(e) =>
+                    setPayForm({ ...payForm, description: e.target.value })
+                  }
+                />
+              </div>
+              <div className="modal-actions">
+                <button type="button" onClick={() => setPayVendor(null)}>
+                  {t("common.cancel")}
+                </button>
+                <button
+                  type="button"
+                  className="primary-btn"
+                  disabled={
+                    !payForm.projectId || !payForm.amount || payMut.isPending
+                  }
+                  onClick={() => payMut.mutate()}
+                >
+                  {t("vendors.recordPayment")}
+                </button>
+              </div>
+            </div>
+          </div>
         </ModalPortal>
       )}
     </div>
