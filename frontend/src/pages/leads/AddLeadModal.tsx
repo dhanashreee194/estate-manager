@@ -8,6 +8,10 @@ import {
   leadSourceLabel,
   type LeadSourceValue,
 } from "../../constants/leadSources";
+import {
+  LEAD_REQUIREMENTS,
+  isPresetRequirement,
+} from "../../constants/leadRequirements";
 import "./lead.css";
 
 const emptyForm = {
@@ -21,8 +25,15 @@ const emptyForm = {
   referredBy: "",
   budget: "",
   requirement: "",
+  requirementOther: "",
   nextFollowUp: "",
 };
+
+function parseBudget(value: string): number | undefined {
+  if (!value?.trim()) return undefined;
+  const numeric = Number(String(value).replace(/[^\d.]/g, ""));
+  return Number.isFinite(numeric) && numeric > 0 ? numeric : undefined;
+}
 
 export default function AddLeadModal({
   open,
@@ -65,9 +76,17 @@ export default function AddLeadModal({
   };
 
   const needsReferral = form.source === "REFERRAL" || form.source === "BROKER";
-  const isPortal = ["PORTAL_99ACRES", "MAGICBRICKS", "HOUSING", "MAKAAN"].includes(
-    form.source,
-  );
+  const isPortal = [
+    "PORTAL_99ACRES",
+    "MAGICBRICKS",
+    "HOUSING",
+    "MAKAAN",
+  ].includes(form.source);
+
+  const resolvedRequirement =
+    form.requirement === "Other"
+      ? form.requirementOther.trim() || "Other"
+      : form.requirement || undefined;
 
   const submit = async () => {
     try {
@@ -80,15 +99,18 @@ export default function AddLeadModal({
         portalListingId: form.portalListingId || undefined,
         portalUrl: form.portalUrl || undefined,
         referredBy: form.referredBy || undefined,
-        budget: form.budget ? Number(form.budget) : undefined,
-        requirement: form.requirement || undefined,
+        budget: parseBudget(form.budget),
+        requirement: resolvedRequirement,
         nextFollowUp: form.nextFollowUp
           ? new Date(form.nextFollowUp).toISOString()
           : undefined,
         ...(defaultProjectId && { projectId: defaultProjectId }),
       });
 
-      setForm({ ...emptyForm, source: (defaultSource as LeadSourceValue) || "WALK_IN" });
+      setForm({
+        ...emptyForm,
+        source: (defaultSource as LeadSourceValue) || "WALK_IN",
+      });
       onSuccess();
       onClose();
     } catch (err) {
@@ -214,18 +236,54 @@ export default function AddLeadModal({
 
           <input
             name="budget"
-            placeholder={t("leads.budget")}
+            inputMode="decimal"
+            placeholder={t("leads.budgetPlaceholder")}
             value={form.budget}
             onChange={handleChange}
           />
 
-          <textarea
+          <label className="field-label" htmlFor="lead-requirement">
+            {t("leads.requirement")}
+          </label>
+          <select
+            id="lead-requirement"
             name="requirement"
-            placeholder={t("leads.requirement")}
-            value={form.requirement}
+            value={
+              isPresetRequirement(form.requirement)
+                ? form.requirement
+                : form.requirement
+                  ? "Other"
+                  : ""
+            }
             onChange={handleChange}
-            rows={3}
-          />
+          >
+            <option value="">{t("leads.requirementPlaceholder")}</option>
+            {LEAD_REQUIREMENTS.map((value) => (
+              <option key={value} value={value}>
+                {value}
+              </option>
+            ))}
+          </select>
+
+          {(form.requirement === "Other" ||
+            (form.requirement && !isPresetRequirement(form.requirement))) && (
+            <input
+              name="requirementOther"
+              placeholder={t("leads.requirementOther")}
+              value={
+                form.requirement === "Other"
+                  ? form.requirementOther
+                  : form.requirement
+              }
+              onChange={(e) =>
+                setForm({
+                  ...form,
+                  requirement: "Other",
+                  requirementOther: e.target.value,
+                })
+              }
+            />
+          )}
 
           <label className="field-label">{t("leads.nextFollowUp")}</label>
           <input

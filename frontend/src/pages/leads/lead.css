@@ -191,6 +191,19 @@
   color: #6ee7b7;
 }
 
+.lead-modal-body select,
+.lead-modal select {
+  appearance: auto;
+  -webkit-appearance: menulist;
+  cursor: pointer;
+  min-height: 40px;
+}
+
+.lead-modal-body select option {
+  color: var(--text, #0f172a);
+  background: var(--bg-input, #fff);
+}
+
 .modal-overlay,
 .lead-modal-overlay {
   position: fixed;
