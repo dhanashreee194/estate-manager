@@ -186,7 +186,7 @@ export default function EditCustomerModal({ customer, onClose, onSaved }: any) {
                 <div
                   style={{
                     fontSize: 12,
-                    color: "#999",
+                    color: "var(--text-muted)",
                   }}
                 >
                   {doc.verified ? "Verified" : "Pending"}
@@ -213,7 +213,7 @@ export default function EditCustomerModal({ customer, onClose, onSaved }: any) {
         {!customer?.id && (
           <p
             style={{
-              color: "#999",
+              color: "var(--text-muted)",
               marginTop: 12,
               fontSize: 14,
             }}

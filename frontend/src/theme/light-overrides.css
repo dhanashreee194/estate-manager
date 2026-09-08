@@ -1,5 +1,11 @@
 /* Extra light-theme polish for leftover rgba / hardcoded accents */
 
+[data-theme="light"] {
+  /* Stronger muted greys for readable contrast on light backgrounds */
+  --text-muted: #475569;
+  --text-faint: #64748b;
+}
+
 [data-theme="light"] .modal-backdrop,
 [data-theme="light"] .modal-overlay {
   background: var(--overlay);
@@ -53,4 +59,144 @@
   background: transparent;
   border-color: var(--border-strong);
   color: var(--text);
+}
+
+/* ---- Readable muted / secondary text ---- */
+[data-theme="light"] .muted,
+[data-theme="light"] .empty-text,
+[data-theme="light"] .hint,
+[data-theme="light"] .subtitle,
+[data-theme="light"] .field-label,
+[data-theme="light"] .intake-label,
+[data-theme="light"] .lead-phone,
+[data-theme="light"] .lead-source,
+[data-theme="light"] .lead-source-detail,
+[data-theme="light"] .source-summary-total,
+[data-theme="light"] .toggle-hint,
+[data-theme="light"] .toggle-text,
+[data-theme="light"] .summary-text,
+[data-theme="light"] .project-location,
+[data-theme="light"] .flat-meta,
+[data-theme="light"] .footer-text,
+[data-theme="light"] .auth-card .muted {
+  color: var(--text-muted) !important;
+  opacity: 1 !important;
+}
+
+/* Opacity-only “grey” text becomes invisible on light — restore contrast */
+[data-theme="light"] .lead-phone,
+[data-theme="light"] .lead-source,
+[data-theme="light"] .lead-source-detail,
+[data-theme="light"] .source-summary-total,
+[data-theme="light"] .intake-label,
+[data-theme="light"] .field-label {
+  opacity: 1 !important;
+}
+
+/* ---- Forms / modals: never keep dark-theme white text ---- */
+[data-theme="light"] input,
+[data-theme="light"] select,
+[data-theme="light"] textarea,
+[data-theme="light"] .form-control,
+[data-theme="light"] .modal input,
+[data-theme="light"] .modal select,
+[data-theme="light"] .modal textarea,
+[data-theme="light"] .modal-card input,
+[data-theme="light"] .modal-card select,
+[data-theme="light"] .modal-card textarea,
+[data-theme="light"] .lead-modal input,
+[data-theme="light"] .lead-modal select,
+[data-theme="light"] .lead-modal textarea,
+[data-theme="light"] .source-filter {
+  color: var(--text) !important;
+  background: var(--bg-input) !important;
+  border-color: var(--border-strong) !important;
+}
+
+[data-theme="light"] input::placeholder,
+[data-theme="light"] textarea::placeholder,
+[data-theme="light"] .form-control::placeholder,
+[data-theme="light"] .modal input::placeholder,
+[data-theme="light"] .modal textarea::placeholder,
+[data-theme="light"] .modal-card input::placeholder,
+[data-theme="light"] .lead-modal input::placeholder,
+[data-theme="light"] .lead-modal textarea::placeholder {
+  color: var(--text-faint) !important;
+  opacity: 1 !important;
+}
+
+[data-theme="light"] .modal,
+[data-theme="light"] .modal-card,
+[data-theme="light"] .lead-modal,
+[data-theme="light"] .auth-card {
+  color: var(--text);
+  background: var(--bg-elevated);
+}
+
+[data-theme="light"] .modal h2,
+[data-theme="light"] .modal h3,
+[data-theme="light"] .modal h4,
+[data-theme="light"] .modal-card h3,
+[data-theme="light"] .modal-card h4,
+[data-theme="light"] .lead-modal-header h2 {
+  color: var(--text-strong);
+}
+
+[data-theme="light"] .lead-modal-close {
+  color: var(--text);
+}
+
+[data-theme="light"] .intake-chip,
+[data-theme="light"] .source-summary-chip {
+  background: var(--bg-muted);
+  border-color: var(--border-strong);
+  color: var(--text);
+}
+
+[data-theme="light"] .intake-chip.active,
+[data-theme="light"] .source-summary-chip.active {
+  background: var(--success-soft);
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+[data-theme="light"] .secondary-btn,
+[data-theme="light"] .btn-outline {
+  color: var(--text);
+  border-color: var(--border-strong);
+  background: var(--bg-elevated);
+}
+
+[data-theme="light"] .filter-tabs button {
+  color: var(--text-muted);
+  border-color: var(--border-strong);
+}
+
+[data-theme="light"] .filter-tabs button.active {
+  background: var(--accent);
+  color: var(--accent-text);
+}
+
+/* Cards / lists that still assume dark text */
+[data-theme="light"] .lead-card,
+[data-theme="light"] .project-card,
+[data-theme="light"] .building-card,
+[data-theme="light"] .wing-card,
+[data-theme="light"] .flat-card {
+  color: var(--text);
+}
+
+[data-theme="light"] .lead-card:hover {
+  background: var(--bg-hover);
+}
+
+[data-theme="light"] .kanban-container,
+[data-theme="light"] .lead-column,
+[data-theme="light"] .column-header {
+  color: var(--text);
+}
+
+[data-theme="light"] option {
+  color: var(--text);
+  background: var(--bg-input);
 }

@@ -84,7 +84,7 @@
 }
 
 .floor-label {
-  color: #9ca3af;
+  color: var(--text-muted);
   font-size: 13px;
 }
 
@@ -198,7 +198,7 @@
 }
 
 .flat-meta {
-  color: #9ca3af;
+  color: var(--text-muted);
   font-size: 12px;
   margin-top: 2px;
 }
@@ -227,12 +227,12 @@
 }
 
 .muted {
-  color: #9ca3af;
+  color: var(--text-muted);
   font-size: 12px;
 }
 
 .empty-text {
-  color: #6b7280;
+  color: var(--text-muted);
   font-size: 13px;
   margin-left: 8px;
 }
@@ -279,7 +279,7 @@
 
 .toggle-hint {
   font-size: 12px;
-  color: #9ca3af;
+  color: var(--text-muted);
   margin: 0;
   padding-left: 28px;
 }
@@ -555,7 +555,7 @@
 }
 
 .toggle-text {
-  color: #9ca3af;
+  color: var(--text-muted);
 }
 
 @media (max-width: 768px) {

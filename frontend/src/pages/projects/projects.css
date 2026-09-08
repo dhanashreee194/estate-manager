@@ -262,7 +262,7 @@
   background: transparent;
   border: none;
 
-  color: #9ca3af;
+  color: var(--text-muted);
   font-size: 20px;
 
   cursor: pointer;
@@ -331,7 +331,7 @@
   gap: 12px;
   margin-bottom: 6px;
   font-size: 12px;
-  color: #9ca3af;
+  color: var(--text-muted);
 }
 
 /* Inputs */
@@ -377,7 +377,7 @@
   }
 
   .grid-5 input::placeholder {
-    color: #9ca3af;
+    color: var(--text-muted);
   }
 }
 .dark-input:focus {
@@ -430,7 +430,7 @@
 .filter-tabs button {
   background: transparent;
   border: 1px solid #2a3a55;
-  color: #ccc;
+  color: var(--text-muted);
   padding: 6px 14px;
   border-radius: 6px;
   cursor: pointer;
@@ -552,7 +552,7 @@ h4 {
 .report-grid-labels {
   margin-bottom: 6px;
   font-size: 12px;
-  color: #9ca3af;
+  color: var(--text-muted);
 }
 
 /* Inputs styling inside report grid */
@@ -607,7 +607,7 @@ h4 {
 }
 
 .cost-title {
-  color: #9ca3af;
+  color: var(--text-muted);
   font-size: 14px;
 }
 
@@ -626,7 +626,7 @@ h4 {
   justify-content: space-between;
   align-items: center;
   font-size: 14px;
-  color: #9ca3af;
+  color: var(--text-muted);
   margin-bottom: 10px;
 }
 .cost-value {
@@ -701,7 +701,7 @@ h4 {
   gap: 8px;
   margin-top: 8px;
   font-size: 13px;
-  color: #9ca3af;
+  color: var(--text-muted);
 }
 
 /* ===== Paper Daily Report (matches site form) ===== */

@@ -40,7 +40,7 @@
 
 .analytics-table th {
   text-align: left;
-  color: #9ca3af;
+  color: var(--text-muted);
   font-size: 13px;
   padding: 10px 0;
 }

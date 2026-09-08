@@ -40,7 +40,7 @@
 
 .subtitle {
   font-size: 15px;
-  color: #9ca3af;
+  color: var(--text-muted);
   margin-top: 10px;
 }
 

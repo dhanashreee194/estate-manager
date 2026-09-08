@@ -10,7 +10,7 @@
 .table-card.empty {
   text-align: center;
   padding: 40px;
-  color: #aaa;
+  color: var(--text-muted);
 }
 
 /* Wrapper */
@@ -65,7 +65,7 @@
 
 .customer-cell .phone {
   font-size: 12px;
-  color: #888;
+  color: var(--text-muted);
 }
 
 /* Unit */
