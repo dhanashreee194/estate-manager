@@ -91,6 +91,7 @@ export class VendorService {
         billOrReason: p.description || '',
         gstRate: p.gstRate,
         gstAmount: p.gstAmount,
+        paymentMode: p.paymentMode,
         projectId: p.projectId,
         projectName: p.project?.name || '',
       })),
@@ -135,6 +136,7 @@ export class VendorService {
       gstRate?: number;
       type?: string;
       bankAccountId?: string;
+      paymentMode?: string;
     },
     companyId: string,
   ) {
@@ -151,6 +153,9 @@ export class VendorService {
     const gstRate = data.gstRate ?? 0;
     const gstAmount = gstRate ? (data.amount * gstRate) / 100 : 0;
     const totalAmount = data.amount + gstAmount;
+    const paymentMode = data.paymentMode
+      ? String(data.paymentMode).toUpperCase()
+      : null;
 
     return this.prisma.$transaction(async (tx) => {
       const expense = await tx.expense.create({
@@ -165,6 +170,7 @@ export class VendorService {
           vendorGST: vendor.gstNumber,
           vendorId: vendor.id,
           bankAccountId: data.bankAccountId || null,
+          paymentMode,
         },
         include: { vendor: true },
       });

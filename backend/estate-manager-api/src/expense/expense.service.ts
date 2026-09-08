@@ -18,7 +18,10 @@ export class ExpenseService {
         projectId,
         project: { companyId },
       },
-      include: { vendor: true },
+      include: {
+        vendor: { select: { id: true, name: true } },
+        bankAccount: { select: { id: true, name: true, accountType: true } },
+      },
       orderBy: { date: 'desc' },
     });
   }
@@ -443,6 +446,9 @@ export class ExpenseService {
           : 0;
 
     const totalAmount = baseAmount + gstAmount;
+    const paymentMode = data.paymentMode
+      ? String(data.paymentMode).toUpperCase()
+      : null;
 
     return this.prisma.$transaction(async (tx) => {
       const expense = await tx.expense.create({
@@ -457,8 +463,12 @@ export class ExpenseService {
           vendorGST: data.vendorGST || null,
           vendorId: data.vendorId || null,
           bankAccountId: data.bankAccountId || null,
+          paymentMode,
         },
-        include: { vendor: true },
+        include: {
+          vendor: true,
+          bankAccount: { select: { id: true, name: true, accountType: true } },
+        },
       });
 
       if (data.bankAccountId && totalAmount > 0) {

@@ -338,6 +338,7 @@
   },
   "expenses": {
     "title": "खर्च यादी",
+    "ledgerTitle": "पेमेंट / खर्च लेजर",
     "add": "खर्च / विक्रेता पेमेंट जोडा",
     "loading": "खर्च लोड होत आहेत…",
     "empty": "अजून खर्च नाहीत",
@@ -356,7 +357,27 @@
     "totalCost": "एकूण खर्च",
     "totalValue": "एकूण मूल्य",
     "saveExpenseFailed": "खर्च जतन अयशस्वी",
-    "saveBudgetFailed": "बजेट जतन अयशस्वी"
+    "saveBudgetFailed": "बजेट जतन अयशस्वी",
+    "gstHint": "करपात्र मूळ रक्कम टाका. GST % वर जोडले जाते; एकूण = मूळ + GST.",
+    "baseAmount": "मूळ रक्कम (GST आधी)",
+    "gstPercent": "GST %",
+    "gstAmount": "GST रक्कम",
+    "totalAfterGst": "एकूण (GST नंतर)",
+    "paidAt": "तारीख व वेळ",
+    "paymentMode": "पेमेंट मोड",
+    "paidFrom": "कोठून भरले",
+    "billOrReason": "बिल / पेमेंट कारण",
+    "previewLine": "मूळ {{base}} + GST {{gst}} = एकूण {{total}}",
+    "modes": {
+      "CASH": "रोख",
+      "UPI": "UPI",
+      "NEFT": "NEFT",
+      "RTGS": "RTGS",
+      "CHEQUE": "चेक",
+      "CARD": "कार्ड",
+      "ONLINE": "ऑनलाइन",
+      "OTHER": "इतर"
+    }
   },
   "land": {
     "title": "जमीन",

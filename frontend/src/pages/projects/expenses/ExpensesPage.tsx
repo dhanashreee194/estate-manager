@@ -1,15 +1,47 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import {
   createExpense,
   getProjectExpenses,
   getProjectExpenseReport,
+  PAYMENT_MODES,
 } from "../../../api/expense";
 import { getBudget, setBudget } from "../../../api/budget";
 import { getVendors } from "../../../api/vendor";
 import { getBankAccounts } from "../../../api/finance";
 import "../projects.css";
+
+function formatMoney(amount: number) {
+  return new Intl.NumberFormat("en-IN", {
+    style: "currency",
+    currency: "INR",
+    maximumFractionDigits: 0,
+  }).format(amount || 0);
+}
+
+function formatDateTime(value: string) {
+  const d = new Date(value);
+  if (Number.isNaN(d.getTime())) return "—";
+  return d.toLocaleString("en-IN", {
+    day: "2-digit",
+    month: "short",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+  });
+}
+
+function toDateTimeLocalValue(d = new Date()) {
+  const pad = (n: number) => String(n).padStart(2, "0");
+  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
+}
+
+function baseAmountOf(e: any) {
+  const total = Number(e.amount || 0);
+  const gst = Number(e.gstAmount || 0);
+  return Math.max(0, total - gst);
+}
 
 export default function ExpensesPage() {
   const { t } = useTranslation();
@@ -26,11 +58,12 @@ export default function ExpensesPage() {
   const [form, setForm] = useState({
     type: "OTHER",
     amount: 0,
-    date: new Date().toISOString().slice(0, 10),
+    date: toDateTimeLocalValue(),
     description: "",
     gstRate: 0,
     vendorId: "",
     bankAccountId: "",
+    paymentMode: "CASH",
   });
 
   useEffect(() => {
@@ -59,6 +92,13 @@ export default function ExpensesPage() {
     }
   };
 
+  const previewGst = useMemo(() => {
+    const base = Number(form.amount || 0);
+    const rate = Number(form.gstRate || 0);
+    const gst = rate ? (base * rate) / 100 : 0;
+    return { base, gst, total: base + gst };
+  }, [form.amount, form.gstRate]);
+
   const saveExpense = async () => {
     if (!projectId || !form.amount) return;
     try {
@@ -67,20 +107,22 @@ export default function ExpensesPage() {
         projectId,
         type: form.type,
         amount: Number(form.amount),
-        date: form.date,
+        date: new Date(form.date).toISOString(),
         description: form.description || undefined,
         gstRate: Number(form.gstRate) || undefined,
         vendorId: form.vendorId || undefined,
         bankAccountId: form.bankAccountId || undefined,
+        paymentMode: form.paymentMode || undefined,
       });
       setForm({
         type: "OTHER",
         amount: 0,
-        date: new Date().toISOString().slice(0, 10),
+        date: toDateTimeLocalValue(),
         description: "",
         gstRate: 0,
         vendorId: "",
         bankAccountId: "",
+        paymentMode: "CASH",
       });
       await loadData();
     } catch (err) {
@@ -115,27 +157,27 @@ export default function ExpensesPage() {
       <div className="expense-summary">
         <div className="summary-card">
           <h4>{t("expenses.totalCost")}</h4>
-          <p>₹ {spent}</p>
+          <p>{formatMoney(spent)}</p>
         </div>
         <div className="summary-card">
           <h4>{t("expenses.material")}</h4>
-          <p>₹ {summary?.breakdown?.MATERIAL ?? 0}</p>
+          <p>{formatMoney(summary?.breakdown?.MATERIAL ?? 0)}</p>
         </div>
         <div className="summary-card">
           <h4>{t("expenses.labour")}</h4>
-          <p>₹ {summary?.breakdown?.LABOUR ?? 0}</p>
+          <p>{formatMoney(summary?.breakdown?.LABOUR ?? 0)}</p>
         </div>
         <div className="summary-card">
           <h4>{t("expenses.other")}</h4>
-          <p>₹ {summary?.breakdown?.OTHER ?? 0}</p>
+          <p>{formatMoney(summary?.breakdown?.OTHER ?? 0)}</p>
         </div>
         <div className="summary-card">
           <h4>{t("expenses.budget")}</h4>
-          <p>₹ {budgetVal}</p>
+          <p>{formatMoney(budgetVal)}</p>
         </div>
         <div className="summary-card">
           <h4>{t("expenses.remaining")}</h4>
-          <p>₹ {remaining}</p>
+          <p>{formatMoney(remaining)}</p>
         </div>
       </div>
 
@@ -156,6 +198,7 @@ export default function ExpensesPage() {
 
       <div className="page-card" style={{ marginBottom: "1rem" }}>
         <h3>{t("expenses.add")}</h3>
+        <p className="hint">{t("expenses.gstHint")}</p>
         <div className="form-row" style={{ flexWrap: "wrap" }}>
           <select
             value={form.type}
@@ -163,13 +206,15 @@ export default function ExpensesPage() {
           >
             <option value="OTHER">{t("expenses.other")}</option>
             <option value="VENDOR_PAYMENT">{t("expenses.vendorPayment")}</option>
-            <option value="MATERIAL_PURCHASE">{t("expenses.materialPurchase")}</option>
+            <option value="MATERIAL_PURCHASE">
+              {t("expenses.materialPurchase")}
+            </option>
             <option value="LABOUR">{t("expenses.labour")}</option>
             <option value="MATERIAL">{t("expenses.material")}</option>
           </select>
           <input
             type="number"
-            placeholder={t("common.amount")}
+            placeholder={t("expenses.baseAmount")}
             value={form.amount}
             onChange={(e) => setForm({ ...form, amount: +e.target.value })}
           />
@@ -180,15 +225,29 @@ export default function ExpensesPage() {
             onChange={(e) => setForm({ ...form, gstRate: +e.target.value })}
           />
           <input
-            type="date"
+            type="datetime-local"
             value={form.date}
             onChange={(e) => setForm({ ...form, date: e.target.value })}
           />
           <select
+            value={form.paymentMode}
+            onChange={(e) =>
+              setForm({ ...form, paymentMode: e.target.value })
+            }
+          >
+            {PAYMENT_MODES.map((mode) => (
+              <option key={mode} value={mode}>
+                {t(`expenses.modes.${mode}`, { defaultValue: mode })}
+              </option>
+            ))}
+          </select>
+          <select
             value={form.vendorId}
             onChange={(e) => setForm({ ...form, vendorId: e.target.value })}
           >
-            <option value="">{t("common.vendor")} ({t("common.optional")})</option>
+            <option value="">
+              {t("common.vendor")} ({t("common.optional")})
+            </option>
             {vendors.map((v) => (
               <option key={v.id} value={v.id}>
                 {v.name}
@@ -209,9 +268,11 @@ export default function ExpensesPage() {
             ))}
           </select>
           <input
-            placeholder={t("common.description")}
+            placeholder={t("expenses.billOrReason")}
             value={form.description}
-            onChange={(e) => setForm({ ...form, description: e.target.value })}
+            onChange={(e) =>
+              setForm({ ...form, description: e.target.value })
+            }
           />
           <button
             className="primary-btn"
@@ -221,40 +282,63 @@ export default function ExpensesPage() {
             {saving ? t("common.saving") : t("expenses.add")}
           </button>
         </div>
+        {previewGst.base > 0 && (
+          <p className="gst-preview">
+            {t("expenses.previewLine", {
+              base: formatMoney(previewGst.base),
+              gst: formatMoney(previewGst.gst),
+              total: formatMoney(previewGst.total),
+            })}
+          </p>
+        )}
       </div>
 
-      <div className="expense-table">
-        <h3>{t("expenses.title")}</h3>
+      <div className="expense-table payment-ledger">
+        <h3>{t("expenses.ledgerTitle")}</h3>
 
         {expenses.length === 0 ? (
           <p className="empty">{t("expenses.empty")}</p>
         ) : (
-          <table>
-            <thead>
-              <tr>
-                <th>{t("common.date")}</th>
-                <th>{t("common.type")}</th>
-                <th>{t("common.vendor")}</th>
-                <th>{t("common.description")}</th>
-                <th>{t("common.gst")}</th>
-                <th>{t("expenses.amountInr")}</th>
-              </tr>
-            </thead>
-            <tbody>
-              {expenses.map((e) => (
-                <tr key={e.id}>
-                  <td>{new Date(e.date).toLocaleDateString()}</td>
-                  <td>{e.type}</td>
-                  <td>{e.vendor?.name || "—"}</td>
-                  <td>{e.description || "—"}</td>
-                  <td>
-                    {e.gstRate ? `${e.gstRate}% (₹${e.gstAmount || 0})` : "—"}
-                  </td>
-                  <td>₹ {e.amount}</td>
+          <div className="ledger-scroll">
+            <table>
+              <thead>
+                <tr>
+                  <th>{t("expenses.paidAt")}</th>
+                  <th>{t("common.type")}</th>
+                  <th>{t("common.vendor")}</th>
+                  <th>{t("expenses.billOrReason")}</th>
+                  <th>{t("expenses.baseAmount")}</th>
+                  <th>{t("expenses.gstPercent")}</th>
+                  <th>{t("expenses.gstAmount")}</th>
+                  <th>{t("expenses.totalAfterGst")}</th>
+                  <th>{t("expenses.paymentMode")}</th>
+                  <th>{t("expenses.paidFrom")}</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                {expenses.map((e) => {
+                  const base = baseAmountOf(e);
+                  const gst = Number(e.gstAmount || 0);
+                  return (
+                    <tr key={e.id}>
+                      <td>{formatDateTime(e.date)}</td>
+                      <td>{e.type}</td>
+                      <td>{e.vendor?.name || "—"}</td>
+                      <td>{e.description || "—"}</td>
+                      <td>{formatMoney(base)}</td>
+                      <td>{e.gstRate ? `${e.gstRate}%` : "—"}</td>
+                      <td>{gst ? formatMoney(gst) : "—"}</td>
+                      <td>
+                        <strong>{formatMoney(Number(e.amount || 0))}</strong>
+                      </td>
+                      <td>{e.paymentMode || "—"}</td>
+                      <td>{e.bankAccount?.name || "—"}</td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
         )}
       </div>
     </div>

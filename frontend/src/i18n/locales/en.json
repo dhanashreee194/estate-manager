@@ -338,6 +338,7 @@
   },
   "expenses": {
     "title": "Expense list",
+    "ledgerTitle": "Payment / expense ledger",
     "add": "Add expense / vendor payment",
     "loading": "Loading expenses…",
     "empty": "No expenses yet",
@@ -356,7 +357,27 @@
     "totalCost": "Total Cost",
     "totalValue": "Total Value",
     "saveExpenseFailed": "Failed to save expense",
-    "saveBudgetFailed": "Failed to save budget"
+    "saveBudgetFailed": "Failed to save budget",
+    "gstHint": "Enter taxable base amount. GST % is added on top; total paid = base + GST.",
+    "baseAmount": "Base amount (before GST)",
+    "gstPercent": "GST %",
+    "gstAmount": "GST amount",
+    "totalAfterGst": "Total (after GST)",
+    "paidAt": "Date & time",
+    "paymentMode": "Payment mode",
+    "paidFrom": "Paid from",
+    "billOrReason": "Against bill / payment reason",
+    "previewLine": "Base {{base}} + GST {{gst}} = Total {{total}}",
+    "modes": {
+      "CASH": "Cash",
+      "UPI": "UPI",
+      "NEFT": "NEFT",
+      "RTGS": "RTGS",
+      "CHEQUE": "Cheque",
+      "CARD": "Card",
+      "ONLINE": "Online",
+      "OTHER": "Other"
+    }
   },
   "land": {
     "title": "Land",

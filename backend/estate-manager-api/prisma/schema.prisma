@@ -193,6 +193,8 @@ model Expense {
   gstRate   Float? // 5, 12, 18, 28
   gstAmount Float?
   vendorGST String?
+  /// CASH | UPI | NEFT | RTGS | CHEQUE | CARD | ONLINE | OTHER
+  paymentMode String?
 
   vendorId String?
   vendor   Vendor? @relation(fields: [vendorId], references: [id])

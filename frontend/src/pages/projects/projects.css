@@ -513,24 +513,50 @@ h4 {
   margin-bottom: 12px;
 }
 
+.expense-table .hint,
+.expenses-page .hint {
+  color: var(--text-muted);
+  margin: 0 0 0.75rem;
+  font-size: 0.9rem;
+}
+
+.expense-table .gst-preview,
+.expenses-page .gst-preview {
+  margin: 0.75rem 0 0;
+  color: var(--text-muted);
+  font-size: 0.9rem;
+}
+
 .expense-table table {
   width: 100%;
   border-collapse: collapse;
+  min-width: 980px;
 }
 
 .expense-table th,
 .expense-table td {
   padding: 10px;
   border-bottom: 1px solid var(--border);
+  vertical-align: top;
+  white-space: nowrap;
 }
 
 .expense-table th {
   color: var(--text-muted);
   text-align: left;
+  font-weight: 600;
+  font-size: 0.85rem;
 }
 
 .expense-table td {
   color: var(--text);
+  font-size: 0.9rem;
+}
+
+.payment-ledger .ledger-scroll {
+  width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
 }
 
 .empty {

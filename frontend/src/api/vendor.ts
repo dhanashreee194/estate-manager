@@ -38,6 +38,7 @@ export type VendorPayment = {
   billOrReason: string;
   gstRate?: number | null;
   gstAmount?: number | null;
+  paymentMode?: string | null;
   projectId: string;
   projectName: string;
 };
@@ -60,5 +61,7 @@ export const recordVendorPayment = (
     description?: string;
     gstRate?: number;
     type?: string;
+    bankAccountId?: string;
+    paymentMode?: string;
   },
 ) => api.post(`/vendors/${id}/payment`, data).then((r) => r.data);

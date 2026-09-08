@@ -10,6 +10,8 @@ import {
   type Vendor,
 } from "../../api/vendor";
 import { getProjects } from "../../api/project";
+import { getBankAccounts } from "../../api/finance";
+import { PAYMENT_MODES } from "../../api/expense";
 import "./vendors.css";
 import ModalPortal from "../../components/ModalPortal";
 
@@ -33,10 +35,12 @@ function formatMoney(amount: number) {
 function formatDate(value: string) {
   const d = new Date(value);
   if (Number.isNaN(d.getTime())) return "—";
-  return d.toLocaleDateString("en-IN", {
+  return d.toLocaleString("en-IN", {
     day: "2-digit",
     month: "short",
     year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
   });
 }
 
@@ -50,9 +54,11 @@ export default function VendorsPage() {
   const [payForm, setPayForm] = useState({
     projectId: "",
     amount: 0,
-    date: new Date().toISOString().slice(0, 10),
+    date: new Date().toISOString().slice(0, 16),
     description: "",
     gstRate: 0,
+    paymentMode: "CASH",
+    bankAccountId: "",
   });
 
   const { data: vendors = [], isLoading } = useQuery({
@@ -63,6 +69,11 @@ export default function VendorsPage() {
   const { data: projects = [] } = useQuery({
     queryKey: ["projects"],
     queryFn: getProjects,
+  });
+
+  const { data: accounts = [] } = useQuery({
+    queryKey: ["bank-accounts"],
+    queryFn: getBankAccounts,
   });
 
   const { data: paymentHistory, isLoading: paymentsLoading } = useQuery({
@@ -89,7 +100,10 @@ export default function VendorsPage() {
       recordVendorPayment(payVendor!.id, {
         ...payForm,
         amount: Number(payForm.amount),
+        date: new Date(payForm.date).toISOString(),
         gstRate: Number(payForm.gstRate) || undefined,
+        paymentMode: payForm.paymentMode || undefined,
+        bankAccountId: payForm.bankAccountId || undefined,
       }),
     onSuccess: () => {
       const vendorId = payVendor?.id;
@@ -97,9 +111,11 @@ export default function VendorsPage() {
       setPayForm({
         projectId: "",
         amount: 0,
-        date: new Date().toISOString().slice(0, 10),
+        date: new Date().toISOString().slice(0, 16),
         description: "",
         gstRate: 0,
+        paymentMode: "CASH",
+        bankAccountId: "",
       });
       queryClient.invalidateQueries({ queryKey: ["vendors"] });
       if (vendorId) {
@@ -258,9 +274,10 @@ export default function VendorsPage() {
                   <>
                     <div className="payment-history-table">
                       <div className="table-header payment-grid">
-                        <span>{t("common.date")}</span>
+                        <span>{t("expenses.paidAt")}</span>
                         <span>{t("vendors.billOrReason")}</span>
                         <span>{t("common.project")}</span>
+                        <span>{t("expenses.paymentMode")}</span>
                         <span>{t("common.amount")}</span>
                       </div>
                       {paymentHistory.payments.map((p) => (
@@ -270,6 +287,7 @@ export default function VendorsPage() {
                             {p.billOrReason || p.description || "—"}
                           </span>
                           <span>{p.projectName || "—"}</span>
+                          <span>{p.paymentMode || "—"}</span>
                           <span>{formatMoney(p.amount)}</span>
                         </div>
                       ))}
@@ -356,12 +374,43 @@ export default function VendorsPage() {
               <div className="form-group">
                 <label>{t("common.date")}</label>
                 <input
-                  type="date"
+                  type="datetime-local"
                   value={payForm.date}
                   onChange={(e) =>
                     setPayForm({ ...payForm, date: e.target.value })
                   }
                 />
+              </div>
+              <div className="form-group">
+                <label>{t("expenses.paymentMode")}</label>
+                <select
+                  value={payForm.paymentMode}
+                  onChange={(e) =>
+                    setPayForm({ ...payForm, paymentMode: e.target.value })
+                  }
+                >
+                  {PAYMENT_MODES.map((mode) => (
+                    <option key={mode} value={mode}>
+                      {t(`expenses.modes.${mode}`, { defaultValue: mode })}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              <div className="form-group">
+                <label>{t("common.payFromAccount")}</label>
+                <select
+                  value={payForm.bankAccountId}
+                  onChange={(e) =>
+                    setPayForm({ ...payForm, bankAccountId: e.target.value })
+                  }
+                >
+                  <option value="">{t("common.optional")}</option>
+                  {accounts.map((a: any) => (
+                    <option key={a.id} value={a.id}>
+                      {a.name}
+                    </option>
+                  ))}
+                </select>
               </div>
               <div className="form-group">
                 <label>{t("vendors.billOrReason")}</label>
