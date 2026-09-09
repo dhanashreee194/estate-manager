@@ -73,7 +73,7 @@ export default function VendorsPage() {
 
   const { data: accounts = [] } = useQuery({
     queryKey: ["bank-accounts"],
-    queryFn: getBankAccounts,
+    queryFn: () => getBankAccounts(),
   });
 
   const { data: paymentHistory, isLoading: paymentsLoading } = useQuery({

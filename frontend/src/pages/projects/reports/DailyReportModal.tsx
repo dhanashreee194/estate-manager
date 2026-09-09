@@ -217,7 +217,7 @@ export default function DailyReportModal({
       setMeterFrom("");
       setMeterTo("");
       setMeterUnits("");
-      setWork("");
+      setWorkItems([""]);
       setCheckedBy("");
       setLabours(Array.from({ length: LABOUR_ROWS }, emptyLabour));
       setCement({ materialId: "", stock: 0, consumed: 0 });
