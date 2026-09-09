@@ -13,8 +13,10 @@
 .reminders-summary .summary-card {
   background: var(--bg-elevated);
   border: 1px solid var(--border);
-  border-radius: 12px;
+  border-radius: var(--radius-lg, 10px);
   padding: 14px 16px;
+  box-shadow: var(--shadow);
+  border-top: 3px solid var(--border-strong);
 }
 
 .reminders-summary h4 {
@@ -28,22 +30,58 @@
   margin: 0;
   font-size: 22px;
   font-weight: 650;
-  color: var(--text);
+  font-family: var(--font-display);
+  color: var(--text-strong);
+}
+
+.reminders-summary .summary-card.due {
+  border-top-color: var(--warning);
 }
 
 .reminders-summary .summary-card.due p {
-  color: #fbbf24;
+  color: var(--warning);
+}
+
+.reminders-summary .summary-card.overdue {
+  border-top-color: var(--danger);
 }
 
 .reminders-summary .summary-card.overdue p {
-  color: #f87171;
+  color: var(--danger);
 }
 
 .reminders-page .page-card {
   background: var(--bg-elevated);
   border: 1px solid var(--border);
-  border-radius: 12px;
-  padding: 16px;
+  border-radius: var(--radius-lg, 10px);
+  padding: 18px 20px;
+  box-shadow: var(--shadow);
+}
+
+.reminders-page .toolbar h3,
+.reminders-page .page-card > h3 {
+  font-family: var(--font-display);
+  font-weight: 650;
+  color: var(--text-strong);
+}
+
+.reminders-page button.rm-btn-primary {
+  background: var(--accent) !important;
+  border: 1px solid var(--accent) !important;
+  color: var(--accent-text) !important;
+  font-weight: 700 !important;
+  cursor: pointer;
+  white-space: nowrap;
+  min-height: 40px;
+  padding: 8px 16px;
+  border-radius: var(--radius, 6px);
+  box-shadow: none;
+}
+
+.reminders-page button.rm-btn-primary:hover:not(:disabled) {
+  background: var(--accent-hover) !important;
+  border-color: var(--accent-hover) !important;
+  color: var(--accent-text) !important;
 }
 
 .reminders-page .toolbar {
@@ -86,26 +124,6 @@
   gap: 6px;
   font-size: 13px;
   color: var(--text-sidebar);
-}
-
-/* Solid green CTAs — beat global button styles */
-.reminders-page button.rm-btn-primary {
-  background: #16c784 !important;
-  border: 1px solid #16c784 !important;
-  color: #04140e !important;
-  font-weight: 700 !important;
-  cursor: pointer;
-  white-space: nowrap;
-  min-height: 40px;
-  padding: 8px 16px;
-  border-radius: 8px;
-  box-shadow: none;
-}
-
-.reminders-page button.rm-btn-primary:hover:not(:disabled) {
-  background: #12b574 !important;
-  border-color: #12b574 !important;
-  color: #04140e !important;
 }
 
 .reminders-page button.rm-btn-primary:disabled {
@@ -170,9 +188,10 @@
   display: inline-block;
   font-size: 11px;
   padding: 3px 8px;
-  border-radius: 999px;
-  background: var(--border);
+  border-radius: 4px;
+  background: var(--bg-muted);
   color: var(--text-sidebar);
+  font-weight: 650;
 }
 
 .type-badge.installment_overdue {

@@ -1,29 +1,79 @@
-/* Semantic theme tokens — dark default, light via [data-theme="light"] */
+/* Site Ledger — light-first construction office aesthetic */
 
 :root,
+[data-theme="light"] {
+  color-scheme: light;
+
+  --font-display: "Fraunces", "Source Serif 4", Georgia, serif;
+  --font-body: "Source Sans 3", "Segoe UI", sans-serif;
+
+  --bg-app: #efece5;
+  --bg-app-soft: #e5e1d8;
+  --bg-sidebar: #f7f4ee;
+  --bg-elevated: #faf8f4;
+  --bg-muted: #e8e4db;
+  --bg-input: #fffcf7;
+  --bg-hover: #e0dbd0;
+
+  --border: #d9d3c6;
+  --border-strong: #c4bdae;
+
+  --text: #1c1917;
+  --text-strong: #0c0a09;
+  --text-muted: #57534e;
+  --text-faint: #78716c;
+  --text-sidebar: #44403c;
+
+  --accent: #1f5c45;
+  --accent-text: #f7f4ee;
+  --accent-soft: rgba(31, 92, 69, 0.12);
+  --accent-hover: #174836;
+
+  --danger: #b91c1c;
+  --danger-soft: #fee2e2;
+  --warning: #b45309;
+  --warning-soft: #fef3c7;
+  --info: #1e4a6e;
+  --info-soft: #e0eef8;
+  --success: #1f5c45;
+  --success-soft: #d8ebe2;
+
+  --radius: 6px;
+  --radius-lg: 10px;
+  --shadow: 0 1px 0 rgba(28, 25, 23, 0.04), 0 8px 28px rgba(28, 25, 23, 0.06);
+  --auth-gradient: linear-gradient(145deg, #ebe6dc 0%, #dfd9cc 45%, #c8d5cc 100%);
+  --sidebar-gradient: linear-gradient(180deg, #f7f4ee 0%, #f0ebe3 100%);
+  --overlay: rgba(28, 25, 23, 0.42);
+  --paper-grain: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+}
+
 [data-theme="dark"] {
   color-scheme: dark;
 
-  --bg-app: #020617;
-  --bg-app-soft: #0b1220;
-  --bg-sidebar: #020617;
-  --bg-elevated: #0f172a;
-  --bg-muted: #1e293b;
-  --bg-input: #020617;
-  --bg-hover: #1e293b;
+  --font-display: "Fraunces", "Source Serif 4", Georgia, serif;
+  --font-body: "Source Sans 3", "Segoe UI", sans-serif;
 
-  --border: #1e293b;
-  --border-strong: #334155;
+  --bg-app: #161411;
+  --bg-app-soft: #1c1916;
+  --bg-sidebar: #1a1714;
+  --bg-elevated: #221f1b;
+  --bg-muted: #2c2823;
+  --bg-input: #1a1714;
+  --bg-hover: #322e28;
 
-  --text: #e2e8f0;
-  --text-strong: #f8fafc;
-  --text-muted: #94a3b8;
-  --text-faint: #64748b;
-  --text-sidebar: #cbd5e1;
+  --border: #3a3530;
+  --border-strong: #524b43;
 
-  --accent: #16c784;
-  --accent-text: #04140e;
-  --accent-soft: rgba(22, 199, 132, 0.15);
+  --text: #ebe6dc;
+  --text-strong: #f7f4ee;
+  --text-muted: #a8a29e;
+  --text-faint: #78716c;
+  --text-sidebar: #d6d3d1;
+
+  --accent: #4a9b74;
+  --accent-text: #0c0a09;
+  --accent-soft: rgba(74, 155, 116, 0.16);
+  --accent-hover: #5cb086;
 
   --danger: #f87171;
   --danger-soft: #3b1e1e;
@@ -31,50 +81,14 @@
   --warning-soft: #3b2f1e;
   --info: #93c5fd;
   --info-soft: #1e3a5f;
-  --success: #34d399;
+  --success: #4a9b74;
   --success-soft: #0b2a22;
 
-  --shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
-  --auth-gradient: radial-gradient(circle at top left, #1f2933, #020617 70%);
-  --sidebar-gradient: linear-gradient(180deg, #020617, #020617ee);
-  --overlay: rgba(2, 6, 23, 0.72);
-}
-
-[data-theme="light"] {
-  color-scheme: light;
-
-  --bg-app: #f1f5f9;
-  --bg-app-soft: #e2e8f0;
-  --bg-sidebar: #ffffff;
-  --bg-elevated: #ffffff;
-  --bg-muted: #f1f5f9;
-  --bg-input: #ffffff;
-  --bg-hover: #e2e8f0;
-
-  --border: #e2e8f0;
-  --border-strong: #cbd5e1;
-
-  --text: #0f172a;
-  --text-strong: #020617;
-  --text-muted: #475569;
-  --text-faint: #64748b;
-  --text-sidebar: #334155;
-
-  --accent: #059669;
-  --accent-text: #ffffff;
-  --accent-soft: rgba(5, 150, 105, 0.12);
-
-  --danger: #dc2626;
-  --danger-soft: #fee2e2;
-  --warning: #d97706;
-  --warning-soft: #fef3c7;
-  --info: #2563eb;
-  --info-soft: #dbeafe;
-  --success: #059669;
-  --success-soft: #d1fae5;
-
-  --shadow: 0 8px 24px rgba(15, 23, 42, 0.08);
-  --auth-gradient: radial-gradient(circle at top left, #e2e8f0, #f8fafc 70%);
-  --sidebar-gradient: linear-gradient(180deg, #ffffff, #f8fafc);
-  --overlay: rgba(15, 23, 42, 0.45);
+  --radius: 6px;
+  --radius-lg: 10px;
+  --shadow: 0 1px 0 rgba(0, 0, 0, 0.2), 0 12px 32px rgba(0, 0, 0, 0.35);
+  --auth-gradient: linear-gradient(155deg, #1a1714 0%, #221f1b 50%, #1a2420 100%);
+  --sidebar-gradient: linear-gradient(180deg, #1a1714, #161411);
+  --overlay: rgba(12, 10, 9, 0.72);
+  --paper-grain: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.06'/%3E%3C/svg%3E");
 }

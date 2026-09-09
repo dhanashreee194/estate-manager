@@ -45,49 +45,57 @@ export default function Login() {
         <ThemeSwitcher compact />
         <LanguageSwitcher compact />
       </div>
-      <div className="brand">
-        <h1>🏗️ {t("nav.brand")}</h1>
+
+      <section className="auth-hero" aria-label={t("nav.brand")}>
+        <span className="logo-mark" aria-hidden />
+        <h1>{t("nav.brand")}</h1>
         <p className="subtitle">{t("auth.subtitle")}</p>
-      </div>
+      </section>
 
-      <div className="auth-card">
-        <h2>{t("auth.login")}</h2>
-        <p className="muted">{t("auth.loginHint")}</p>
-        {error && <p className="muted" style={{ color: "#f87171" }}>{error}</p>}
+      <section className="auth-panel">
+        <div className="auth-card">
+          <h2>{t("auth.login")}</h2>
+          <p className="muted">{t("auth.loginHint")}</p>
+          {error && <p className="error-text">{error}</p>}
 
-        <form onSubmit={handleLogin}>
-          <div className="field">
-            <label>{t("auth.email")}</label>
-            <input
-              type="email"
-              placeholder="admin@company.com"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              required
-            />
-          </div>
+          <form onSubmit={handleLogin}>
+            <div className="field">
+              <label htmlFor="login-email">{t("auth.email")}</label>
+              <input
+                id="login-email"
+                type="email"
+                placeholder="admin@company.com"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
+                autoComplete="email"
+              />
+            </div>
 
-          <div className="field">
-            <label>{t("auth.password")}</label>
-            <input
-              type="password"
-              placeholder="••••••••"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-            />
-          </div>
+            <div className="field">
+              <label htmlFor="login-password">{t("auth.password")}</label>
+              <input
+                id="login-password"
+                type="password"
+                placeholder="••••••••"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+                autoComplete="current-password"
+              />
+            </div>
 
-          <button className="primary-btn" disabled={loading}>
-            {t("auth.login")}
-          </button>
-        </form>
+            <button className="primary-btn" disabled={loading} type="submit">
+              {loading ? t("common.loading") : t("auth.login")}
+            </button>
+          </form>
 
-        <p className="footer-text">
-          {t("auth.noAccount")}{" "}
-          <Link to="/signup">{t("auth.signup")}</Link>
-        </p>
-      </div>
+          <p className="footer-text">
+            {t("auth.noAccount")}{" "}
+            <Link to="/signup">{t("auth.signup")}</Link>
+          </p>
+        </div>
+      </section>
     </div>
   );
 }

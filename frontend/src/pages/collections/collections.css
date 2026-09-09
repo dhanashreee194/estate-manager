@@ -1,62 +1,81 @@
 .collections-page {
   display: flex;
   flex-direction: column;
-  gap: 1.25rem;
+  gap: 1rem;
 }
 
 .collections-summary {
   display: grid;
   grid-template-columns: repeat(5, minmax(0, 1fr));
-  gap: 12px;
+  gap: 10px;
 }
 
 .collections-summary .summary-card {
   background: var(--bg-elevated);
   border: 1px solid var(--border);
-  border-radius: 12px;
-  padding: 14px 16px;
+  border-radius: var(--radius-lg, 10px);
+  padding: 12px 14px;
+  box-shadow: var(--shadow);
+  border-top: 3px solid var(--border-strong);
 }
 
 .collections-summary h4 {
-  margin: 0 0 6px;
+  margin: 0 0 4px;
   color: var(--text-muted);
-  font-size: 13px;
-  font-weight: 500;
+  font-size: 12px;
+  font-weight: 650;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
 }
 
 .collections-summary p {
   margin: 0;
-  font-size: 20px;
+  font-size: 1.2rem;
   font-weight: 650;
-  color: var(--text);
+  font-family: var(--font-display);
+  color: var(--text-strong);
+  line-height: 1.2;
 }
 
 .collections-summary small {
-  color: var(--text-faint);
+  color: var(--text-muted);
   font-size: 12px;
 }
 
+.collections-summary .summary-card.overdue {
+  border-top-color: var(--danger);
+}
 .collections-summary .summary-card.overdue p {
-  color: #f87171;
+  color: var(--danger);
 }
 
+.collections-summary .summary-card.due {
+  border-top-color: var(--warning);
+}
 .collections-summary .summary-card.due p {
-  color: #fbbf24;
+  color: var(--warning);
 }
 
+.collections-summary .summary-card.partial {
+  border-top-color: var(--info);
+}
 .collections-summary .summary-card.partial p {
-  color: #c4b5fd;
+  color: var(--info);
 }
 
+.collections-summary .summary-card.collected {
+  border-top-color: var(--accent);
+}
 .collections-summary .summary-card.collected p {
-  color: #34d399;
+  color: var(--accent);
 }
 
 .collections-page .page-card {
   background: var(--bg-elevated);
   border: 1px solid var(--border);
-  border-radius: 12px;
-  padding: 16px;
+  border-radius: var(--radius-lg, 10px);
+  padding: 16px 18px;
+  box-shadow: var(--shadow);
 }
 
 .collections-page .toolbar {
@@ -70,11 +89,14 @@
 
 .collections-page .toolbar h3 {
   margin: 0 0 4px;
+  font-family: var(--font-display);
+  font-weight: 650;
+  color: var(--text-strong);
 }
 
 .collections-page .hint {
   margin: 0;
-  opacity: 0.7;
+  color: var(--text-muted);
   font-size: 0.9rem;
 }
 
@@ -88,21 +110,32 @@
 .collections-page .filters select,
 .collections-page .filters button,
 .collections-page .filters .link-btn {
-  padding: 8px 10px;
-  border-radius: 6px;
-  border: 1px solid #2a3a55;
-  background: var(--bg-app);
-  color: white;
+  padding: 8px 12px;
+  border-radius: var(--radius, 6px);
+  border: 1px solid var(--border-strong);
+  background: var(--bg-input);
+  color: var(--text);
   text-decoration: none;
   display: inline-flex;
   align-items: center;
+  font-weight: 600;
+  min-height: 38px;
+}
+
+.collections-page .filters button.primary,
+.collections-page .primary {
+  background: var(--accent) !important;
+  border: 1px solid var(--accent) !important;
+  color: var(--accent-text) !important;
+  font-weight: 700;
+  cursor: pointer;
 }
 
 .collections-page .wa {
   background: #128c7e;
   border: none;
   color: white;
-  border-radius: 6px;
+  border-radius: var(--radius, 6px);
   padding: 6px 10px;
   text-decoration: none;
   font-size: 13px;
@@ -118,22 +151,12 @@
   color: var(--text-sidebar);
 }
 
-.collections-page .primary {
-  background: #16c784;
-  border: none;
-  padding: 6px 10px;
-  border-radius: 6px;
-  color: #04140e;
-  font-weight: 600;
-  cursor: pointer;
-}
-
 .collections-page .ghost {
   background: transparent;
   border: 1px solid var(--border-strong);
   color: var(--text);
   padding: 6px 10px;
-  border-radius: 6px;
+  border-radius: var(--radius, 6px);
   cursor: pointer;
 }
 
@@ -153,9 +176,11 @@
 }
 
 .collections-page .table-header {
-  color: var(--text-faint);
+  color: var(--text-muted);
   font-size: 12px;
-  font-weight: 600;
+  font-weight: 650;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
 }
 
 .collections-page .grid {
@@ -164,7 +189,7 @@
 
 .collections-page .days {
   display: block;
-  color: #f87171;
+  color: var(--danger);
   font-size: 11px;
 }
 
@@ -177,36 +202,42 @@
 .inst-badge {
   display: inline-block;
   font-size: 11px;
-  font-weight: 600;
+  font-weight: 650;
   padding: 3px 8px;
-  border-radius: 999px;
+  border-radius: 4px;
   border: 1px solid var(--border-strong);
+  background: var(--bg-muted);
+  color: var(--text);
 }
 
 .inst-badge.overdue {
-  background: #3b1e1e;
-  color: #fca5a5;
+  background: var(--danger-soft);
+  color: var(--danger);
+  border-color: transparent;
 }
 
 .inst-badge.due {
-  background: #3b2f1e;
-  color: #fbbf24;
+  background: var(--warning-soft);
+  color: var(--warning);
+  border-color: transparent;
 }
 
 .inst-badge.partial {
-  background: #2e1e3b;
-  color: #c4b5fd;
+  background: var(--info-soft);
+  color: var(--info);
+  border-color: transparent;
 }
 
 .inst-badge.upcoming,
 .inst-badge.pending {
-  background: var(--border);
+  background: var(--bg-muted);
   color: var(--text-muted);
 }
 
 .inst-badge.paid {
-  background: #0b2a22;
-  color: #6ee7b7;
+  background: var(--success-soft);
+  color: var(--success);
+  border-color: transparent;
 }
 
 @media (max-width: 1100px) {

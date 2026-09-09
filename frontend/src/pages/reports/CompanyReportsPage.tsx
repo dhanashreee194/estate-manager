@@ -80,7 +80,7 @@ export default function CompanyReportsPage() {
   return (
     <div className="reports-page">
       <div className="page-header">
-        <h3>📊 {t("reports.companyReports")}</h3>
+        <h3>{t("reports.companyReports")}</h3>
       </div>
 
       <div className="cost-grid">
@@ -90,24 +90,24 @@ export default function CompanyReportsPage() {
             <span className="cost-value">₹ {analytics?.totalCost ?? 0}</span>
           </div>
 
-          <ResponsiveContainer width="100%" height={160}>
+          <ResponsiveContainer width="100%" height={140}>
             <LineChart data={timelineData}>
-              <CartesianGrid stroke="#1f2937" strokeDasharray="3 3" />
+              <CartesianGrid stroke="var(--border)" strokeDasharray="3 3" />
 
               <XAxis
                 dataKey="date"
-                stroke="#6b7280"
+                stroke="var(--text-muted)"
                 tickFormatter={(v) => {
                   const d = new Date(v);
                   return `${d.getDate()}/${d.getMonth() + 1}`;
                 }}
               />
 
-              <YAxis stroke="#6b7280" tickFormatter={(v) => `₹${v}`} />
+              <YAxis stroke="var(--text-muted)" tickFormatter={(v) => `₹${v}`} />
 
               <Line
                 dataKey="amount"
-                stroke="#22c55e"
+                stroke="var(--accent)"
                 strokeWidth={2}
                 dot={false}
               />
@@ -121,7 +121,7 @@ export default function CompanyReportsPage() {
             <span className="cost-value">₹ {analytics?.materialCost ?? 0}</span>
           </div>
 
-          <Chart data={cumulativeData} color="#38bdf8" />
+          <Chart data={cumulativeData} color="var(--info)" />
         </div>
 
         <div className="cost-card">
@@ -130,7 +130,7 @@ export default function CompanyReportsPage() {
             <span className="cost-value">₹ {analytics?.labourCost ?? 0}</span>
           </div>
 
-          <Chart data={cumulativeData} color="#f59e0b" />
+          <Chart data={cumulativeData} color="var(--warning)" />
         </div>
 
         <div className="cost-card">
@@ -139,17 +139,7 @@ export default function CompanyReportsPage() {
             <span className="cost-value">{analytics?.totalProjects ?? 0}</span>
           </div>
 
-          <div
-            style={{
-              height: 160,
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              color: "#6b7280",
-            }}
-          >
-            {t("reports.noTimeline")}
-          </div>
+          <div className="cost-empty">{t("reports.noTimeline")}</div>
         </div>
 
         <div className="cost-card">
@@ -158,17 +148,7 @@ export default function CompanyReportsPage() {
             <span className="cost-value">{analytics?.totalEnquiries ?? 0}</span>
           </div>
 
-          <div
-            style={{
-              height: 160,
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              color: "#6b7280",
-            }}
-          >
-            {t("reports.noTimeline")}
-          </div>
+          <div className="cost-empty">{t("reports.noTimeline")}</div>
         </div>
 
         <div className="cost-card">
@@ -177,17 +157,7 @@ export default function CompanyReportsPage() {
             <span className="cost-value">{analytics?.convertedLeads ?? 0}</span>
           </div>
 
-          <div
-            style={{
-              height: 160,
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              color: "#6b7280",
-            }}
-          >
-            {t("reports.noTimeline")}
-          </div>
+          <div className="cost-empty">{t("reports.noTimeline")}</div>
         </div>
 
         <div className="cost-card">
@@ -197,17 +167,7 @@ export default function CompanyReportsPage() {
               {analytics?.conversionRate?.toFixed(1)}%
             </span>
           </div>
-          <div
-            style={{
-              height: 160,
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              color: "#6b7280",
-            }}
-          >
-            {t("reports.noTimeline")}
-          </div>
+          <div className="cost-empty">{t("reports.noTimeline")}</div>
         </div>
       </div>
     </div>

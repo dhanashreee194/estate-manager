@@ -18,6 +18,7 @@ import BookingStats from "./BookingStats";
 import BookingTable from "./BookingTable";
 import BookingModal from "./BookingModal";
 import BookingPaymentModal from "./BookingPaymentModal";
+import "./bookings.css";
 
 export default function BookingsPage() {
   const { t } = useTranslation();
@@ -86,7 +87,7 @@ export default function BookingsPage() {
   /* ---------------- UI ---------------- */
 
   return (
-    <div className="page-container">
+    <div className="page-container bookings-panel">
       <div className="page-header">
         <h2>{t("bookings.title")}</h2>
 
@@ -104,6 +105,7 @@ export default function BookingsPage() {
       {/* Project Selector */}
 
       <select
+        className="custom-select"
         value={projectId || ""}
         onChange={(e) => dispatch(setCurrentProjectId(e.target.value))}
       >

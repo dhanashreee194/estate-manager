@@ -49,10 +49,7 @@ export default function AdminDashboard() {
     window.location.href = "/login";
   };
 
-  const navLabel = (key: string) => {
-    if (key === "advancedReports") return `📊 ${t("nav.advancedReports")}`;
-    return t(`nav.${key}`);
-  };
+  const navLabel = (key: string) => t(`nav.${key}`);
 
   return (
     <div className={`dashboard-layout ${sidebarOpen ? "nav-open" : ""}`}>
@@ -64,7 +61,10 @@ export default function AdminDashboard() {
 
       <aside className={`sidebar ${sidebarOpen ? "open" : ""}`}>
         <div className="sidebar-top">
-          <h2 className="logo">🏗️ {t("nav.brand")}</h2>
+          <div>
+            <span className="logo-mark" aria-hidden />
+            <h2 className="logo">{t("nav.brand")}</h2>
+          </div>
           <button
             type="button"
             className="sidebar-close"
@@ -117,10 +117,17 @@ export default function AdminDashboard() {
               <span />
               <span />
             </button>
-            <h1>
-              {t("nav.welcome")}
-              {user?.name ? `, ${user.name}` : ""} 👋
-            </h1>
+            <div>
+              <h1>
+                {t("nav.welcome")}
+                {user?.name ? `, ${user.name}` : ""}
+              </h1>
+              {role && (
+                <span className="header-welcome-sub">
+                  {t(`roles.${role}`)}
+                </span>
+              )}
+            </div>
           </div>
 
           <div className="header-actions">

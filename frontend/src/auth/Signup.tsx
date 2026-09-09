@@ -55,73 +55,82 @@ export default function Signup() {
         <ThemeSwitcher compact />
         <LanguageSwitcher compact />
       </div>
-      <div className="brand">
-        <h1>🏗️ {t("nav.brand")}</h1>
+
+      <section className="auth-hero" aria-label={t("nav.brand")}>
+        <span className="logo-mark" aria-hidden />
+        <h1>{t("nav.brand")}</h1>
         <p className="subtitle">{t("auth.subtitle")}</p>
-      </div>
+      </section>
 
-      <div className="auth-card">
-        <h2>{t("auth.signup")}</h2>
-        <p className="muted">{t("auth.signupHint")}</p>
+      <section className="auth-panel">
+        <div className="auth-card">
+          <h2>{t("auth.signup")}</h2>
+          <p className="muted">{t("auth.signupHint")}</p>
 
-        <form onSubmit={handleSignup}>
-          <div className="field">
-            <label>{t("auth.companyName")}</label>
-            <input
-              name="companyName"
-              placeholder="Green Valley Builders"
-              onChange={handleChange}
-              required
-            />
-          </div>
-          <div className="field">
-            <label>{t("auth.companyEmail")}</label>
-            <input
-              name="companyEmail"
-              type="email"
-              placeholder="contact@greenvalley.com"
-              onChange={handleChange}
-              required
-            />
-          </div>
-          <div className="field">
-            <label>{t("auth.adminName")}</label>
-            <input
-              name="adminName"
-              placeholder="Admin User"
-              onChange={handleChange}
-              required
-            />
-          </div>
-          <div className="field">
-            <label>{t("auth.adminEmail")}</label>
-            <input
-              name="adminEmail"
-              type="email"
-              placeholder="admin@greenvalley.com"
-              onChange={handleChange}
-              required
-            />
-          </div>
-          <div className="field">
-            <label>{t("auth.password")}</label>
-            <input
-              name="password"
-              type="password"
-              placeholder={t("auth.minPassword")}
-              onChange={handleChange}
-              required
-            />
-          </div>
-          <button className="primary-btn" disabled={loading}>
-            {loading ? t("common.saving") : t("auth.signup")}
-          </button>
-        </form>
+          <form onSubmit={handleSignup}>
+            <div className="field">
+              <label htmlFor="companyName">{t("auth.companyName")}</label>
+              <input
+                id="companyName"
+                name="companyName"
+                placeholder="Green Valley Builders"
+                onChange={handleChange}
+                required
+              />
+            </div>
+            <div className="field">
+              <label htmlFor="companyEmail">{t("auth.companyEmail")}</label>
+              <input
+                id="companyEmail"
+                name="companyEmail"
+                type="email"
+                placeholder="contact@greenvalley.com"
+                onChange={handleChange}
+                required
+              />
+            </div>
+            <div className="field">
+              <label htmlFor="adminName">{t("auth.adminName")}</label>
+              <input
+                id="adminName"
+                name="adminName"
+                placeholder="Admin User"
+                onChange={handleChange}
+                required
+              />
+            </div>
+            <div className="field">
+              <label htmlFor="adminEmail">{t("auth.adminEmail")}</label>
+              <input
+                id="adminEmail"
+                name="adminEmail"
+                type="email"
+                placeholder="admin@greenvalley.com"
+                onChange={handleChange}
+                required
+              />
+            </div>
+            <div className="field">
+              <label htmlFor="password">{t("auth.password")}</label>
+              <input
+                id="password"
+                name="password"
+                type="password"
+                placeholder={t("auth.minPassword")}
+                onChange={handleChange}
+                required
+              />
+            </div>
+            <button className="primary-btn" disabled={loading} type="submit">
+              {loading ? t("common.saving") : t("auth.signup")}
+            </button>
+          </form>
 
-        <p className="footer-text">
-          {t("auth.hasAccount")} <Link to="/login">{t("auth.login")}</Link>
-        </p>
-      </div>
+          <p className="footer-text">
+            {t("auth.hasAccount")} <Link to="/login">{t("auth.login")}</Link>
+          </p>
+        </div>
+      </section>
     </div>
   );
 }

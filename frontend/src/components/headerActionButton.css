@@ -1,48 +1,52 @@
 .header-action-wrapper {
-  height: 44px;
+  height: 42px;
   display: flex;
   align-items: stretch;
 }
 
 .header-action-btn {
-  min-width: 160px;
+  min-width: 148px;
   height: 100%;
-
   display: flex;
   align-items: center;
   justify-content: center;
-
   font-size: 14px;
-  font-weight: 600;
+  font-weight: 650;
   line-height: 1;
-
-  padding: 0;
+  padding: 0 14px;
   margin: 0;
-
-  border-radius: 10px;
+  border-radius: var(--radius, 6px);
   box-sizing: border-box;
-
   border: 1px solid transparent;
   background: transparent;
-
   cursor: pointer;
+  transition:
+    transform 0.15s ease,
+    background 0.15s ease,
+    border-color 0.15s ease;
 }
 
-/* Outline */
 .header-action-btn.outline {
-  border-color: #22c55e;
-  color: #22c55e;
+  border-color: var(--accent);
+  color: var(--accent);
   background: transparent;
 }
 
-/* Primary */
-.header-action-btn.primary {
-  background: linear-gradient(135deg, #22c55e, #16a34a);
-  color: #022c22;
+.header-action-btn.outline:hover {
+  background: var(--accent-soft);
 }
 
-/* Hover polish */
+.header-action-btn.primary {
+  background: var(--accent);
+  color: var(--accent-text);
+  border-color: var(--accent);
+}
+
+.header-action-btn.primary:hover {
+  background: var(--accent-hover, var(--accent));
+  border-color: var(--accent-hover, var(--accent));
+}
+
 .header-action-btn:hover {
   transform: translateY(-1px);
-  transition: transform 0.15s ease;
 }

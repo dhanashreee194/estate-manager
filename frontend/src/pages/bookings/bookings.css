@@ -1,44 +1,50 @@
 .custom-select {
   width: 100%;
-  padding: 10px 14px;
-  border-radius: 8px;
-  background: linear-gradient(180deg, var(--bg-elevated), var(--bg-app));
-  color: #fff;
-  border: 1px solid rgba(255, 255, 255, 0.15);
+  max-width: 320px;
+  padding: 10px 36px 10px 12px;
+  border-radius: var(--radius, 6px);
+  background-color: var(--bg-input);
+  color: var(--text);
+  border: 1px solid var(--border-strong);
   font-size: 14px;
   outline: none;
   appearance: none;
   cursor: pointer;
-
-  background-image: url("data:image/svg+xml;utf8,<svg fill='white' height='20' viewBox='0 0 24 24' width='20' xmlns='http://www.w3.org/2000/svg'><path d='M7 10l5 5 5-5z'/></svg>");
+  background-image: url("data:image/svg+xml;utf8,<svg fill='%2357534e' height='20' viewBox='0 0 24 24' width='20' xmlns='http://www.w3.org/2000/svg'><path d='M7 10l5 5 5-5z'/></svg>");
   background-repeat: no-repeat;
-  background-position: right 12px center;
+  background-position: right 10px center;
 }
+
 .page-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
   flex-wrap: wrap;
-
   gap: 12px;
-  margin-bottom: 24px;
-
+  margin-bottom: 16px;
   position: sticky;
   top: 0;
-  z-index: 50;
-
+  z-index: 20;
   background: var(--bg-app);
-  padding: 12px 0;
+  padding: 4px 0 12px;
+  border-bottom: 1px solid var(--border);
+}
+
+.page-header h2 {
+  margin: 0;
+  font-family: var(--font-display);
+  font-weight: 650;
+  color: var(--text-strong);
 }
 
 .page-header .primary-btn {
   width: auto;
   min-width: 140px;
   white-space: nowrap;
-}
-.page-header .primary-btn {
-  background: linear-gradient(135deg, #10b981, #22c55e);
-  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.4);
+  background: var(--accent) !important;
+  color: var(--accent-text) !important;
+  border: 1px solid var(--accent) !important;
+  box-shadow: none;
 }
 
 @media (max-width: 640px) {
@@ -47,14 +53,23 @@
     min-width: 0;
   }
 }
+
 .custom-select:focus {
-  border-color: #22c55e;
-  box-shadow: 0 0 0 2px rgba(34, 197, 94, 0.3);
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-soft);
 }
 
 .custom-select option {
-  background: var(--bg-app);
-  color: white;
+  background: var(--bg-elevated);
+  color: var(--text);
+}
+
+.bookings-panel {
+  background: var(--bg-elevated);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg, 10px);
+  padding: 16px 18px;
+  box-shadow: var(--shadow);
 }
 
 .form-group {
@@ -72,10 +87,10 @@
 .remaining-box {
   margin: 10px 0;
   padding: 8px;
-  border-radius: 6px;
-  background: rgba(16, 185, 129, 0.1);
-  color: #10b981;
-  font-weight: 500;
+  border-radius: var(--radius, 6px);
+  background: var(--accent-soft);
+  color: var(--accent);
+  font-weight: 600;
 }
 
 .modal-card::-webkit-scrollbar {
@@ -83,7 +98,7 @@
 }
 
 .modal-card::-webkit-scrollbar-thumb {
-  background: #10b981;
+  background: var(--accent);
   border-radius: 4px;
 }
 
@@ -103,41 +118,39 @@
 }
 
 .modal-card {
-  width: 420px; /* adjust if needed */
-  max-height: 85vh; /* max height = 85% screen */
-  overflow-y: auto; /* ENABLE SCROLL */
-
-  background: #050b1e;
-  border-radius: 12px;
-
+  width: min(420px, 94vw);
+  max-height: 85vh;
+  overflow-y: auto;
+  background: var(--bg-elevated);
+  color: var(--text);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg, 10px);
   padding: 24px;
-
   display: flex;
   flex-direction: column;
   gap: 12px;
+  box-shadow: var(--shadow);
 }
 
 .modal-backdrop {
   position: fixed;
   inset: 0;
-
-  background: rgba(0, 0, 0, 0.6);
-
+  background: var(--overlay);
   display: flex;
   justify-content: center;
   align-items: center;
-
   z-index: 9999;
 }
+
 .installment-row {
   display: grid;
   grid-template-columns: 1.3fr 0.9fr 0.9fr 0.9fr 0.8fr auto;
   gap: 8px;
   align-items: center;
   padding: 10px;
-  border-bottom: 1px solid #1f2937;
+  border-bottom: 1px solid var(--border);
   cursor: pointer;
-  border-radius: 8px;
+  border-radius: var(--radius, 6px);
 }
 
 .installment-row.paid {
@@ -145,23 +158,23 @@
 }
 
 .installment-row.overdue {
-  background: rgba(248, 113, 113, 0.08);
+  background: var(--danger-soft);
 }
 
 .installment-row.due {
-  background: rgba(251, 191, 36, 0.08);
+  background: var(--warning-soft);
 }
 
 .installment-row.partial {
-  background: rgba(196, 181, 253, 0.08);
+  background: var(--info-soft);
 }
 
 .installment-row.selected {
-  outline: 1px solid #16c784;
+  outline: 1px solid var(--accent);
 }
 
 .installment-row:hover {
-  background: var(--bg-app);
+  background: var(--bg-hover);
 }
 
 .installment-row .due-line {
@@ -180,7 +193,7 @@
 }
 
 .ledger-error {
-  color: #f87171;
+  color: var(--danger);
 }
 
 .payment-ledger-modal {
@@ -191,7 +204,7 @@
   background: transparent;
   border: 1px solid var(--border-strong);
   color: var(--text);
-  border-radius: 6px;
+  border-radius: var(--radius, 6px);
   padding: 4px 8px;
   cursor: pointer;
 }
@@ -211,30 +224,35 @@
 .inst-badge {
   display: inline-block;
   font-size: 11px;
-  font-weight: 600;
+  font-weight: 650;
   padding: 3px 8px;
-  border-radius: 999px;
+  border-radius: 4px;
   border: 1px solid var(--border-strong);
+  background: var(--bg-muted);
+  color: var(--text);
 }
 
 .inst-badge.overdue {
-  background: #3b1e1e;
-  color: #fca5a5;
+  background: var(--danger-soft);
+  color: var(--danger);
+  border-color: transparent;
 }
 
 .inst-badge.due {
-  background: #3b2f1e;
-  color: #fbbf24;
+  background: var(--warning-soft);
+  color: var(--warning);
+  border-color: transparent;
 }
 
 .inst-badge.partial {
-  background: #2e1e3b;
-  color: #c4b5fd;
+  background: var(--info-soft);
+  color: var(--info);
+  border-color: transparent;
 }
 
 .inst-badge.upcoming,
 .inst-badge.pending {
-  background: var(--border);
+  background: var(--bg-muted);
   color: var(--text-muted);
 }
 
@@ -242,6 +260,13 @@
 .inst-badge.fully_paid,
 .inst-badge.partial_paid,
 .inst-badge.booked {
-  background: #0b2a22;
-  color: #6ee7b7;
+  background: var(--success-soft);
+  color: var(--success);
+  border-color: transparent;
+}
+
+.empty-text {
+  text-align: center;
+  color: var(--text-muted);
+  padding: 28px 12px;
 }

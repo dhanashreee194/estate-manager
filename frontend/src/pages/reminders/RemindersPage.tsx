@@ -169,9 +169,9 @@ export default function RemindersPage() {
               disabled={generateMut.isPending}
               onClick={() => generateMut.mutate()}
               style={{
-                background: "#16c784",
-                border: "1px solid #16c784",
-                color: "#04140e",
+                background: "var(--accent)",
+                border: "1px solid var(--accent)",
+                color: "var(--accent-text)",
                 fontWeight: 700,
               }}
             >
@@ -290,9 +290,9 @@ export default function RemindersPage() {
               })
             }
             style={{
-              background: "#16c784",
-              border: "1px solid #16c784",
-              color: "#04140e",
+              background: "var(--accent)",
+              border: "1px solid var(--accent)",
+              color: "var(--accent-text)",
               fontWeight: 700,
             }}
           >
