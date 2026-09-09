@@ -48,6 +48,27 @@
   opacity: 0.8;
 }
 
+.lead-budget {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--accent, #16c784);
+  margin-top: 2px;
+}
+
+.lead-requirement {
+  font-size: 12px;
+  opacity: 0.85;
+  margin-top: 2px;
+}
+
+.budget-preview {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--accent, #16c784);
+  margin-top: -4px;
+  margin-bottom: 4px;
+}
+
 .lead-source {
   font-size: 12px;
   opacity: 0.6;

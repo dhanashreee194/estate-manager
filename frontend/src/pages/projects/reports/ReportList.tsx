@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 
 import { getReports } from "../../../api/report";
+import { parseWorkDetails } from "../../../utils/workDetails";
 import "../projects.css";
 export default function ReportList() {
   const { projectId } = useParams();
@@ -25,7 +26,11 @@ export default function ReportList() {
         <div key={r.id} className="report-item">
           <b>{new Date(r.date).toDateString()}</b>
 
-          <p>{r.workDetails}</p>
+          <ul className="work-details-list">
+            {parseWorkDetails(r.workDetails).map((item, i) => (
+              <li key={i}>{item}</li>
+            ))}
+          </ul>
 
           <small>
             Labour: {r.labours.length} | Material: {r.materials.length}

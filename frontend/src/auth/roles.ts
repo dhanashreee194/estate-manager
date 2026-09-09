@@ -12,16 +12,18 @@ export type NavKey =
   | "reminders"
   | "marketing"
   | "bookings"
-  | "users"
+  | "customers"
   | "leads"
   | "reports"
-  | "advancedReports";
+  | "advancedReports"
+  | "settings";
 
 export type FeatureKey =
   | NavKey
   | "inviteUser"
   | "createProject"
-  | "aiMarketing";
+  | "aiMarketing"
+  | "team";
 
 const ALL: AppRole[] = ["ADMIN", "SUPERVISOR", "SALES", "ACCOUNTANT"];
 
@@ -38,7 +40,9 @@ export const FEATURE_ROLES: Record<FeatureKey, AppRole[]> = {
   reminders: ALL,
   marketing: ["ADMIN", "SALES"],
   bookings: ["ADMIN", "SALES", "ACCOUNTANT"],
-  users: ["ADMIN", "SALES", "ACCOUNTANT"],
+  customers: ["ADMIN", "SALES", "ACCOUNTANT"],
+  team: ["ADMIN"],
+  settings: ["ADMIN"],
   leads: ["ADMIN", "SALES"],
   reports: ALL,
   advancedReports: ["ADMIN", "SUPERVISOR", "ACCOUNTANT", "SALES"],
@@ -59,10 +63,11 @@ export const NAV_ITEMS: { key: NavKey; to: string; end?: boolean }[] = [
   { key: "reminders", to: "/dashboard/reminders" },
   { key: "marketing", to: "/dashboard/marketing" },
   { key: "bookings", to: "/dashboard/bookings" },
-  { key: "users", to: "/dashboard/users" },
+  { key: "customers", to: "/dashboard/customers" },
   { key: "leads", to: "/dashboard/leads" },
   { key: "reports", to: "/dashboard/reports" },
   { key: "advancedReports", to: "/dashboard/comprehensive-reports" },
+  { key: "settings", to: "/dashboard/settings" },
 ];
 
 export function getStoredUser(): { role?: string; name?: string } | null {
@@ -109,7 +114,10 @@ export function featureForPath(pathname: string): FeatureKey | null {
     ["/dashboard/reminders", "reminders"],
     ["/dashboard/marketing", "marketing"],
     ["/dashboard/bookings", "bookings"],
-    ["/dashboard/users", "users"],
+    ["/dashboard/customers", "customers"],
+    ["/dashboard/users", "customers"],
+    ["/dashboard/team", "settings"],
+    ["/dashboard/settings", "settings"],
     ["/dashboard/leads", "leads"],
     ["/dashboard/reports", "reports"],
   ];

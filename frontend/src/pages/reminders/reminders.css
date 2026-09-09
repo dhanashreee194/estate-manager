@@ -72,14 +72,12 @@
 }
 
 .reminders-page .filters select,
-.reminders-page .filters button,
-.reminders-page .manual-form input,
-.reminders-page .manual-form button {
+.reminders-page .manual-form input {
   padding: 8px 10px;
   border-radius: 6px;
-  border: 1px solid #2a3a55;
-  background: var(--bg-app);
-  color: white;
+  border: 1px solid var(--border-strong, #2a3a55);
+  background: var(--bg-input, var(--bg-app));
+  color: var(--text, #fff);
 }
 
 .reminders-page .check {
@@ -90,12 +88,29 @@
   color: var(--text-sidebar);
 }
 
-.reminders-page .primary {
-  background: #16c784;
-  border: none !important;
+/* Solid green CTAs — beat global button styles */
+.reminders-page button.rm-btn-primary {
+  background: #16c784 !important;
+  border: 1px solid #16c784 !important;
   color: #04140e !important;
-  font-weight: 600;
+  font-weight: 700 !important;
   cursor: pointer;
+  white-space: nowrap;
+  min-height: 40px;
+  padding: 8px 16px;
+  border-radius: 8px;
+  box-shadow: none;
+}
+
+.reminders-page button.rm-btn-primary:hover:not(:disabled) {
+  background: #12b574 !important;
+  border-color: #12b574 !important;
+  color: #04140e !important;
+}
+
+.reminders-page button.rm-btn-primary:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
 }
 
 .reminders-page .table-header,

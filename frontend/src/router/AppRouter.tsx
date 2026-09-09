@@ -20,6 +20,8 @@ import ReportsPage from "../pages/projects/reports/ReportsPage";
 import ExpensesPage from "../pages/projects/expenses/ExpensesPage";
 import LeadKanban from "../pages/leads/LeadKanban";
 import UsersPage from "../pages/users/UsersPage";
+import TeamAccessPage from "../pages/users/TeamAccessPage";
+import SettingsPage from "../pages/settings/SettingsPage";
 import CompanyReportsPage from "../pages/reports/CompanyReportsPage";
 import ProjectLeads from "../pages/projects/leads/ProjectLeads";
 import ComprehensiveReports from "../pages/reports/ComprehensiveReports";
@@ -62,7 +64,13 @@ export default function AppRouter() {
         <Route path="/dashboard/marketing" element={<MarketingPage />} />
         <Route path="bookings" element={<BookingsPage />} />
         <Route path="/dashboard/leads" element={<LeadKanban />} />
-        <Route path="/dashboard/users" element={<UsersPage />} />
+        <Route path="/dashboard/customers" element={<UsersPage />} />
+        <Route
+          path="/dashboard/users"
+          element={<Navigate to="/dashboard/customers" replace />}
+        />
+        <Route path="/dashboard/team" element={<TeamAccessPage />} />
+        <Route path="/dashboard/settings" element={<SettingsPage />} />
         <Route path="/dashboard/reports" element={<CompanyReportsPage />} />
         <Route
           path="/dashboard/comprehensive-reports"

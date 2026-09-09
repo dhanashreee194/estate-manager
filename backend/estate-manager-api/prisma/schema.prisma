@@ -15,6 +15,19 @@ model Company {
   isActive  Boolean  @default(true)
   createdAt DateTime @default(now())
 
+  /// Branding & office (Settings)
+  logoUrl   String?
+  phone     String?
+  address   String?
+  gstNumber String?
+  panNumber String?
+
+  /// Invoice / bill letterhead options
+  invoicePrefix String? @default("INV")
+  invoiceFooter String?
+  billTitle     String?
+  showGstOnDocs Boolean @default(true)
+
   users     User[]
   projects  Project[]
   materials Material[]
@@ -545,6 +558,9 @@ model DailyLabour {
   men     Int
   women   Int
   total   Int
+
+  /// Names of skilled workers (length should match skilled count)
+  skilledNames String[] @default([])
 
   report DailyReport @relation(fields: [reportId], references: [id])
 

@@ -198,3 +198,88 @@ export function agreementCopy(lang: PdfLang) {
 export function localeFor(lang: PdfLang) {
   return lang === 'mr' ? 'mr-IN' : 'en-IN';
 }
+
+export type CompanyLetterhead = {
+  name: string;
+  logoUrl?: string | null;
+  phone?: string | null;
+  address?: string | null;
+  gstNumber?: string | null;
+  panNumber?: string | null;
+  billTitle?: string | null;
+  invoiceFooter?: string | null;
+  showGstOnDocs?: boolean | null;
+};
+
+/** Resolve /uploads/... URL to a local filesystem path for PDFKit. */
+export function resolveUploadPath(url?: string | null): string | null {
+  if (!url) return null;
+  const cleaned = String(url).replace(/^\/+/, '');
+  if (!cleaned.startsWith('uploads/')) return null;
+  const full = path.join(process.cwd(), cleaned);
+  return fs.existsSync(full) ? full : null;
+}
+
+/** Draw company logo + name + office address/GST at top of PDF. */
+export function drawCompanyLetterhead(
+  doc: PDFKit.PDFDocument,
+  company: CompanyLetterhead,
+  options?: { subtitle?: string | null },
+) {
+  const logoPath = resolveUploadPath(company.logoUrl);
+  if (logoPath) {
+    try {
+      const pageWidth =
+        doc.page.width - doc.page.margins.left - doc.page.margins.right;
+      const logoW = 70;
+      doc.image(logoPath, doc.page.margins.left + (pageWidth - logoW) / 2, doc.y, {
+        fit: [logoW, logoW],
+      });
+      doc.moveDown(0.3);
+    } catch {
+      // ignore bad image
+    }
+  }
+
+  pdfFont(doc).fontSize(18).text(company.name, { align: 'center' });
+
+  pdfFont(doc).fontSize(9).fillColor('#444');
+  if (company.address) {
+    doc.text(company.address, { align: 'center' });
+  }
+  const contactBits: string[] = [];
+  if (company.phone) contactBits.push(`Ph: ${company.phone}`);
+  if (company.showGstOnDocs !== false && company.gstNumber) {
+    contactBits.push(`GSTIN: ${company.gstNumber}`);
+  }
+  if (company.panNumber) contactBits.push(`PAN: ${company.panNumber}`);
+  if (contactBits.length) {
+    doc.text(contactBits.join('  ·  '), { align: 'center' });
+  }
+  if (options?.subtitle) {
+    doc.text(options.subtitle, { align: 'center' });
+  }
+  doc.fillColor('#000');
+  doc.moveDown(0.5);
+
+  if (company.billTitle) {
+    pdfFont(doc)
+      .fontSize(11)
+      .text(company.billTitle, { align: 'center' });
+    doc.moveDown(0.3);
+  }
+}
+
+export function drawCompanyFooter(
+  doc: PDFKit.PDFDocument,
+  company: CompanyLetterhead,
+) {
+  if (!company.invoiceFooter?.trim()) return;
+  doc.moveDown(1);
+  pdfFont(doc)
+    .fontSize(8)
+    .fillColor('#555')
+    .text(company.invoiceFooter.trim(), { align: 'center' });
+  doc.fillColor('#000');
+}
+

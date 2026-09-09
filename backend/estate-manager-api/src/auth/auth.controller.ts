@@ -1,4 +1,4 @@
-import { Controller, Post, Body, Req, UseGuards } from '@nestjs/common';
+import { Controller, Post, Body, Req, UseGuards, Get } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { InviteUserDto } from './dto/invite-user.dto';
 import { AuthGuard } from '@nestjs/passport';
@@ -21,5 +21,15 @@ export class AuthController {
   @Post('invite')
   invite(@Body() dto: InviteUserDto, @Req() req) {
     return this.authService.inviteUser(dto, req.user.companyId, req.user.role);
+  }
+
+  /** List staff users who can access company modules (ADMIN only). */
+  @UseGuards(AuthGuard('jwt'))
+  @Get('users')
+  listUsers(@Req() req) {
+    return this.authService.listCompanyUsers(
+      req.user.companyId,
+      req.user.role,
+    );
   }
 }

@@ -1,5 +1,6 @@
 import { useDraggable } from "@dnd-kit/core";
 import { leadSourceLabel } from "../../constants/leadSources";
+import { formatBudget } from "../../utils/budget";
 import "./lead.css";
 
 export default function LeadCard({ lead, onClick }: any) {
@@ -14,6 +15,7 @@ export default function LeadCard({ lead, onClick }: any) {
   };
 
   const sourceClass = `source-badge source-${(lead.source || "OTHER").toLowerCase()}`;
+  const budgetLabel = formatBudget(lead.budget);
 
   return (
     <div
@@ -28,6 +30,12 @@ export default function LeadCard({ lead, onClick }: any) {
 
       <div className="lead-name">{lead.name}</div>
       <div className="lead-phone">{lead.phone}</div>
+      {budgetLabel !== "—" && (
+        <div className="lead-budget">{budgetLabel}</div>
+      )}
+      {lead.requirement && (
+        <div className="lead-requirement">{lead.requirement}</div>
+      )}
       <div className={sourceClass}>{leadSourceLabel(lead.source)}</div>
       {lead.sourceDetail && (
         <div className="lead-source-detail">{lead.sourceDetail}</div>

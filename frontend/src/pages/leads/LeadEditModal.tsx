@@ -7,16 +7,8 @@ import {
   LEAD_REQUIREMENTS,
   isPresetRequirement,
 } from "../../constants/leadRequirements";
+import { parseBudget, formatBudget } from "../../utils/budget";
 import "./lead.css";
-
-function parseBudget(value: string | number): number | undefined {
-  if (value === "" || value == null) return undefined;
-  if (typeof value === "number") {
-    return Number.isFinite(value) ? value : undefined;
-  }
-  const numeric = Number(String(value).replace(/[^\d.]/g, ""));
-  return Number.isFinite(numeric) && numeric > 0 ? numeric : undefined;
-}
 
 export default function LeadEditModal({ lead, onClose, onSaved }: any) {
   const { t } = useTranslation();
@@ -193,6 +185,11 @@ export default function LeadEditModal({ lead, onClose, onSaved }: any) {
             onChange={handleChange}
             placeholder={t("leads.budgetPlaceholder")}
           />
+          {parseBudget(form.budget) != null && (
+            <div className="budget-preview">
+              {t("leads.budget")}: {formatBudget(parseBudget(form.budget))}
+            </div>
+          )}
 
           <label className="field-label" htmlFor="edit-lead-requirement">
             {t("leads.requirement")}

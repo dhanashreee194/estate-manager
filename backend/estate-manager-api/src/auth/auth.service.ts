@@ -167,4 +167,21 @@ export class AuthService {
       },
     });
   }
+
+  async listCompanyUsers(companyId: string, requesterRole: string) {
+    if (requesterRole !== 'ADMIN') {
+      throw new ForbiddenException('Only admin can view team users');
+    }
+
+    return this.prisma.user.findMany({
+      where: { companyId },
+      select: {
+        id: true,
+        name: true,
+        email: true,
+        role: true,
+      },
+      orderBy: [{ role: 'asc' }, { name: 'asc' }],
+    });
+  }
 }

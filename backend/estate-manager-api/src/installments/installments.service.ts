@@ -5,6 +5,8 @@ import { Response } from 'express';
 import {
   createPdfDoc,
   demandCopy,
+  drawCompanyFooter,
+  drawCompanyLetterhead,
   localeFor,
   normalizePdfLang,
   pdfFont,
@@ -301,10 +303,7 @@ export class InstallmentsService {
     res.setHeader('Content-Type', 'application/pdf');
     doc.pipe(res);
 
-    pdfFont(doc).fontSize(18).text(company?.name || project.name, {
-      align: 'center',
-    });
-    doc.moveDown(0.5);
+    drawCompanyLetterhead(doc, company || { name: project.name });
     pdfFont(doc).fontSize(11).text(project.name, { align: 'center' });
     doc.moveDown();
     pdfFont(doc).fontSize(16).text(L.title, {
@@ -341,6 +340,7 @@ export class InstallmentsService {
 
     doc.moveDown(3);
     doc.text(L.signatory, { align: 'right' });
+    drawCompanyFooter(doc, company || { name: project.name });
     doc.end();
   }
 }

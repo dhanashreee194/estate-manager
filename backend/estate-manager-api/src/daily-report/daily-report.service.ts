@@ -55,6 +55,18 @@ export class DailyReportService {
     const skilled = Number(data.skilled || 0);
     const men = Number(data.men || 0);
     const women = Number(data.women || 0);
+    const skilledNames = Array.isArray(data.skilledNames)
+      ? data.skilledNames
+          .map((n: unknown) => String(n ?? '').trim())
+          .filter(Boolean)
+          .slice(0, Math.max(skilled, 0))
+      : typeof data.skilledNames === 'string' && data.skilledNames.trim()
+        ? data.skilledNames
+            .split(/\r?\n|,/)
+            .map((n: string) => n.trim())
+            .filter(Boolean)
+            .slice(0, Math.max(skilled, 0))
+        : [];
 
     return this.prisma.dailyLabour.create({
       data: {
@@ -65,6 +77,7 @@ export class DailyReportService {
         men,
         women,
         total: skilled + men + women,
+        skilledNames,
       },
       include: { vendor: true },
     });

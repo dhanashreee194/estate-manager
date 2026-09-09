@@ -31,6 +31,7 @@ import { FinanceModule } from './finance/finance.module';
 import { LandModule } from './land/land.module';
 import { ReminderModule } from './reminder/reminder.module';
 import { MarketingModule } from './marketing/marketing.module';
+import { CompanyModule } from './company/company.module';
 import { HealthController } from './health.controller';
 
 @Module({
@@ -67,6 +68,7 @@ import { HealthController } from './health.controller';
     LandModule,
     ReminderModule,
     MarketingModule,
+    CompanyModule,
   ],
   controllers: [AppController, HealthController],
   providers: [AppService],

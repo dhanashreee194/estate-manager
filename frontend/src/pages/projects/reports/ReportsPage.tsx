@@ -7,6 +7,7 @@ import DailyReportModal from "./DailyReportModal";
 
 import "../projects.css";
 import { getProjectAnalytics } from "../../../api/projectAnalytics";
+import { parseWorkDetails } from "../../../utils/workDetails";
 
 export default function ReportsPage() {
   const { t } = useTranslation();
@@ -351,7 +352,11 @@ export default function ReportsPage() {
               </span>
             </div>
 
-            <p>{r.workDetails}</p>
+            <ul className="work-details-list">
+              {parseWorkDetails(r.workDetails).map((item, i) => (
+                <li key={i}>{item}</li>
+              ))}
+            </ul>
 
             <div className="muted" style={{ fontSize: 12, marginTop: 4 }}>
               {(r.labours || [])
@@ -361,6 +366,26 @@ export default function ReportsPage() {
               {r.meterUnits != null ? ` · ${t("common.unit")} ${r.meterUnits}` : ""}
               {r.checkedBy ? ` · ${r.checkedBy}` : ""}
             </div>
+
+            {(r.labours || []).some(
+              (l: any) =>
+                Array.isArray(l.skilledNames) && l.skilledNames.length > 0,
+            ) && (
+              <ul className="work-details-list skilled-names-preview">
+                {(r.labours || []).flatMap((l: any) =>
+                  (Array.isArray(l.skilledNames) ? l.skilledNames : [])
+                    .filter(Boolean)
+                    .map((name: string, i: number) => (
+                      <li key={`${l.id || l.agency}-${i}`}>
+                        Skilled: {name}
+                        {l.agency || l.vendor?.name
+                          ? ` (${l.agency || l.vendor?.name})`
+                          : ""}
+                      </li>
+                    )),
+                )}
+              </ul>
+            )}
 
             <div className="report-footer">
               <span>🧱 {(r.materials || []).length} {t("expenses.material")}</span>

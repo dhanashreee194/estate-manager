@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { Fragment, useEffect, useMemo, useState } from "react";
 import { useOutletContext } from "react-router-dom";
 import {
   createReport,
@@ -10,6 +10,10 @@ import { getMaterials, getProjectStock } from "../../../api/inventory";
 import { getProject } from "../../../api/project";
 import "../projects.css";
 import ModalPortal from "../../../components/ModalPortal";
+import {
+  parseWorkDetails,
+  serializeWorkDetails,
+} from "../../../utils/workDetails";
 
 const STEEL_SIZES = ["6 mm", "8 mm", "10 mm", "12 mm", "16 mm", "20 mm"];
 const LABOUR_ROWS = 2;
@@ -32,6 +36,7 @@ type LabourRow = {
   skilled: number;
   men: number;
   women: number;
+  skilledNames: string[];
 };
 
 type PaymentRow = {
@@ -61,7 +66,15 @@ const emptyLabour = (): LabourRow => ({
   skilled: 0,
   men: 0,
   women: 0,
+  skilledNames: [],
 });
+
+const resizeSkilledNames = (names: string[], count: number): string[] => {
+  const n = Math.max(0, Math.min(40, Number(count) || 0));
+  const next = (names || []).slice(0, n);
+  while (next.length < n) next.push("");
+  return next;
+};
 
 const emptyPayment = (): PaymentRow => ({
   vendorId: "",
@@ -113,7 +126,7 @@ export default function DailyReportModal({
   const [meterFrom, setMeterFrom] = useState<number | "">("");
   const [meterTo, setMeterTo] = useState<number | "">("");
   const [meterUnits, setMeterUnits] = useState<number | "">("");
-  const [work, setWork] = useState("");
+  const [workItems, setWorkItems] = useState<string[]>([""]);
   const [checkedBy, setCheckedBy] = useState("");
   const [loading, setLoading] = useState(false);
 
@@ -221,7 +234,8 @@ export default function DailyReportModal({
     setMeterFrom(report.meterFrom ?? "");
     setMeterTo(report.meterTo ?? "");
     setMeterUnits(report.meterUnits ?? "");
-    setWork(report.workDetails || "");
+    const parsed = parseWorkDetails(report.workDetails || "");
+    setWorkItems(parsed.length ? parsed : [""]);
     setCheckedBy(report.checkedBy || "");
 
     const labourRows = (report.labours || []).map((l: any) => ({
@@ -230,6 +244,10 @@ export default function DailyReportModal({
       skilled: l.skilled || 0,
       men: l.men || 0,
       women: l.women || 0,
+      skilledNames: resizeSkilledNames(
+        Array.isArray(l.skilledNames) ? l.skilledNames : [],
+        l.skilled || 0,
+      ),
     }));
     while (labourRows.length < LABOUR_ROWS) labourRows.push(emptyLabour());
     setLabours(labourRows);
@@ -314,8 +332,9 @@ export default function DailyReportModal({
       alert("Please fill date");
       return;
     }
-    if (!work.trim()) {
-      alert("Please fill Works Details");
+    const workDetails = serializeWorkDetails(workItems);
+    if (!workDetails) {
+      alert("Please add at least one work item");
       return;
     }
 
@@ -325,7 +344,7 @@ export default function DailyReportModal({
 
       const header = {
         date,
-        workDetails: work,
+        workDetails,
         siteName,
         meterFrom: meterFrom === "" ? null : Number(meterFrom),
         meterTo: meterTo === "" ? null : Number(meterTo),
@@ -497,13 +516,43 @@ export default function DailyReportModal({
 
             <div className="paper-box">
               <div className="paper-box-title center">: Works Details :</div>
-              <textarea
-                className="paper-works"
-                rows={4}
-                placeholder={"1) Shuttering of Column and Stairs\n2) ..."}
-                value={work}
-                onChange={(e) => setWork(e.target.value)}
-              />
+              <div className="paper-work-list">
+                {workItems.map((item, idx) => (
+                  <div className="paper-work-row" key={idx}>
+                    <span className="paper-work-bullet" aria-hidden>
+                      •
+                    </span>
+                    <input
+                      placeholder="e.g. Shuttering of column and stairs"
+                      value={item}
+                      onChange={(e) => {
+                        const next = [...workItems];
+                        next[idx] = e.target.value;
+                        setWorkItems(next);
+                      }}
+                    />
+                    {workItems.length > 1 && (
+                      <button
+                        type="button"
+                        className="paper-row-remove"
+                        onClick={() =>
+                          setWorkItems(workItems.filter((_, i) => i !== idx))
+                        }
+                      >
+                        Remove
+                      </button>
+                    )}
+                  </div>
+                ))}
+              </div>
+              <button
+                type="button"
+                className="ghost-btn"
+                style={{ marginTop: 10 }}
+                onClick={() => setWorkItems([...workItems, ""])}
+              >
+                + Add work item
+              </button>
             </div>
 
             <button
@@ -577,11 +626,16 @@ export default function DailyReportModal({
                             type="number"
                             inputMode="numeric"
                             value={row.skilled || ""}
-                            onChange={(e) =>
+                            onChange={(e) => {
+                              const skilled = +e.target.value || 0;
                               updateLabour(idx, {
-                                skilled: +e.target.value || 0,
-                              })
-                            }
+                                skilled,
+                                skilledNames: resizeSkilledNames(
+                                  row.skilledNames,
+                                  skilled,
+                                ),
+                              });
+                            }}
                           />
                         </label>
                         <label>
@@ -613,6 +667,32 @@ export default function DailyReportModal({
                           <input value={total || ""} disabled />
                         </label>
                       </div>
+                      {row.skilled > 0 && (
+                        <div className="paper-skilled-names">
+                          <div className="paper-subtitle">
+                            Skilled labour names ({row.skilled})
+                          </div>
+                          {resizeSkilledNames(row.skilledNames, row.skilled).map(
+                            (name, nameIdx) => (
+                              <label key={nameIdx}>
+                                Skilled {nameIdx + 1}
+                                <input
+                                  placeholder={`Name of skilled worker ${nameIdx + 1}`}
+                                  value={name}
+                                  onChange={(e) => {
+                                    const skilledNames = resizeSkilledNames(
+                                      row.skilledNames,
+                                      row.skilled,
+                                    );
+                                    skilledNames[nameIdx] = e.target.value;
+                                    updateLabour(idx, { skilledNames });
+                                  }}
+                                />
+                              </label>
+                            ),
+                          )}
+                        </div>
+                      )}
                     </div>
                   );
                 })}
@@ -636,7 +716,8 @@ export default function DailyReportModal({
                       Number(row.men || 0) +
                       Number(row.women || 0);
                     return (
-                      <tr key={idx}>
+                      <Fragment key={idx}>
+                      <tr>
                         <td>
                           <select
                             value={row.vendorId}
@@ -670,11 +751,16 @@ export default function DailyReportModal({
                           <input
                             type="number"
                             value={row.skilled || ""}
-                            onChange={(e) =>
+                            onChange={(e) => {
+                              const skilled = +e.target.value || 0;
                               updateLabour(idx, {
-                                skilled: +e.target.value || 0,
-                              })
-                            }
+                                skilled,
+                                skilledNames: resizeSkilledNames(
+                                  row.skilledNames,
+                                  skilled,
+                                ),
+                              });
+                            }}
                           />
                         </td>
                         <td>
@@ -701,6 +787,41 @@ export default function DailyReportModal({
                           <input value={total || ""} disabled />
                         </td>
                       </tr>
+                      {row.skilled > 0 && (
+                        <tr className="paper-skilled-names-row">
+                          <td colSpan={5}>
+                            <div className="paper-skilled-names">
+                              <div className="paper-subtitle">
+                                Skilled labour names — Agency {idx + 1} (
+                                {row.skilled})
+                              </div>
+                              <div className="paper-skilled-names-grid">
+                                {resizeSkilledNames(
+                                  row.skilledNames,
+                                  row.skilled,
+                                ).map((name, nameIdx) => (
+                                  <label key={nameIdx}>
+                                    {nameIdx + 1}.
+                                    <input
+                                      placeholder={`Skilled worker ${nameIdx + 1}`}
+                                      value={name}
+                                      onChange={(e) => {
+                                        const skilledNames = resizeSkilledNames(
+                                          row.skilledNames,
+                                          row.skilled,
+                                        );
+                                        skilledNames[nameIdx] = e.target.value;
+                                        updateLabour(idx, { skilledNames });
+                                      }}
+                                    />
+                                  </label>
+                                ))}
+                              </div>
+                            </div>
+                          </td>
+                        </tr>
+                      )}
+                      </Fragment>
                     );
                   })}
                   <tr>

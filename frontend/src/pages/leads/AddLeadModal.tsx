@@ -12,6 +12,7 @@ import {
   LEAD_REQUIREMENTS,
   isPresetRequirement,
 } from "../../constants/leadRequirements";
+import { parseBudget, formatBudget } from "../../utils/budget";
 import "./lead.css";
 
 const emptyForm = {
@@ -28,12 +29,6 @@ const emptyForm = {
   requirementOther: "",
   nextFollowUp: "",
 };
-
-function parseBudget(value: string): number | undefined {
-  if (!value?.trim()) return undefined;
-  const numeric = Number(String(value).replace(/[^\d.]/g, ""));
-  return Number.isFinite(numeric) && numeric > 0 ? numeric : undefined;
-}
 
 export default function AddLeadModal({
   open,
@@ -241,6 +236,11 @@ export default function AddLeadModal({
             value={form.budget}
             onChange={handleChange}
           />
+          {parseBudget(form.budget) != null && (
+            <div className="budget-preview">
+              {t("leads.budget")}: {formatBudget(parseBudget(form.budget))}
+            </div>
+          )}
 
           <label className="field-label" htmlFor="lead-requirement">
             {t("leads.requirement")}

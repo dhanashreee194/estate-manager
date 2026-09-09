@@ -2,6 +2,7 @@ import { useEffect } from "react";
 import { createPortal } from "react-dom";
 import { useTranslation } from "react-i18next";
 import { leadSourceLabel } from "../../constants/leadSources";
+import { formatBudget } from "../../utils/budget";
 import "./lead.css";
 
 export default function LeadDetailsModal({ lead, onClose }: any) {
@@ -75,7 +76,7 @@ export default function LeadDetailsModal({ lead, onClose }: any) {
             </p>
           )}
           <p>
-            <b>{t("leads.budget")}:</b> {lead.budget ?? "—"}
+            <b>{t("leads.budget")}:</b> {formatBudget(lead.budget)}
           </p>
           <p>
             <b>{t("leads.requirement")}:</b> {lead.requirement || "—"}

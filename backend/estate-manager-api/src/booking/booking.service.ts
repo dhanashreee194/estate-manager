@@ -5,6 +5,8 @@ import type { Response } from 'express';
 import {
   agreementCopy,
   createPdfDoc,
+  drawCompanyFooter,
+  drawCompanyLetterhead,
   localeFor,
   normalizePdfLang,
   pdfFont,
@@ -429,15 +431,9 @@ export class BookingService {
     const money = (n: number | null | undefined) =>
       `₹ ${Number(n || 0).toLocaleString(loc, { maximumFractionDigits: 0 })}`;
 
-    pdfFont(doc).fontSize(18).text(company.name, { align: 'center' });
-    if (project.location) {
-      pdfFont(doc)
-        .fontSize(10)
-        .fillColor('#444')
-        .text(project.location, { align: 'center' });
-    }
-    doc.fillColor('#000');
-    doc.moveDown(0.4);
+    drawCompanyLetterhead(doc, company, {
+      subtitle: project.location || null,
+    });
     pdfFont(doc)
       .fontSize(11)
       .text(`${L.project}: ${project.name}`, { align: 'center' });
@@ -552,6 +548,8 @@ export class BookingService {
     doc.text(L.authSign, 320, sigY + 16);
     doc.text(`(${customer.name})`, 50, sigY + 30);
     doc.text(`(${company.name})`, 320, sigY + 30);
+
+    drawCompanyFooter(doc, company);
 
     doc.end();
   }

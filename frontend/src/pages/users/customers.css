@@ -1,0 +1,76 @@
+.customers-page {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.customers-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.customers-toolbar-left {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+}
+
+.customers-toolbar-left h2 {
+  margin: 0;
+}
+
+.customers-search {
+  padding: 10px 12px;
+  min-width: min(250px, 100%);
+}
+
+.customers-actions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.customers-error {
+  color: #f87171;
+}
+
+.team-access-page {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.team-access-page .hint {
+  margin: 0 0 16px;
+  color: var(--text-muted);
+  max-width: 56ch;
+  line-height: 1.45;
+}
+
+.team-access-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 8px;
+}
+
+.team-access-toolbar h2 {
+  margin: 0;
+}
+
+.role-pill {
+  display: inline-block;
+  font-size: 12px;
+  font-weight: 600;
+  padding: 3px 8px;
+  border-radius: 999px;
+  border: 1px solid var(--border-strong);
+  background: var(--bg-muted);
+}

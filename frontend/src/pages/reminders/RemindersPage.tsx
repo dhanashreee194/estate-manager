@@ -164,9 +164,16 @@ export default function RemindersPage() {
               ))}
             </select>
             <button
-              className="primary"
+              type="button"
+              className="rm-btn-primary"
               disabled={generateMut.isPending}
               onClick={() => generateMut.mutate()}
+              style={{
+                background: "#16c784",
+                border: "1px solid #16c784",
+                color: "#04140e",
+                fontWeight: 700,
+              }}
             >
               {t("reminders.generate")}
             </button>
@@ -268,7 +275,8 @@ export default function RemindersPage() {
             onChange={(e) => setManual({ ...manual, message: e.target.value })}
           />
           <button
-            className="primary"
+            type="button"
+            className="rm-btn-primary"
             disabled={!manual.title || createMut.isPending}
             onClick={() =>
               createMut.mutate({
@@ -281,6 +289,12 @@ export default function RemindersPage() {
                 entityType: "Manual",
               })
             }
+            style={{
+              background: "#16c784",
+              border: "1px solid #16c784",
+              color: "#04140e",
+              fontWeight: 700,
+            }}
           >
             {t("reminders.addReminder")}
           </button>
