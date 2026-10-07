@@ -162,6 +162,13 @@
   margin-bottom: 12px;
 }
 
+.auth-wait-hint {
+  margin: 12px 0 0;
+  font-size: 13px;
+  line-height: 1.45;
+  text-align: center;
+}
+
 /* Legacy brand block (mobile stacks hero) */
 .brand {
   display: none;

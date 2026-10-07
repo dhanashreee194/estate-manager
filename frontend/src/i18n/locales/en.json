@@ -134,6 +134,7 @@
     "noAccount": "Don’t have an account?",
     "hasAccount": "Already have an account?",
     "loginFailed": "Login failed",
+    "serverWaking": "The server is waking up. This can take a minute or two — please keep this page open.",
     "signupFailed": "Signup failed",
     "minPassword": "Minimum 8 characters"
   },

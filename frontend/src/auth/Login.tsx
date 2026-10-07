@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import "./auth.css";
@@ -13,7 +13,22 @@ export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
+  const [slow, setSlow] = useState(false);
   const [error, setError] = useState("");
+
+  // Start waking the free-tier API while the user is still typing.
+  useEffect(() => {
+    api.get("/health").catch(() => {});
+  }, []);
+
+  useEffect(() => {
+    if (!loading) {
+      setSlow(false);
+      return;
+    }
+    const timer = setTimeout(() => setSlow(true), 8000);
+    return () => clearTimeout(timer);
+  }, [loading]);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -33,7 +48,9 @@ export default function Login() {
 
       navigate("/dashboard");
     } catch (err: any) {
-      setError(err.message || t("auth.loginFailed"));
+      setError(
+        err.response?.data?.message || err.message || t("auth.loginFailed"),
+      );
     } finally {
       setLoading(false);
     }
@@ -88,6 +105,7 @@ export default function Login() {
             <button className="primary-btn" disabled={loading} type="submit">
               {loading ? t("common.loading") : t("auth.login")}
             </button>
+            {slow && <p className="muted auth-wait-hint">{t("auth.serverWaking")}</p>}
           </form>
 
           <p className="footer-text">

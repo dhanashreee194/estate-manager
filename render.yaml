@@ -10,9 +10,11 @@ services:
     plan: free
     rootDir: backend/estate-manager-api
     buildCommand: npm ci --include=dev && npx prisma generate && npm run build
-    # migrate deploy applies tracked SQL; db push syncs remaining schema drift
-    # (many models were evolved locally with `prisma db push` without migrations).
-    startCommand: npx prisma migrate deploy && npx prisma db push && npm run start:prod
+    # Free-tier builds can't reach the database, so migrations run at start.
+    # `db push` is slow enough on free CPU that boots time out, so it only runs
+    # when PRISMA_DB_PUSH_ON_START=true (set it for one deploy after a schema
+    # change that has no migration, then unset it).
+    startCommand: ./node_modules/.bin/prisma migrate deploy && if [ "$PRISMA_DB_PUSH_ON_START" = "true" ]; then ./node_modules/.bin/prisma db push --skip-generate; fi && node dist/main
     healthCheckPath: /health
     envVars:
       - key: NODE_VERSION
